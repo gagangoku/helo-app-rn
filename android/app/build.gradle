@@ -128,7 +128,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.helo_app_rn"
+        applicationId "com.heloprotocol.helo.app.rn.notificationtester"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

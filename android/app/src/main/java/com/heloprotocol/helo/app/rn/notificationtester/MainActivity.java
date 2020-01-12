@@ -1,4 +1,4 @@
-package com.helo_app_rn;
+package com.heloprotocol.helo.app.rn.notificationtester;
 
 import com.facebook.react.ReactActivity;
 

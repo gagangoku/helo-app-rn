@@ -1,4 +1,4 @@
-package com.helo_app_rn;
+package com.heloprotocol.helo.app.rn.notificationtester;
 
 import android.app.Application;
 import android.content.Context;
