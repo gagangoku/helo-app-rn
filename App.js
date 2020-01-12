@@ -6,19 +6,22 @@
  */
 
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {createAppContainer} from 'react-navigation';
+import {createStackNavigator} from 'react-navigation-stack';
+import HomeScreen from './src/HomeScreen';
 
-export default class App extends React.Component {
-  render() {
-    return (
-        <View>
-          <Text>Hi hi</Text>
-        </View>
-    );
-  }
-}
+const homeScreens = [HomeScreen];
 
-
-const styles = StyleSheet.create({
-  scrollView: {},
+const allScreens = {};
+[homeScreens].forEach(y => {
+    y.forEach(x => {
+        allScreens[x.URL] = {screen: x};
+    });
 });
+
+const MainNavigator = createStackNavigator(allScreens, {
+    initialRouteName: HomeScreen.URL,
+});
+
+const App = createAppContainer(MainNavigator);
+export default App;
