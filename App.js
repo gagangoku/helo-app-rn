@@ -9,9 +9,12 @@ import React from 'react';
 import {createAppContainer} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
 import HomeScreen from './src/HomeScreen';
+import {initializeFirebase} from './src/util/firebase';
+
+
+initializeFirebase();
 
 const homeScreens = [HomeScreen];
-
 const allScreens = {};
 [homeScreens].forEach(y => {
     y.forEach(x => {

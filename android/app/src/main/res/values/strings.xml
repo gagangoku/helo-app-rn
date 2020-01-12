@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">helo_app_rn</string>
+    <string name="app_name">Helo</string>
+    <string name="default_notification_channel_id">HeloChannel</string>
 </resources>

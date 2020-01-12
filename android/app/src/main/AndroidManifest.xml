@@ -9,10 +9,34 @@
                  android:roundIcon="@mipmap/ic_launcher_round"
                  android:allowBackup="false"
                  android:theme="@style/AppTheme">
-      <activity android:name=".MainActivity"
-                android:label="@string/app_name"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-                android:windowSoftInputMode="adjustResize">
+
+        <service android:name="io.invertase.firebase.messaging.RNFirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <service android:name="io.invertase.firebase.messaging.RNFirebaseInstanceIdService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+            </intent-filter>
+        </service>
+        <service android:name="io.invertase.firebase.messaging.RNFirebaseBackgroundMessagingService" />
+
+        <!-- Firbase -->
+        <meta-data android:name="com.google.firebase.messaging.default_notification_icon"
+                   android:resource="@mipmap/ic_notification_icon" />
+        <meta-data
+                android:name="com.google.firebase.messaging.default_notification_color"
+                android:resource="@color/pink" />
+        <meta-data
+                android:name="com.google.firebase.messaging.default_notification_channel_id"
+                android:value="@string/default_notification_channel_id" />
+
+        <activity android:name=".MainActivity"
+                  android:launchMode="singleTask"
+                  android:label="@string/app_name"
+                  android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+                  android:windowSoftInputMode="adjustResize">
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />

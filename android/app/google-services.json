@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "241327438102",
+    "firebase_url": "https://india-project-e7798.firebaseio.com",
+    "project_id": "india-project-e7798",
+    "storage_bucket": "india-project-e7798.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:241327438102:android:a3a35e746c7dd2d9e97837",
+        "android_client_info": {
+          "package_name": "com.heloprotocol.helo.app.rn.notificationtester"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "241327438102-fggtv8b1l9shjtu849piski24h8gaaj8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBFFj15cLj2r39tXQSmYfQz7kMKfAeEcCg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "241327438102-fggtv8b1l9shjtu849piski24h8gaaj8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:241327438102:android:5b660e3baad1fc58",
+        "android_client_info": {
+          "package_name": "com.heloprotocol.test"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "241327438102-fggtv8b1l9shjtu849piski24h8gaaj8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBFFj15cLj2r39tXQSmYfQz7kMKfAeEcCg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "241327438102-fggtv8b1l9shjtu849piski24h8gaaj8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
