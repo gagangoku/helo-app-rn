@@ -9,10 +9,10 @@ import React from 'react';
 import {createAppContainer} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
 import HomeScreen from './src/HomeScreen';
-import {initializeFirebase} from './src/util/firebase';
+import {initializeFirebaseNotifications} from './src/util/firebase';
 
 
-initializeFirebase();
+initializeFirebaseNotifications();
 
 const homeScreens = [HomeScreen];
 const allScreens = {};

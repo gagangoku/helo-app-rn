@@ -4,7 +4,7 @@ import type { RemoteMessage } from 'react-native-firebase';
 import Toast from "react-native-simple-toast";
 
 
-export const initializeFirebase = async () => {
+export const initializeFirebaseNotifications = async () => {
     try {
         const hasPerm = await firebase.messaging().hasPermission();
         const perm = await firebase.messaging().requestPermission();
@@ -31,6 +31,29 @@ export const initializeFirebase = async () => {
         // User has rejected permissions
         console.log('Firebase rejected: ', e);
     }
+};
+
+export const initializeFirestore = async () => {
+    const nowMs = new Date().getTime();
+    const ref = firebase.firestore().collection('groups').doc('restaurant-jobs-india');
+    const data = await ref.get();
+    console.log('firestore data: ', data);
+    console.log('Time taken: ', new Date().getTime() - nowMs);
+
+    // console.log('Initializing firebase');
+    //
+    // // Your web app's Firebase configuration
+    // const firebaseConfig = {
+    //     apiKey: "AIzaSyBtxjZ8kP8TlnTowlKRwIKqcnbUDSiK04U",
+    //     authDomain: "india-project-e7798.firebaseapp.com",
+    //     databaseURL: "https://india-project-e7798.firebaseio.com",
+    //     projectId: "india-project-e7798",
+    //     storageBucket: "",
+    //     messagingSenderId: "241327438102",
+    //     appId: "1:241327438102:web:0a47583838b4c4dc"
+    // };
+    // // Initialize Firebase
+    // firebase.initializeApp(firebaseConfig);
 };
 
 export const handleFirebaseNewNotification = (notification: Notification) => {
