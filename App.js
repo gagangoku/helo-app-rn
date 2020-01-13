@@ -10,9 +10,15 @@ import {createAppContainer} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
 import HomeScreen from './src/HomeScreen';
 import {initializeFirebaseNotifications} from './src/util/firebase';
+import {setPushyNotificationListeners} from './src/util/pushy';
+import {initFirestore} from './src/util/firestore';
 
 
 initializeFirebaseNotifications();
+setPushyNotificationListeners();
+initFirestore('supply', 352, (x) => {
+    console.log('cbFn: ', x);
+});
 
 const homeScreens = [HomeScreen];
 const allScreens = {};

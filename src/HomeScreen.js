@@ -1,7 +1,6 @@
 import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {initPushy} from './util/pushy';
-import {initializeFirestore} from './util/firebase';
 
 
 export default class HomeScreen extends React.Component {
@@ -13,7 +12,7 @@ export default class HomeScreen extends React.Component {
 
     async componentDidMount() {
         initPushy();
-        initializeFirestore();
+        // initializeFirestore();
     }
 
     render() {

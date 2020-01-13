@@ -52,25 +52,27 @@ export const initPushy = () => {
     });
 };
 
-Pushy.setNotificationListener(async (data) => {
-    // Print notification payload data
-    console.log('Received notification: ', JSON.stringify(data));
-    Toast.show('Received notification', Toast.LONG);
+export const setPushyNotificationListeners = () => {
+    Pushy.setNotificationListener(async (data) => {
+        // Print notification payload data
+        console.log('Received notification: ', JSON.stringify(data));
+        Toast.show('Received notification', Toast.LONG);
 
-    // Notification title
-    let notificationTitle = 'MyApp';
+        // Notification title
+        let notificationTitle = 'MyApp';
 
-    // Attempt to extract the "message" property from the payload: {"message":"Hello World!"}
-    let notificationText = data.message || 'Test notification';
+        // Attempt to extract the "message" property from the payload: {"message":"Hello World!"}
+        let notificationText = data.message || 'Test notification';
 
-    // Display basic system notification
-    Pushy.notify(notificationTitle, notificationText, data);
-});
-Pushy.setNotificationClickListener(async (data) => {
-    // Display basic alert
-    console.log('Clicked notification: ', data.message);
-    Toast.show('Clicked notification', Toast.LONG);
+        // Display basic system notification
+        // Pushy.notify(notificationTitle, notificationText, data);
+    });
+    Pushy.setNotificationClickListener(async (data) => {
+        // Display basic alert
+        console.log('Clicked notification: ', data.message);
+        Toast.show('Clicked notification', Toast.LONG);
 
-    // Navigate the user to another page or
-    // execute other logic on notification click
-});
+        // Navigate the user to another page or
+        // execute other logic on notification click
+    });
+};
