@@ -1,6 +1,11 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.heloprotocol.helo.app.rn.notificationtester">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.heloprotocol.helo.app.rn.notificationtester">
 
-    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application android:name=".MainApplication"
                  android:label="@string/app_name"
@@ -12,7 +17,7 @@
 
         <service android:name="io.invertase.firebase.messaging.RNFirebaseMessagingService">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
         </service>
         <service android:name="io.invertase.firebase.messaging.RNFirebaseInstanceIdService">
@@ -20,31 +25,69 @@
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
             </intent-filter>
         </service>
-        <service android:name="io.invertase.firebase.messaging.RNFirebaseBackgroundMessagingService" />
-        <service android:name=".MyTaskService" />
+        <service android:name="io.invertase.firebase.messaging.RNFirebaseBackgroundMessagingService"/>
+        <service android:name=".MyTaskService"/>
 
         <!-- Firbase -->
         <meta-data android:name="com.google.firebase.messaging.default_notification_icon"
-                   android:resource="@mipmap/ic_notification_icon" />
+                   android:resource="@mipmap/ic_notification_icon"/>
         <meta-data
                 android:name="com.google.firebase.messaging.default_notification_color"
-                android:resource="@color/pink" />
+                android:resource="@color/pink"/>
         <meta-data
                 android:name="com.google.firebase.messaging.default_notification_channel_id"
-                android:value="@string/default_notification_channel_id" />
+                android:value="@string/default_notification_channel_id"/>
 
         <activity android:name=".MainActivity"
                   android:launchMode="singleTask"
                   android:label="@string/app_name"
                   android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
                   android:windowSoftInputMode="adjustResize">
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
-      </activity>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
 
-      <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
+        <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>
+
+        <!-- Pushy Declarations -->
+        <!-- Pushy Notification Receiver -->
+        <!-- Do not modify - internal BroadcastReceiver that forwards notifications to the internal notification service-->
+        <receiver android:name="me.pushy.sdk.react.receivers.PushReceiver" android:exported="false">
+            <intent-filter>
+                <!-- Do not modify this -->
+                <action android:name="pushy.me"/>
+            </intent-filter>
+        </receiver>
+
+        <!-- Pushy Update Receiver -->
+        <!-- Do not modify - internal BroadcastReceiver that restarts the listener service -->
+        <receiver android:name="me.pushy.sdk.receivers.PushyUpdateReceiver" android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+            </intent-filter>
+        </receiver>
+
+        <!-- Pushy Boot Receiver -->
+        <!-- Do not modify - internal BroadcastReceiver that restarts the listener service -->
+        <receiver android:name="me.pushy.sdk.receivers.PushyBootReceiver" android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
+
+        <!-- Pushy Socket Service -->
+        <!-- Do not modify - internal service -->
+        <service android:name="me.pushy.sdk.services.PushySocketService"/>
+
+        <!-- Pushy Job Service (added in Pushy SDK 1.0.35) -->
+        <!-- Do not modify - internal service -->
+        <service android:name="me.pushy.sdk.services.PushyJobService"
+                 android:permission="android.permission.BIND_JOB_SERVICE"
+                 android:exported="true"/>
+        <!-- End Pushy Declarations -->
+
     </application>
 
 </manifest>

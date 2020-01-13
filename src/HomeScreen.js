@@ -1,5 +1,6 @@
 import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
+import {initPushy} from './util/pushy';
 
 
 export default class HomeScreen extends React.Component {
@@ -8,6 +9,10 @@ export default class HomeScreen extends React.Component {
         headerShown: false,
     });
     static URL = '/home';
+
+    async componentDidMount() {
+        initPushy();
+    }
 
     render() {
         const { navigation } = this.props;
