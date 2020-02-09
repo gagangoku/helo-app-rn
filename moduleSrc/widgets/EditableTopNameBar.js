@@ -1,11 +1,9 @@
 import React from "react";
-import IconButton from "@material-ui/core/IconButton";
-import LeftIcon from '@material-ui/icons/ChevronLeft';
-import EditIcon from '@material-ui/icons/Edit';
-import CheckIcon from '@material-ui/icons/Check';
-import {Text, View} from "../util/Util";
+import {Image, Text, View} from "../util/Util";
 import {TOP_BAR_COLOR} from "../chat/Constants";
 import {historyBack} from "../platform/Util";
+import TouchableAnim from "./TouchableAnim";
+import {CHEVRON_LEFT_ICON, EDIT_ICON, CHECK_TICK_ICON} from "../constants/Constants";
 
 
 export default class EditableTopNameBar extends React.Component {
@@ -36,22 +34,22 @@ export default class EditableTopNameBar extends React.Component {
         const { isEditable } = this.props;
 
         const editNameIcon = (
-            <IconButton style={{ height: 25, width: 25 }}>
-                <EditIcon onClick={() => this.setState({ editing: true })} style={{ height: 25, width: 25, color: '#ffffff' }} />
-            </IconButton>
+            <TouchableAnim onPress={() => this.setState({ editing: true })} style={{ height: 25, width: 25, lineHeight: 'normal' }}>
+                <Image src={EDIT_ICON} style={{ height: 25, width: 25 }} />
+            </TouchableAnim>
         );
         const tickIcon = (
-            <IconButton style={{ height: 25, width: 25 }}>
-                <CheckIcon onClick={this.onUpdateFn} style={{ height: 25, width: 25, color: '#ffffff' }} />
-            </IconButton>
+            <TouchableAnim onPress={this.onUpdateFn} style={{ height: 25, width: 25, lineHeight: 'normal' }}>
+                <Image src={CHECK_TICK_ICON} style={{ height: 25, width: 25 }} />
+            </TouchableAnim>
         );
 
         return (
             <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', height: 50, ...custom.topBar}}>
                 <View style={{ width: '10%' }}>
-                    <IconButton style={{ height: 35, width: 35 }}>
-                        <LeftIcon onClick={this.goBackFn} style={{ height: 35, width: 35, color: '#ffffff' }} />
-                    </IconButton>
+                    <TouchableAnim onPress={this.goBackFn} style={{ height: 35, width: 35, lineHeight: 'normal' }}>
+                        <Image src={CHEVRON_LEFT_ICON} style={{ height: 35, width: 35, }} />
+                    </TouchableAnim>
                 </View>
                 <View style={{ width: '80%' }}>
                     <Text style={{ fontSize: 18, fontWeight: 'bold', display: editing ? 'none' : 'block' }}>{name}</Text>

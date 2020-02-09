@@ -108,7 +108,10 @@ export default class ViewPersonProfile extends React.Component {
     callFn = (phone) => {
         showToast('Coming soon');
     };
-    whatsappFn = (phone) => {};
+    whatsappFn = (phone) => {
+        const url = format('https://wa.me/91{}?text=Hi', phone);
+        window.open(url);
+    };
 
     onUpdateNameFn = async (name) => {
         console.log('onUpdateNameFn: ', name);

@@ -1,8 +1,8 @@
 import React from 'react';
-import IconButton from "@material-ui/core/IconButton";
-import Stop from '@material-ui/icons/Stop';
-import Mic from '@material-ui/icons/Mic';
 import {recordAudio, spacer} from "../util/Util";
+import {MIC_BLACK_ICON, MIC_RED_ICON} from "../constants/Constants";
+import TouchableAnim from "./TouchableAnim";
+import {Image} from "../platform/Util";
 
 
 export default class MicRecorderWidget extends React.Component {
@@ -72,12 +72,12 @@ export default class MicRecorderWidget extends React.Component {
         let secs = duration - 60*mins;
         secs = secs <= 9 ? '0' + secs : secs;
 
-        const color = this.state.isRecording ? 'red' : 'rgba(0, 0, 0, 0.54)';
+        const micImg = this.state.isRecording ? MIC_RED_ICON : MIC_BLACK_ICON;
+        const micOpacity = this.state.isRecording ? 1: 0.54;
         const micIcon = (
-            <IconButton style={{ opacity, height: 40, width: 40 }}><Mic onClick={this.toggleFn} style={{ height: 40, width: 40, color }} /></IconButton>
-        );
-        const stopIcon = (
-            <IconButton style={{ opacity, height: 40, width: 40 }}><Stop onClick={this.toggleFn} style={{ height: 40, width: 40, color }} /></IconButton>
+            <TouchableAnim onPress={this.toggleFn} style={{ opacity, height: 40, width: 40 }}>
+                <Image src={micImg} style={{ height: 40, width: 40, opacity: micOpacity }} />
+            </TouchableAnim>
         );
 
         return (
@@ -91,6 +91,7 @@ export default class MicRecorderWidget extends React.Component {
         );
     }
 }
+
 const custom = {
     grid: {
         width: '60%',

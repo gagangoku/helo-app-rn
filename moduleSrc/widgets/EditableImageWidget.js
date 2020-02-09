@@ -1,7 +1,7 @@
 import React from "react";
-import IconButton from "@material-ui/core/IconButton";
 import {getImageUrl, Image, uploadBlob, View} from "../util/Util";
-import AddAPhotoIcon from '@material-ui/icons/AddAPhoto';
+import TouchableAnim from "./TouchableAnim";
+import {ADD_PHOTO_ICON} from "../constants/Constants";
 
 
 export default class EditableImageWidget extends React.Component {
@@ -32,9 +32,9 @@ export default class EditableImageWidget extends React.Component {
         const editPhotoFn = (() => isEditable ? this.imageRef.current.click() : '');
         const editPhotoIcon = (
             <View style={{ position: 'absolute', top: 20, right: 20 }}>
-                <IconButton style={{ height: 20, width: 20 }}>
-                    <AddAPhotoIcon onClick={editPhotoFn} style={{ height: 20, width: 20, color: '#000000' }} />
-                </IconButton>
+                <TouchableAnim onPress={editPhotoFn} style={{ lineHeight: 'normal' }}>
+                    <Image src={ADD_PHOTO_ICON} style={{ height: 20, width: 20 }} />
+                </TouchableAnim>
             </View>
         );
 

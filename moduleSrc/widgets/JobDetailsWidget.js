@@ -1,7 +1,4 @@
 import React from 'react';
-import {withStyles} from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
-
 import {
     actionButton,
     capitalizeEachWord,
@@ -13,12 +10,13 @@ import {
     staticMapsImg
 } from "../util/Util";
 import {GENDER_FEMALE} from "../constants/Constants";
-import classnames from "classnames";
 import Modal from "react-modal";
 import AudioAnalyser from "../audio/AudioAnalyser";
+import {Image, Text, View} from "../platform/Util";
+import TouchableAnim from "./TouchableAnim";
 
 
-class JobDetailsWidget extends React.Component {
+export default class JobDetailsWidget extends React.Component {
     constructor(props) {
         super(props);
 
@@ -66,7 +64,7 @@ class JobDetailsWidget extends React.Component {
     };
 
     renderJob = (jobDetails) => {
-        const { classes, applyJobFn, disableNav, disableEnquiry } = this.props;
+        const { disableNav } = this.props;
         const styleOverrides = this.props.styleOverrides || { root: {} };
         const platform = navigator.platform;
 
@@ -81,8 +79,8 @@ class JobDetailsWidget extends React.Component {
 
         const vegOnly = jobOpening.veg === 'VEG_ONLY' || false;
         const femaleOnly = jobOpening.gender === GENDER_FEMALE;
-        const femaleOnlySection = femaleOnly ? <div className={classes.lineAttrib}>Female only</div> : '';
-        const vegOnlySection = !vegOnly ? '' : <div className={classes.lineAttrib}>Veg only</div>;
+        const femaleOnlySection = femaleOnly ? <Text style={custom.lineAttrib}>Female only</Text> : <View />;
+        const vegOnlySection = !vegOnly ? <View /> : <Text style={custom.lineAttrib}>Veg only</Text>;
 
         const skills = {};
         jobOpening.attributes.forEach(x => {
@@ -100,8 +98,8 @@ class JobDetailsWidget extends React.Component {
 
         const categories = Object.keys(skills).map(x => x.toUpperCase());
         console.log('categories: ', categories);
-        const numResidentsSection = categories.includes('COOK') ? <div className={classes.lineAttrib}>Residents: {numResidents}</div> : '';
-        const mealsSection = categories.includes('COOK') ? <div className={classes.lineAttrib}>Meals: {capitalizeEachWord(breakfastLunchDinner.join(', '))}</div> : '';
+        const numResidentsSection = categories.includes('COOK') ? <Text style={custom.lineAttrib}>Residents: {numResidents}</Text> : <View />;
+        const mealsSection = categories.includes('COOK') ? <Text style={custom.lineAttrib}>Meals: {capitalizeEachWord(breakfastLunchDinner.join(', '))}</Text> : <View />;
 
         const workLocType = (jobOpening.workLocType || ['HOME'])[0].toLowerCase();
         const workTypes = jobOpening.workTypes || [];
@@ -122,41 +120,38 @@ class JobDetailsWidget extends React.Component {
         const { labels, actions } = this.props.actionPanel;
         for (let i = 0; i < labels.length; i++) {
             buttons.push(actionButton(labels[i], () => actions[i](customer), {minWidth: 100, width: 100, height: 40}));
-            buttons.push(<div key={customer.person.id + '-spacer-' + i}>{spacer(0, 10)}</div>);
+            buttons.push(<View key={customer.person.id + '-spacer-' + i}>{spacer(0, 10)}</View>);
         }
 
-        const clazz = classnames(classes.jobCtr, this.highlightJob ? classes.highlightJob : classes.noop);
         return (
-            <Paper className={clazz} key={customer.person.id + ''} style={styleOverrides.root}>
-                <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <div className={classes.lineAttrib}>Rs. {fromPrice} - {toPrice} per month</div>
-                    <div className={classes.lineAttrib}>{timeFrom}, {hoursWork || '-'} hrs work</div>
-                </div>
+            <View style={{...custom.jobCtr, ...(this.highlightJob ? custom.highlightJob : custom.noop), ...styleOverrides.root}} key={customer.person.id + ''}>
+                <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <Text style={custom.lineAttrib}>Rs. {fromPrice} - {toPrice} per month</Text>
+                    <Text style={custom.lineAttrib}>{timeFrom}, {hoursWork || '-'} hrs work</Text>
+                </View>
 
-                <div className={classes.jobMapImgCtr}>
-                    <a onClick={navigateToLocFn} target="_blank">
-                        <img src={staticMapsImg(location.lat, location.lng, MAP_W, MAP_W)} className={classes.jobMapImg} />
-                    </a>
-                </div>
-                <div className={classes.lineAttrib} style={{ width: '100%', textAlign: 'center' }}><b>{customerName}'s {workLocType} {debugInfo}</b></div>
+                <TouchableAnim style={custom.jobMapImgCtr} onPress={navigateToLocFn}>
+                    <Image src={staticMapsImg(location.lat, location.lng, MAP_W, MAP_W)} style={custom.jobMapImg} />
+                </TouchableAnim>
+                <Text style={{...custom.lineAttrib, width: '100%', textAlign: 'center', fontWeight: 'bold'}}>{customerName}'s {workLocType} {debugInfo}</Text>
                 {spacer(5)}
 
                 {numResidentsSection}
                 {mealsSection}
-                <div className={classes.lineAttrib}>Area: {area}</div>
-                <div className={classes.lineAttrib}>Languages: {this.normalizeArray(languages).join(', ')}</div>
-                <div className={classes.lineAttrib}>Work types: {this.normalizeArray(workTypes).join(', ')}</div>
+                <Text style={custom.lineAttrib}>Area: {area}</Text>
+                <Text style={custom.lineAttrib}>Languages: {this.normalizeArray(languages).join(', ')}</Text>
+                <Text style={custom.lineAttrib}>Work types: {this.normalizeArray(workTypes).join(', ')}</Text>
                 {femaleOnlySection}
                 {vegOnlySection}
-                <div className={classes.lineAttrib}>Skills needed: {this.normalizeArray(skillSummary).join(', ')}</div>
-                <div className={classes.lineAttrib}>Distance: {distanceMeters / 1000.0} kms</div>
+                <Text style={custom.lineAttrib}>Skills needed: {this.normalizeArray(skillSummary).join(', ')}</Text>
+                <Text style={custom.lineAttrib}>Distance: {distanceMeters / 1000.0} kms</Text>
 
                 {spacer(15)}
-                <div style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+                <View style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
                     {buttons}
-                </div>
+                </View>
                 {this.modalContent()}
-            </Paper>
+            </View>
         );
     };
 
@@ -170,7 +165,7 @@ class JobDetailsWidget extends React.Component {
 const WINDOW_INNER_WIDTH = WINDOW_INNER_WIDTH || 400;
 const W = Math.min(350, WINDOW_INNER_WIDTH - 20);
 const MAP_W = Math.ceil(W * 0.85);
-const styles = theme => ({
+const custom = {
     root: {
         display: 'flex',
         flexDirection: 'column',
@@ -188,6 +183,10 @@ const styles = theme => ({
         fontFamily: 'Lato, Helvetica, sans-serif',
         padding: 20,
         margin: 5,
+
+        boxShadow: '0px 1px 5px 0px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 3px 1px -2px rgba(0, 0, 0, 0.12)',
+        borderRadius: 4,
+        background: '#ffffff',
     },
     jobMapImgCtr: {
         width: '100%',
@@ -206,7 +205,8 @@ const styles = theme => ({
     },
 
     noop: {},
-});
+};
+
 const modalStyle = {
     content : {
         top                   : '50%',
@@ -218,4 +218,3 @@ const modalStyle = {
     }
 };
 
-export default withStyles(styles)(JobDetailsWidget);

@@ -544,7 +544,7 @@ class AttachPopup extends React.PureComponent {
             const file = files[i];
             const blobUrl = await uploadBlob(file);
 
-            const { type } = checkFileType(file.name);
+            const { type } = checkFileType(file.name, file.type);
             const key = getFieldNameFromType(type);
             if (isTraining) {
                 this.setState({ videoUrl: blobUrl });

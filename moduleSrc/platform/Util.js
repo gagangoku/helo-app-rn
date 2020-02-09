@@ -131,7 +131,7 @@ export const uploadBlob = async (file) => {
     }
 
     const fileName = file.name.toLowerCase();
-    const { maxFileSize, serverUrl } = checkFileType(fileName);
+    const { maxFileSize, serverUrl } = checkFileType(fileName, file.type);
     if (file.size > maxFileSize) {
         window.alert('Too big');
         return null;
