@@ -1,0 +1,53 @@
+import React from "react";
+import IconButton from "@material-ui/core/IconButton";
+import {getImageUrl, Image, uploadBlob, View} from "../util/Util";
+import AddAPhotoIcon from '@material-ui/icons/AddAPhoto';
+
+
+export default class EditableImageWidget extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            photo: this.props.photo,
+        };
+        this.imageRef = React.createRef();
+    }
+
+    onSelectFile = async (files) => {
+        console.log('Files: ', files);
+        if (files.length === 0) {
+            return;
+        }
+        const file = files[0];
+        const blobUrl = await uploadBlob(file);
+        await this.props.onUpdateFn(blobUrl);
+        this.setState({ photo: blobUrl });
+    };
+
+
+    render() {
+        const { isEditable, imgStyle } = this.props;
+        const { photo } = this.state;
+
+        const editPhotoFn = (() => isEditable ? this.imageRef.current.click() : '');
+        const editPhotoIcon = (
+            <View style={{ position: 'absolute', top: 20, right: 20 }}>
+                <IconButton style={{ height: 20, width: 20 }}>
+                    <AddAPhotoIcon onClick={editPhotoFn} style={{ height: 20, width: 20, color: '#000000' }} />
+                </IconButton>
+            </View>
+        );
+
+        return (
+            <View style={{ width: '100%', position: 'relative' }}>
+                <Image style={{ width: '100%', ...imgStyle }} src={getImageUrl(photo)} onClick={editPhotoFn} />
+                <input type="file" accept={'image/*'} ref={this.imageRef}
+                       style={{ display: 'none' }} onChange={() => this.onSelectFile(this.imageRef.current.files)} />
+                {isEditable ? editPhotoIcon : <View />}
+            </View>
+        );
+    }
+}
+
+const custom = {
+};

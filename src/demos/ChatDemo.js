@@ -16,8 +16,9 @@ import {
     SENDER_VISITOR,
 } from '../chat/Questions';
 import {getChatContext} from '../util/ChatUtil';
-import MessagingUI from '../chat/MessagingUI';
+// import MessagingUI from '../chat/MessagingUI';
 import {HELO_LOGO} from '../chat/Constants';
+import MessagingUI from '../../moduleSrc/chat/messaging/MessagingUI';
 
 
 class ChatDemo extends React.Component {
