@@ -1,5 +1,16 @@
-import {AsyncStorage, Modal, Image, StyleSheet, Text, ToastAndroid as Toast, TouchableOpacity, View, Platform} from 'react-native';
+import {
+    AsyncStorage,
+    Dimensions,
+    Image,
+    Modal,
+    StyleSheet,
+    Text,
+    ToastAndroid as Toast,
+    TouchableOpacity,
+    View
+} from 'react-native';
 import React from "react";
+import window from "global";
 
 
 // TODO: Implement
@@ -17,6 +28,13 @@ export class Popover extends React.Component {
         return <View />;
     }
 }
+export class PlacesAutocomplete extends React.Component {
+    render() {
+        return <View />;
+    }
+}
+export const geocodeByAddress = () => {};
+export const getLatLng = () => {};
 
 export const mobileDetect = () => {
     return { isAndroid: true, isIphone: false };
@@ -34,12 +52,14 @@ export const showToast = (text) => {
     Toast.show(text, Toast.LONG);
 };
 
-export const geocodeByAddress = async ({ latitude, longitude }) => {};
-
+export const reverseGeocode = async ({ latitude, longitude }) => {};
 export const playBeepSound = () => {};
 export const scrollToBottomFn = () => {};
 export const scrollToElemFn = (ref) => {};
 export const resizeForKeyboard = ({ mode, msgToScrollTo, cbFn }) => {};
+
+export const WINDOW_INNER_WIDTH = Dimensions.get('window').width;
+export const WINDOW_INNER_HEIGHT = Dimensions.get('window').height;
 
 
 export {

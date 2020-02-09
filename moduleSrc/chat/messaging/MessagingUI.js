@@ -3,7 +3,6 @@ import window from "global/window";
 import {
     actionButton,
     checkFileType,
-    geocodeByAddress,
     getCtx,
     getFieldNameFromType,
     getGpsLocation,
@@ -26,10 +25,15 @@ import OptionPickerWidget from "../../widgets/OptionPickerWidget";
 import IDCard from "../IDCard";
 import {
     BANGALORE_LAT,
-    BANGALORE_LNG, CALL_MISSED_ICON,
-    CHAT_FONT_FAMILY, FILE_ICON_IMG,
+    BANGALORE_LNG,
+    CALL_MISSED_ICON,
+    CHAT_FONT_FAMILY,
+    FILE_ICON_IMG,
     FIREBASE_CHAT_MESSAGES_DB_NAME,
-    GROUPS_SUPER_ADMINS, IMAGE_ICON_IMG, PLAY_ARROW_ICON, TROPHY_IMG
+    GROUPS_SUPER_ADMINS,
+    IMAGE_ICON_IMG,
+    PLAY_ARROW_ICON,
+    TROPHY_IMG
 } from "../../constants/Constants";
 import PlacesAutocompleteWidget from "../../widgets/PlacesAutocompleteWidget";
 import JobDetailsWidget from "../../widgets/JobDetailsWidget";
@@ -95,9 +99,11 @@ import {
     Modal,
     Popover,
     resizeForKeyboard,
+    reverseGeocode,
     scrollToBottomFn,
     scrollToElemFn,
     stopBodyOverflow,
+    WINDOW_INNER_WIDTH,
 } from "../../platform/Util";
 
 
@@ -1053,7 +1059,7 @@ class LocationMessage extends React.PureComponent {
     onNewMsgFn = async (answer) => {
         try {
             const {latitude, longitude} = await getGpsLocation();
-            const {obj} = await geocodeByAddress({latitude, longitude});
+            const {obj} = await reverseGeocode({latitude, longitude});
             const location = {lat: latitude, lng: longitude};
             await this.props.onNewMsgFn({ answer: obj.address, type: OUTPUT_LOCATION, latitude, longitude, location, geocodeResult: obj });
         } catch (e) {
@@ -1540,8 +1546,8 @@ const SHOW_NEW_JOINEE_DISTANCE_THRESHOLD_KM = 10;
 const MIN_SPEECH_RECOGNITION_MS = 3 * 1000;
 const MAX_SPEECH_RECOGNITION_MS = 8 * 1000;
 const INNER_HEIGHT = window.innerHeight - 55 - 56;
-const INNER_WIDTH_MAX = Math.min(window.innerWidth, 450);
-const SCR_WIDTH = Math.min(window.innerWidth - 2, INNER_WIDTH_MAX);
+const INNER_WIDTH_MAX = Math.min(WINDOW_INNER_WIDTH, 450);
+const SCR_WIDTH = Math.min(WINDOW_INNER_WIDTH - 2, INNER_WIDTH_MAX);
 const SEND_ICON = 'https://images-lb.heloprotocol.in/sendButton.png-6412-355572-1556567055483.png';
 const MIC_ICON = 'https://images-lb.heloprotocol.in/micTransparent.png-14784-992191-1562241230129.png';
 const MIC_ICON_DISABLED = 'https://images-lb.heloprotocol.in/micDisabled.png-10163-675042-1564599701870.png';

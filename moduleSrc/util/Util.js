@@ -2,7 +2,6 @@ import React from "react";
 import {commonStyle} from "../styles/common";
 import {
     AsyncStorage,
-    geocodeByAddress,
     getGpsLocation,
     Image,
     initWebPush,
@@ -58,12 +57,10 @@ import {
 } from "../chat/Questions";
 import uuidv1 from "uuid/v1";
 import {crudsSearch, getPersonNamesByRoleId, hgetAllFromKVStore, searchCustomer, searchSupply} from "./Api";
-import {firebase} from '@firebase/app';
-import '@firebase/firestore';
+import {firebase, initFirebase} from '../platform/firebase';
 import xrange from 'xrange';
 import lodash from "lodash";
 import TouchableAnim from "../widgets/TouchableAnim";
-import {initFirebase} from '../platform/firebase';
 
 
 export const getCtx = (obj) => {
@@ -822,5 +819,4 @@ export {
     initFirebase,
     StyleSheet, View, Text, TouchableOpacity, Image,
     showToast,
-    geocodeByAddress,
 };

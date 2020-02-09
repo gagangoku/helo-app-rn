@@ -1,4 +1,5 @@
-import {firebase} from "@firebase/app";
+import {firebase} from '@firebase/app';
+import '@firebase/firestore';
 
 
 export const initFirebase = () => {
@@ -18,6 +19,8 @@ export const initFirebase = () => {
     firebase.initializeApp(firebaseConfig);
 };
 
+export const firestore = firebase.firestore;
 
 export {
+    firebase,
 }

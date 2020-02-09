@@ -8,6 +8,7 @@ import {commonStyle} from "../../styles/common";
 import {confirmAlert} from 'react-confirm-alert';
 import {Helmet} from "react-helmet";
 import window from "global/window";
+import {WINDOW_INNER_HEIGHT, WINDOW_INNER_WIDTH} from "../../platform/Util";
 
 
 class LocationInputScreen extends React.Component {
@@ -238,8 +239,8 @@ class LocationInputScreen extends React.Component {
     }
 }
 
-const INNER_WIDTH = window.innerWidth;
-const INNER_HEIGHT = window.innerHeight;
+const INNER_WIDTH = WINDOW_INNER_WIDTH;
+const INNER_HEIGHT = WINDOW_INNER_HEIGHT;
 const SHOW_CURRENT_LOCATION_MARKER = 'https://images-lb.heloprotocol.in/26.png-2816-792530-1552576482116.png?name=current-location.png';
 
 const DISTANCE_THRESHOLD_LANDMARK_METERS = 500.0;                   // location should not be more than 500 meters from landmark

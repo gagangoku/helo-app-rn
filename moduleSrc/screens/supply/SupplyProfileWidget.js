@@ -36,6 +36,7 @@ import {Comments, FacebookProvider} from "react-facebook";
 import window from 'global/window';
 import MobileDetect from "mobile-detect";
 import Footer from "../../widgets/Footer";
+import {WINDOW_INNER_WIDTH} from "../../platform/Util";
 
 
 export default class SupplyProfileWidget extends React.Component {
@@ -605,7 +606,6 @@ const HEADING_COLOR = '#404040';
 const VALUE_COLOR = '#606060';
 const IMG_STRIP_COLOR = '#d2d2d2';
 
-const WINDOW_INNER_WIDTH = window.innerWidth || 1600;
 const INNER_WIDTH = IS_MOBILE_SCREEN ? WINDOW_INNER_WIDTH : 0.8 * WINDOW_INNER_WIDTH;
 console.log('INNER_WIDTH: ', INNER_WIDTH);
 

@@ -1,5 +1,5 @@
 import React, {Fragment} from "react";
-import {Popover} from '../../platform/Util';
+import {historyBack, Popover} from '../../platform/Util';
 import {getCircularImage, getImageUrl, Image, Text, View} from "../../util/Util";
 import {
     CHAT_FONT_FAMILY,
@@ -16,7 +16,6 @@ import format from "string-format";
 import {StepGroupAnalytics, StepViewPerson} from "../../controller/SupplyPageFlows";
 import {StepCreateGroup, StepGroupDetailsPage} from "../../controller/HomePageFlows";
 import window from 'global';
-import {historyBack} from "../../platform/Util";
 
 
 export class GroupTopBar extends React.Component {

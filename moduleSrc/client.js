@@ -31,7 +31,6 @@ const rootElement = document.getElementById('root');
 
 // NOTE: For testing only
 // window.alert('IS_MOBILE_SCREEN ' + IS_MOBILE_SCREEN);
-// window.alert('window.innerWidth ' + window.innerWidth);
 
 if (window.__HYDRATE_OR_RENDER__ === 'render') {
     console.log('Rendering');

@@ -28,8 +28,7 @@ import Modal from "react-modal";
 import {crudsCreate, crudsSearch, getLocationFromIPAddress, getOtp, logDataToServer, verifyOtp} from "../../util/Api";
 import {USER_BACKGROUND_COLOR_DARK} from "../Constants";
 import AsyncStorage from "@callstack/async-storage";
-import {firebase} from '@firebase/app';
-import '@firebase/firestore';
+import {firebase} from '../../platform/firebase';
 import {confirmAlert} from 'react-confirm-alert';
 import window from 'global';
 import GA from "../../util/GoogleAnalytics";
@@ -37,6 +36,7 @@ import {OUTPUT_NEW_JOINEE, OUTPUT_PROGRESSIVE_MODULE} from "../Questions";
 import {StepCookChatBot, StepLeaderBoard} from "../../controller/SupplyPageFlows";
 import format from 'string-format';
 import {StepGroupList} from "../../controller/HomePageFlows";
+import {WINDOW_INNER_WIDTH} from "../../platform/Util";
 
 
 export class GroupJoinPage extends React.Component {
@@ -525,7 +525,7 @@ const custom = {
         div: {
             fontFamily: 'Nunito, Arial, "Helvetica Neue", Helvetica, sans-serif',
             textAlign: 'center',
-            width: Math.min(300, window.innerWidth * 0.8),
+            width: Math.min(300, WINDOW_INNER_WIDTH * 0.8),
             padding: 40,
             background: '#FFF',
             boxShadow: '0 20px 75px rgba(0, 0, 0, 0.23)',

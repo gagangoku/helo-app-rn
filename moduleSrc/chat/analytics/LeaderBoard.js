@@ -14,7 +14,6 @@ import {
 } from "../../util/Util";
 import uuidv1 from "uuid/v1";
 import TouchableAnim from "../../widgets/TouchableAnim";
-import window from "global";
 import {CHAT_FONT_FAMILY, VIDEO_ANALYTICS_INTERVAL_SECONDS} from "../../constants/Constants";
 import xrange from 'xrange';
 import {ConfigurableTopBar} from "../messaging/TopBar";
@@ -267,7 +266,6 @@ const SAMPLE = [{
 },];
 
 const MAX_WIDTH = 450;
-const INNER_WIDTH_MAX = Math.min(window.innerWidth, 450);
 const custom = {
     root: {
         height: '100%',

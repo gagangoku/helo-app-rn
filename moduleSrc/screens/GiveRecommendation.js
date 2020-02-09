@@ -13,6 +13,7 @@ import {Helmet} from "react-helmet";
 import window from 'global/window';
 import OptionPickerWidget from "../widgets/OptionPickerWidget";
 import {BAD_ATTRIBUTES, GOOD_ATTRIBUTES} from "../constants/Constants";
+import {WINDOW_INNER_WIDTH} from "../platform/Util";
 
 
 class GiveRecommendation extends React.Component {
@@ -320,8 +321,8 @@ const styles = theme => ({
 
     loadingImgCtr: {
         position: 'fixed',
-        top: window.innerHeight / 2 - LOADER_DIM/2,
-        left: window.innerWidth / 2 - LOADER_DIM/2,
+        top: WINDOW_INNER_WIDTH / 2 - LOADER_DIM/2,
+        left: WINDOW_INNER_WIDTH / 2 - LOADER_DIM/2,
     },
     loadingImg: {
         height: LOADER_DIM,

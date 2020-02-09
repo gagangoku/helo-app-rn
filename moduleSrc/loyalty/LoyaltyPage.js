@@ -13,6 +13,7 @@ import {
     GUEST_LIST_STATUS_FULL,
     GUEST_LIST_STATUS_WAITLIST
 } from "./Constants";
+import {WINDOW_INNER_HEIGHT, WINDOW_INNER_WIDTH} from "../platform/Util";
 
 
 export class SilverGoldPlatinumMemberPage extends React.Component {
@@ -794,7 +795,7 @@ const custom = {
             fontFamily: 'Nunito, Arial, "Helvetica Neue", Helvetica, sans-serif',
             textAlign: 'center',
             width: 450,
-            maxWidth: window.innerWidth * 0.8,
+            maxWidth: WINDOW_INNER_WIDTH * 0.8,
             padding: 40,
             background: BG_COLOR,
             boxShadow: '0 20px 75px rgba(0, 0, 0, 0.23)',
@@ -832,7 +833,7 @@ const custom = {
             fontFamily: 'Nunito, Arial, "Helvetica Neue", Helvetica, sans-serif',
             textAlign: 'center',
             width: 450,
-            maxWidth: window.innerWidth * 0.8,
+            maxWidth: WINDOW_INNER_WIDTH * 0.8,
             padding: 40,
             background: BG_COLOR,
             boxShadow: '0 20px 75px rgba(0, 0, 0, 0.23)',
@@ -907,6 +908,6 @@ const modalStyle = {
 };
 
 
-const H = window.innerHeight;
-const W = window.innerWidth;
-console.log('window.innerHeight, window.innerWidth: ', window.innerHeight, window.innerWidth);
+const H = WINDOW_INNER_HEIGHT;
+const W = WINDOW_INNER_WIDTH;
+console.log('window_innerHeight, window_innerWidth: ', H, W);

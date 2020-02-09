@@ -1,4 +1,4 @@
-import window from "global/window";
+import {WINDOW_INNER_HEIGHT, WINDOW_INNER_WIDTH} from "../platform/Util";
 
 
 export const WEBSOCKET_PORT = 8093;
@@ -27,9 +27,9 @@ export const FIREBASE_GROUPS_DB_NAME = 'groups';
 export const CHAT_MESSAGES_DOC_NAME_PREFIX = '';            // For testing
 export const GROUPS_DOC_NAME_PREFIX = '';                   // For testing
 
-export const INNER_HEIGHT = window.innerHeight;
-export const INNER_WIDTH = window.innerWidth;
-export const IS_MOBILE_SCREEN = window.innerWidth < 600;
+export const INNER_HEIGHT = WINDOW_INNER_HEIGHT;
+export const INNER_WIDTH = WINDOW_INNER_WIDTH;
+export const IS_MOBILE_SCREEN = WINDOW_INNER_WIDTH < 600;
 
 export const CUSTOMER_CARE_HELPLINE = '080-4568-3501';
 export const PARTNER_CARE_HELPLINE = '080-4710-3360';

@@ -29,8 +29,7 @@ import window from "global";
 import EditableTopNameBar from "../../widgets/EditableTopNameBar";
 import EditableImageWidget from "../../widgets/EditableImageWidget";
 import {StepViewMyProfile} from "../../controller/SupplyPageFlows";
-import {firebase} from "@firebase/app";
-import '@firebase/firestore';
+import {firebase} from '../../platform/firebase';
 import lodash from 'lodash';
 
 

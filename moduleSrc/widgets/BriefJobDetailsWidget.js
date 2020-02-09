@@ -1,7 +1,7 @@
 import React from 'react';
 import Paper from '@material-ui/core/Paper';
 import {actionButton, spacer} from "../util/Util";
-import window from 'global/window';
+import {WINDOW_INNER_WIDTH} from "../platform/Util";
 
 
 export default class BriefJobDetailsWidget extends React.Component {
@@ -65,8 +65,7 @@ export default class BriefJobDetailsWidget extends React.Component {
     }
 }
 
-const WINDOW_INNER_WIDTH = Math.min(window.innerWidth, 450);
-const W = Math.min(300, WINDOW_INNER_WIDTH - 150);
+const W = Math.min(300, Math.min(WINDOW_INNER_WIDTH, 450) - 150);
 const IMG_WIDTH = 90;
 const custom = {
     root: {

@@ -28,8 +28,7 @@ import window from "global";
 import format from 'string-format';
 import {StepViewPerson} from "../../controller/SupplyPageFlows";
 import EditableTopNameBar from "../../widgets/EditableTopNameBar";
-import {firebase} from "@firebase/app";
-import '@firebase/firestore';
+import {firebase} from '../../platform/firebase';
 import EditableImageWidget from "../../widgets/EditableImageWidget";
 
 

@@ -2,6 +2,7 @@ import React from "react";
 import window from "global";
 import {View} from "../util/Util";
 import {Helmet} from "react-helmet";
+import {WINDOW_INNER_HEIGHT, WINDOW_INNER_WIDTH} from "../platform/Util";
 
 
 export class LoyaltyDashboard extends React.Component {
@@ -13,8 +14,8 @@ export class LoyaltyDashboard extends React.Component {
     }
 
     render() {
-        const H = window.innerHeight;
-        const W = window.innerWidth;
+        const H = WINDOW_INNER_HEIGHT;
+        const W = WINDOW_INNER_WIDTH;
 
         return (
             <View style={custom.root}>

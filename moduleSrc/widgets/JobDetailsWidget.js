@@ -16,7 +16,6 @@ import {GENDER_FEMALE} from "../constants/Constants";
 import classnames from "classnames";
 import Modal from "react-modal";
 import AudioAnalyser from "../audio/AudioAnalyser";
-import window from 'global/window';
 
 
 class JobDetailsWidget extends React.Component {
@@ -168,7 +167,7 @@ class JobDetailsWidget extends React.Component {
     }
 }
 
-const WINDOW_INNER_WIDTH = window.innerWidth || 400;
+const WINDOW_INNER_WIDTH = WINDOW_INNER_WIDTH || 400;
 const W = Math.min(350, WINDOW_INNER_WIDTH - 20);
 const MAP_W = Math.ceil(W * 0.85);
 const styles = theme => ({

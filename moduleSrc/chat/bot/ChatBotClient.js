@@ -143,7 +143,6 @@ export default class ChatBotClient extends React.Component {
             this.connect();
         };
 
-        // width: Math.min(300, window.innerWidth * 0.8),
         return (
             <Modal isOpen={this.state.languageModalOpen} onRequestClose={() => {}}
                    style={modalStyle} onAfterOpen={() => {}} contentLabel="Example Modal">

@@ -2,8 +2,6 @@ import React from 'react';
 import {getCtx, getImageUrl, View} from "../../util/Util";
 import MessagingUI from "../messaging/MessagingUI";
 import {HELO_LOGO, MODE_GROUP_CHAT, MODE_PERSONAL_MESSAGE} from "../Constants";
-import {firebase} from '@firebase/app';
-import '@firebase/firestore';
 import {phoneConnectApi, sendNotificationToMembers} from "../../util/Api";
 import {FIREBASE_GROUPS_DB_NAME, RESTAURANT_JOBS_INDIA_GROUP_ADDITION} from "../../constants/Constants";
 import {
@@ -17,6 +15,7 @@ import {
     OUTPUT_VIDEO
 } from "../Questions";
 import format from "string-format";
+import {firebase} from '../../platform/firebase';
 
 
 /**

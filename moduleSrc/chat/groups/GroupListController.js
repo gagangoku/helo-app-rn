@@ -1,7 +1,6 @@
 import React from 'react';
 import {getCircularImage, getCtx, getGroupInfo, getImageUrl, showToast, sumFn, View} from "../../util/Util";
-import {firebase} from '@firebase/app';
-import '@firebase/firestore';
+import {firebase} from '../../platform/firebase';
 import {
     CHAT_FONT_FAMILY,
     CHAT_MESSAGES_DOC_NAME_PREFIX,
@@ -27,6 +26,7 @@ import {getPersonNamesByRoleId} from "../../util/Api";
 import lodash from 'lodash';
 import {ConfigurableTopBar} from "../messaging/TopBar";
 import {StepViewMyProfile} from "../../controller/SupplyPageFlows";
+import {WINDOW_INNER_WIDTH} from "../../platform/Util";
 
 
 /**
@@ -270,7 +270,7 @@ class ListItem extends React.PureComponent {
 const HEADING_COLOR = '#393939';
 const LIGHT_COLOR = '#a1a1a1';
 const LIGHTER_COLOR = '#cfcfcf';
-const SCR_WIDTH = Math.min(window.innerWidth - 10, 450);
+const SCR_WIDTH = Math.min(WINDOW_INNER_WIDTH - 10, 450);
 const custom = {
     paper: {
         fontFamily: CHAT_FONT_FAMILY,

@@ -6,6 +6,7 @@ import SuperRoot from "../../../widgets/SuperRoot";
 import Modal from "react-modal";
 import {IS_MOBILE_SCREEN, PARTNER_CARE_HELPLINE} from "../../../constants/Constants";
 import window from 'global/window';
+import {WINDOW_INNER_WIDTH} from "../../../platform/Util";
 
 
 class ConfirmOrderScreen extends React.Component {
@@ -236,8 +237,8 @@ const tncModalStyles = {
         position: "absolute",
         top: (IS_MOBILE_SCREEN ? 0.05 : 0.2) * INNER_HEIGHT,
         bottom: (IS_MOBILE_SCREEN ? 0.05 : 0.2) * INNER_HEIGHT,
-        left: IS_MOBILE_SCREEN ? 40 : window.innerWidth * 0.3,
-        right: IS_MOBILE_SCREEN ? 40 : window.innerWidth * 0.3,
+        left: IS_MOBILE_SCREEN ? 40 : WINDOW_INNER_WIDTH * 0.3,
+        right: IS_MOBILE_SCREEN ? 40 : WINDOW_INNER_WIDTH * 0.3,
         border: "1px solid #ccc",
         background: "#fff",
         overflow: "auto",

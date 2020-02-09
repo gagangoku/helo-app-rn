@@ -16,7 +16,7 @@ import {CHAT_FONT_FAMILY, MONTHS, VIDEO_ANALYTICS_INTERVAL_SECONDS} from "../../
 import {ConfigurableTopBar} from "../messaging/TopBar";
 import ReactMinimalPieChart from "react-minimal-pie-chart";
 import window from 'global/window';
-import {firebase} from "@firebase/app";
+import {firebase} from '../../platform/firebase';
 import {getPersonNamesByRoleId, hgetAllFromKVStore} from "../../util/Api";
 import format from "string-format";
 import {OUTPUT_PROGRESSIVE_MODULE} from "../Questions";

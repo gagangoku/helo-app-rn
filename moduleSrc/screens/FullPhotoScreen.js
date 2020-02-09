@@ -2,7 +2,7 @@ import React from 'react';
 import {withStyles} from '@material-ui/core/styles';
 import {getImageUrl} from "../util/Util";
 import SuperRoot from "../widgets/SuperRoot";
-import window from "global/window";
+import {WINDOW_INNER_WIDTH} from "../platform/Util";
 
 
 class FullPhotoScreen extends React.Component {
@@ -34,7 +34,7 @@ const styles = theme => ({
         alignItems: 'center',
     },
     cookThumbImg: {
-        maxWidth: window.innerWidth,
+        maxWidth: WINDOW_INNER_WIDTH,
     },
 });
 export default withStyles(styles)(FullPhotoScreen);

@@ -20,6 +20,7 @@ import MobileDetect from "mobile-detect";
 import {MODE_BOT} from "../chat/Constants";
 import Modal from "react-modal";
 import Popover from "@material-ui/core/Popover";
+import PlacesAutocomplete, {geocodeByAddress, getLatLng} from "react-places-autocomplete";
 
 
 export const stopBodyOverflow = () => {
@@ -210,7 +211,7 @@ export const showToast = (text) => {
     setTimeout(() => toast.dismiss(id), TOAST_DURATION_MS);
 };
 
-export const geocodeByAddress = async ({ latitude, longitude }) => {
+export const reverseGeocode = async ({ latitude, longitude }) => {
     const google = window.google;   // eslint-disable-line
     const geocoder = new google.maps.Geocoder();
     const latlng = new google.maps.LatLng(latitude, longitude);
@@ -350,9 +351,13 @@ export const scrollToElemFn = (ref) => {
     }
 };
 
+export const WINDOW_INNER_WIDTH = window.innerWidth;
+export const WINDOW_INNER_HEIGHT = window.innerHeight;
+
 // Exports
 export {
     AsyncStorage,
     Modal,
     Popover,
+    PlacesAutocomplete, geocodeByAddress, getLatLng,
 }
