@@ -1,14 +1,19 @@
 import React, {Fragment} from 'react';
-import {withStyles} from '@material-ui/core/styles';
-import GoogleMapReact from 'google-map-react';
+import {
+    confirmAlert,
+    geocodeByAddress,
+    getLatLng,
+    GoogleMapReact,
+    Helmet,
+    PlacesAutocomplete,
+    WINDOW_INNER_HEIGHT,
+    WINDOW_INNER_WIDTH,
+    withStyles
+} from '../../platform/Util';
 import {BANGALORE_LAT, BANGALORE_LNG, GOOGLE_MAPS_API_KEY, MAP_CENTER_PIN_IMG} from "../../constants/Constants";
-import PlacesAutocomplete, {geocodeByAddress, getLatLng,} from 'react-places-autocomplete';
 import {fabButton, getCtx, haversineDistanceKms, latLonFn} from "../../util/Util";
 import {commonStyle} from "../../styles/common";
-import {confirmAlert} from 'react-confirm-alert';
-import {Helmet} from "react-helmet";
 import window from "global/window";
-import {WINDOW_INNER_HEIGHT, WINDOW_INNER_WIDTH} from "../../platform/Util";
 
 
 class LocationInputScreen extends React.Component {

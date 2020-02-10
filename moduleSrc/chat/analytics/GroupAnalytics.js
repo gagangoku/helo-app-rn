@@ -14,7 +14,7 @@ import {
 } from "../../util/Util";
 import {CHAT_FONT_FAMILY, MONTHS, VIDEO_ANALYTICS_INTERVAL_SECONDS} from "../../constants/Constants";
 import {ConfigurableTopBar} from "../messaging/TopBar";
-import ReactMinimalPieChart from "react-minimal-pie-chart";
+import {ReactMinimalPieChart, WINDOW_INNER_HEIGHT} from '../../platform/Util';
 import window from 'global/window';
 import {firebase} from '../../platform/firebase';
 import {getPersonNamesByRoleId, hgetAllFromKVStore} from "../../util/Api";
@@ -337,7 +337,7 @@ const COMPLETED_THRESHOLD = 0.9;
 const POINTS_IMG = 'https://images-lb.heloprotocol.in/coins.png-16640-358390-1579973346245.png';
 const COLOR = '#4d4d4d';
 
-const INNER_HEIGHT = window.innerHeight - 10;
+const INNER_HEIGHT = WINDOW_INNER_HEIGHT - 10;
 const MAX_WIDTH = 450;
 const custom = {
     root: {

@@ -9,7 +9,6 @@ import {
     OtpVerificationScreen,
     SilverGoldPlatinumMemberPage
 } from "../loyalty/LoyaltyPage";
-import {Route} from "react-router-dom";
 import {getTruecallerDetails, getTruecallerDetailsForRequest} from "../demos/TruecallerDemo";
 import {
     crudsCreate,
@@ -29,11 +28,10 @@ import {
     MILLIS_IN_DAY,
     PHONE_NUMBER_KEY
 } from "../constants/Constants";
-import AsyncStorage from "@callstack/async-storage";
+import {AsyncStorage, confirmAlert, Route} from "../platform/Util";
 import {calculatePoints, getGoldUserDetailsFromPhone, getUserCheckins} from "../loyalty/LoyaltyUtil";
 import LoyaltyAdmin from "../loyalty/LoyaltyAdmin";
 import window from "global";
-import {confirmAlert} from "react-confirm-alert";
 import GA from "../util/GoogleAnalytics";
 import {
     allEstablishmentIds,
@@ -719,4 +717,7 @@ const steps = [
     LoyaltyAdminStep,
     GuestListViewStep,
 ];
-export const routes = (steps.map(x => <Route exact path={x.URL} component={x} key={x.URL} />));
+export const routes = steps.flatMap(x => {
+    const urls = x.URLS ? x.URLS : [x.URL];
+    return urls.map(y => <Route exact path={y} component={x} key={y} />);
+});

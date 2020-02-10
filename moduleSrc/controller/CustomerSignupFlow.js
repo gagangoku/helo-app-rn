@@ -3,9 +3,8 @@ import PhoneNumberInputScreen from "../screens/customer/PhoneNumberInputScreen";
 import OtpInputScreen from "../screens/customer/OtpInputScreen";
 import RequirementsScreen from "../screens/customer/RequirementsScreen";
 import ConfirmOrderScreen from "../screens/customer/ConfirmOrderScreen";
-import {Route} from "react-router-dom";
 import {getCtx, getUrlParam, navigateTo, redirectIfNotFlow} from "../util/Util";
-import AsyncStorage from "@callstack/async-storage";
+import {AsyncStorage, Route} from "../platform/Util";
 import {
     CUSTOMER_CARE_HELPLINE,
     DESCRIPTOR_CUSTOMER,
@@ -280,4 +279,7 @@ const steps = [
     StepConfirm,
     StepThankYou,
 ];
-export const routes = (steps.map(x => <Route exact path={x.URL} component={x} key={x.URL} />));
+export const routes = steps.flatMap(x => {
+    const urls = x.URLS ? x.URLS : [x.URL];
+    return urls.map(y => <Route exact path={y} component={x} key={y} />);
+});

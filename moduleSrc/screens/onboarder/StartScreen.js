@@ -1,5 +1,5 @@
 import React from 'react';
-import {withStyles} from '@material-ui/core/styles';
+import {withStyles} from '../../platform/Util';
 import {actionButton} from "../../util/Util";
 import {commonStyle} from "../../styles/common";
 import SuperRoot from "../../widgets/SuperRoot";

@@ -1,32 +1,31 @@
 import React from 'react';
-import {withStyles} from '@material-ui/core/styles';
+import {Image, View, WINDOW_INNER_WIDTH} from '../platform/Util';
 import {getImageUrl} from "../util/Util";
 import SuperRoot from "../widgets/SuperRoot";
-import {WINDOW_INNER_WIDTH} from "../platform/Util";
+import {HOME_PAGE_URLS} from "../controller/Urls";
 
 
-class FullPhotoScreen extends React.Component {
-    static URL = '/full-image/:id';
+export default class FullPhotoScreen extends React.Component {
+    static URL = HOME_PAGE_URLS.fullImage;
     constructor(props) {
         super(props);
     }
 
     render() {
-        const {classes} = this.props;
         let thumbImageUrl = getImageUrl(this.props.match.params.id);
         console.log('fullImageUrl: ', thumbImageUrl, this.props);
 
         return (
             <SuperRoot>
-                <div className={classes.root}>
-                    <img src={thumbImageUrl} className={classes.cookThumbImg} />
-                </div>
+                <View style={custom.root}>
+                    <Image src={thumbImageUrl} style={custom.cookThumbImg} />
+                </View>
             </SuperRoot>
         );
     }
 }
 
-const styles = theme => ({
+const custom = {
     root: {
         display: 'flex',
         flexDirection: 'column',
@@ -36,5 +35,4 @@ const styles = theme => ({
     cookThumbImg: {
         maxWidth: WINDOW_INNER_WIDTH,
     },
-});
-export default withStyles(styles)(FullPhotoScreen);
+};

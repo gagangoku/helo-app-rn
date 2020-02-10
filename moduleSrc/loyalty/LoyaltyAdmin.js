@@ -1,8 +1,8 @@
 import React, {Fragment} from "react";
-import AsyncStorage from "@callstack/async-storage";
+import {AsyncStorage, WINDOW_INNER_HEIGHT} from "../platform/Util";
 import {PHONE_NUMBER_KEY} from "../constants/Constants";
 import {setupDeviceId} from "../util/Util";
-import TouchableAnim from "../widgets/TouchableAnim";
+import TouchableAnim from "../platform/TouchableAnim";
 import {REASON_ALREADY_REDEEMED_AT_TABLE} from "./LoyaltyUtil";
 
 
@@ -19,7 +19,7 @@ export default class LoyaltyAdmin extends React.Component {
     async componentDidMount() {
         const deviceID = await setupDeviceId();
         const phone = await AsyncStorage.getItem(PHONE_NUMBER_KEY);
-        this.setState({ H: window.innerHeight });
+        this.setState({ H: WINDOW_INNER_HEIGHT });
     }
     handleChange = (ev, field) => {
         const val = ev.target.value;

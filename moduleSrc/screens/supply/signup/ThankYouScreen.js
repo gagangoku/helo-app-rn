@@ -1,5 +1,5 @@
 import React from 'react'
-import {withStyles} from '@material-ui/core/styles'
+import {withStyles} from '../../../platform/Util';
 import SuperRoot from "../../../widgets/SuperRoot";
 import {COLOR_WHITE_GRAY, TEAL_COLOR_THEME} from "../../../styles/common";
 import Header from "../../../widgets/Header";

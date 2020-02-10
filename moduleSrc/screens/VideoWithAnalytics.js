@@ -7,7 +7,6 @@ import {VIDEO_ANALYTICS_INTERVAL_SECONDS} from "../constants/Constants";
 
 
 export default class VideoWithAnalytics extends React.PureComponent {
-    static URL = '/video-analytics';
     constructor(props) {
         super(props);
         this.state = {

@@ -23,6 +23,7 @@ import {
 } from "./Questions";
 import QRCode from 'qrcode';
 import {flattenSupply} from "./Logic";
+import {Image, Text} from '../platform/Util';
 
 
 export default class IDCard extends React.Component {
@@ -84,8 +85,8 @@ export default class IDCard extends React.Component {
         const FONT_SIZE_2 = 13;
         const func = (value, attr, valueStyle={}, attrStyle={}, divStyle={}) => (
             <View style={{ marginBottom: 6, minWidth: 100, maxWidth: 150, ...this.isRedStyleOverride(attr), ...divStyle }}>
-                <View style={{ fontSize: FONT_SIZE_1, fontWeight: 300, ...valueStyle }}>{value}</View>
-                <View style={{ fontSize: 9, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.4, ...attrStyle }}>{attr}</View>
+                <Text style={{ fontSize: FONT_SIZE_1, fontWeight: 300, ...valueStyle }}>{value}</Text>
+                <Text style={{ fontSize: 9, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.4, ...attrStyle }}>{attr}</Text>
             </View>
         );
 
@@ -101,28 +102,28 @@ export default class IDCard extends React.Component {
             image = cp[QUESTION_THUMBIMAGE] ? getImageUrl(cp[QUESTION_THUMBIMAGE]) : getImageUrl(cp[QUESTION_PROFILE_PHOTO]);
         }
         const willWorkInRestaurant = cp[QUESTION_RESTAURANT_SKILLS_CONFIRM] === OPTION_YES;
-        const restaurentSection = !willWorkInRestaurant ? '' : func(this.display(cp[QUESTION_RESTAURANT_SKILLS], 50), 'restaurant');
+        const restaurentSection = !willWorkInRestaurant ? <View /> : func(this.display(cp[QUESTION_RESTAURANT_SKILLS], 50), 'restaurant');
 
         return (
             <View style={custom.root}>
                 <View style={{ display: 'flex', flexDirection: 'column', width: this.props.width || 400, border: '1px solid' }}>
                     <View style={{ height: 80, display: 'flex', flexDirection: 'row', width: '100%', borderBottom: '1px solid black', backgroundColor: '#B6D7ED' }}>
                         <View style={{ flex: 2, display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
-                            <img src="https://images-lb.heloprotocol.in/logo-Alpha.png-16578-458942-1557833871881.png"  style={{ height: 55, width: 50 }} />
+                            <Image src="https://images-lb.heloprotocol.in/logo-Alpha.png-16578-458942-1557833871881.png"  style={{ height: 55, width: 50 }} />
                         </View>
                         <View style={{ flex: 6, display: 'flex', justifyContent: 'center', flexDirection: 'column', textAlign: 'center' }}>
-                            <View style={{ fontSize: 16 }}>ID CARD</View>
-                            <View style={{ fontSize: FONT_SIZE_2, ...this.isRedStyleOverride('area') }}>{cp[QUESTION_AREA]}, {cp[QUESTION_CITY]}</View>
-                            <View style={{ fontSize: FONT_SIZE_2, ...this.isRedStyleOverride('phoneNumber') }}>Phone: {cp[QUESTION_PHONE]}</View>
+                            <Text style={{ fontSize: 16 }}>ID CARD</Text>
+                            <Text style={{ fontSize: FONT_SIZE_2, ...this.isRedStyleOverride('area') }}>{cp[QUESTION_AREA]}, {cp[QUESTION_CITY]}</Text>
+                            <Text style={{ fontSize: FONT_SIZE_2, ...this.isRedStyleOverride('phoneNumber') }}>Phone: {cp[QUESTION_PHONE]}</Text>
                         </View>
                         <View style={{ flex: 2, display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
-                            <img src={this.state.qrCode} style={{ height: 50, width: 50 }} />
+                            <Image src={this.state.qrCode} style={{ height: 50, width: 50 }} />
                         </View>
                     </View>
 
                     <View style={{ height: 270, display: 'flex', flexDirection: 'row' }}>
                         <View style={{ flex: 3, border: '0px solid', display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
-                            <img src={image} style={{ height: 130, width: 130, marginTop: 10, marginBottom: 10, border: '1px solid black' }} />
+                            <Image src={image} style={{ height: 130, width: 130, marginTop: 10, marginBottom: 10, border: '1px solid black' }} />
 
                             {func(cp[QUESTION_NAME], QUESTION_NAME, { textAlign: 'center', fontSize: FONT_SIZE_2+3 }, { display: 'none' }, { marginBottom: 1 })}
                             {func('', cp[QUESTION_GENDER], { display: 'none' }, { textAlign: 'center', marginBottom: 1 })}

@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import ReactGA from 'react-ga';
-import {Route} from 'react-router-dom';
 import window from "global/window";
 import ReactPixel from 'react-facebook-pixel';
 import {FACEBOOK_PIXEL_ID} from "../constants/Constants";
@@ -53,8 +52,6 @@ GoogleAnalytics.propTypes = {
     options: PropTypes.object,
 };
 
-const RouteTracker = () => <Route component={GoogleAnalytics} />;
-
 const init = (options = {}) => {
     ReactGA.initialize(
         REACT_APP_GA_TRACKING_ID, {
@@ -87,7 +84,6 @@ const REACT_APP_GA_DEBUG = window.location ? !window.location.origin.includes('h
 
 export default {
     GoogleAnalytics,
-    RouteTracker,
     init,
     event,
 }

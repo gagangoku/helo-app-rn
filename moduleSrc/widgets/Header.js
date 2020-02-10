@@ -2,8 +2,8 @@ import React from 'react';
 import {getCtx, Image, View} from "../util/Util";
 import Drawer from '@material-ui/core/Drawer';
 import {CUSTOMER_CARE_HELPLINE, HEADER_ICON, IS_MOBILE_SCREEN} from "../constants/Constants";
-import {GiveRecoScreen, StepCooks} from "../controller/HomePageFlows";
-import {StepCookChatBot} from "../controller/SupplyPageFlows";
+import {COOKS_PAGE_URL, WRITE_SUPPLY_RECOMMENDATION} from "../controller/HomePageFlows";
+import {GROUP_URLS} from "../controller/Urls";
 
 
 export default class Header extends React.Component {
@@ -65,15 +65,15 @@ export default class Header extends React.Component {
                         {editRequirementsSection}
 
                         <View style={custom.headerDrawerItem}>
-                            <a href={StepCookChatBot.URL} style={custom.headerDrawerLink} target="_blank">SIGNUP FOR WORK</a>
+                            <a href={GROUP_URLS.chatBot} style={custom.headerDrawerLink} target="_blank">SIGNUP FOR WORK</a>
                         </View>
 
                         <View style={custom.headerDrawerItem}>
-                            <a href={StepCooks.URL} style={custom.headerDrawerLink}>COOKS</a>
+                            <a href={COOKS_PAGE_URL} style={custom.headerDrawerLink}>COOKS</a>
                         </View>
 
                         <View style={custom.headerDrawerItem}>
-                            <a href={GiveRecoScreen.URL} style={custom.headerDrawerLink}>RECOMMEND YOUR MAID</a>
+                            <a href={WRITE_SUPPLY_RECOMMENDATION} style={custom.headerDrawerLink}>RECOMMEND YOUR MAID</a>
                         </View>
 
                         <View style={custom.headerDrawerItem}>

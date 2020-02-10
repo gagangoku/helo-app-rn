@@ -14,14 +14,13 @@ import {
     OUTPUT_TEXT,
     OUTPUT_VIDEO,
     SENDER_VISITOR,
-} from '../chat/Questions';
-import {getChatContext} from '../util/ChatUtil';
-// import MessagingUI from '../chat/MessagingUI';
-import {HELO_LOGO} from '../chat/Constants';
+} from '../../moduleSrc/chat/Questions';
+import {COOK_ONBOARDING_FLOW, getChatContext} from '../../moduleSrc/chat/bot/ChatUtil';
+import {HELO_LOGO} from '../../moduleSrc/chat/Constants';
 import MessagingUI from '../../moduleSrc/chat/messaging/MessagingUI';
 
 
-class ChatDemo extends React.Component {
+export default class ChatDemo extends React.Component {
     static navigationOptions = ({ navigation, navigationOptions }) => ({
         title: null,
         headerShown: false,
@@ -31,7 +30,7 @@ class ChatDemo extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            messages: INITIAL_MESSAGES1,
+            messages: INITIAL_MESSAGES,
         };
     }
 
@@ -67,26 +66,32 @@ class ChatDemo extends React.Component {
             name: 'HELO',
         };
 
-        const chatContext = getChatContext();
+        const groupInfo = {
+            isAdminPosting: false,
+            admins: [],
+            showMemberAddNotifications: false,
+        };
+        const chatContext = getChatContext(COOK_ONBOARDING_FLOW);
         return (
             <MessagingUI location={this.props.location} history={this.props.history}
                          topBar={null} me={me} otherGuy={heloBot}
                          chatContext={chatContext}
-                         messages={this.state.messages} onUserMsg={this.onUserMsg}
+                         collection={'test'} groupId={'demo'}
+                         groupInfo={groupInfo} messages={this.state.messages} onUserMsg={this.onUserMsg}
                          onTriggerUpload={null} callFn={null} />
         );
     }
 }
-const custom = {
-    grid: {
-        width: '60%',
-    },
-};
 
 const SENDER_ME = 'me';
 const INITIAL_MESSAGES = [{
     type: OUTPUT_TEXT,
     text: 'Hello',
+    timestamp: new Date().getTime(),
+    sender: SENDER_VISITOR,
+}, {
+    type: OUTPUT_TEXT,
+    text: 'Hello <b>bold</b>',
     timestamp: new Date().getTime(),
     sender: SENDER_VISITOR,
 }, {
@@ -141,12 +146,12 @@ const INITIAL_MESSAGES = [{
     text: 'test loc',
     timestamp: new Date().getTime(),
     sender: SENDER_VISITOR,
-}, {
-    type: OUTPUT_PLACES_AUTOCOMPLETE,
-    text: 'Enter location plz',
-    placeholder: 'placeholdddd...',
-    timestamp: new Date().getTime(),
-    sender: SENDER_VISITOR,
+// }, {
+//     type: OUTPUT_PLACES_AUTOCOMPLETE,
+//     text: 'Enter location plz',
+//     placeholder: 'placeholdddd...',
+//     timestamp: new Date().getTime(),
+//     sender: SENDER_VISITOR,
 }, {
     type: OUTPUT_SINGLE_CHOICE,
     text: 'Choose one option',
@@ -276,11 +281,3 @@ const INITIAL_MESSAGES = [{
     timestamp: new Date().getTime(),
     sender: SENDER_VISITOR,
 }];
-const INITIAL_MESSAGES1 = [{
-    type: OUTPUT_TEXT,
-    text: 'Hello',
-    timestamp: new Date().getTime(),
-    sender: SENDER_VISITOR,
-}];
-
-export default ChatDemo;

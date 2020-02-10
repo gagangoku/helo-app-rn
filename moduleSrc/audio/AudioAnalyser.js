@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
 import AudioVisualiser from './AudioVisualiser';
-import IconButton from "@material-ui/core/IconButton/IconButton";
-import Stop from '@material-ui/icons/Stop';
+import TouchableAnim from "../platform/TouchableAnim";
+import {STOP_ICON} from "../constants/Constants";
+import {Image} from "../platform/Util";
 
 
 export default class AudioAnalyser extends Component {
@@ -61,7 +62,9 @@ export default class AudioAnalyser extends Component {
         return (
             <div style={custom.root}>
                 <AudioVisualiser audioData={this.state.audioData} height={height} width={width} />
-                <IconButton><Stop onClick={this.stopFn} /></IconButton>
+                <TouchableAnim onPress={this.stopFn} style={{}}>
+                    <Image src={STOP_ICON} style={{ height: 80, width: 80 }} />
+                </TouchableAnim>
             </div>
         );
     }

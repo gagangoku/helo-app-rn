@@ -1,5 +1,5 @@
 import React from 'react';
-import {withStyles} from '@material-ui/core/styles';
+import {withStyles} from '../../../platform/Util';
 import Header from "../../../widgets/Header";
 import SuperRoot from "../../../widgets/SuperRoot";
 import {actionButton, spacer} from "../../../util/Util";

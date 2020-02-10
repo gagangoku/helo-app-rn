@@ -9,7 +9,7 @@ import PlayCircleOutline from '@material-ui/icons/PlayCircleOutline';
 import Edit from '@material-ui/icons/Edit';
 import Pause from '@material-ui/icons/Pause';
 import Delete from '@material-ui/icons/Delete';
-import {withStyles} from "@material-ui/core";
+import {withStyles} from '../../platform/Util';
 import {
     IS_MOBILE_SCREEN,
     JOB_OPENING_STATUS_CLOSED,

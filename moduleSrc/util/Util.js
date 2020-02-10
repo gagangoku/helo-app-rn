@@ -10,7 +10,6 @@ import {
     showToast,
     StyleSheet,
     Text,
-    TouchableOpacity,
     uploadBlob,
     View,
 } from '../platform/Util';
@@ -60,7 +59,7 @@ import {crudsSearch, getPersonNamesByRoleId, hgetAllFromKVStore, searchCustomer,
 import {firebase, initFirebase} from '../platform/firebase';
 import xrange from 'xrange';
 import lodash from "lodash";
-import TouchableAnim from "../widgets/TouchableAnim";
+import TouchableAnim from "../platform/TouchableAnim";
 
 
 export const getCtx = (obj) => {
@@ -103,9 +102,9 @@ export const actionButton = (text, cbFn, {width, height, style}={}) => {
     const fontSize = (style && style.fontSize) || commonStyle.actionButton.fontSize;
     return (
         <View style={{...commonStyle.actionButtonContainer, ...style, width, height}} onClick={cbFn} key={text}>
-            <View style={{...commonStyle.actionButton, fontSize}}>
+            <Text style={{...commonStyle.actionButton, fontSize}}>
                 {text}
-            </View>
+            </Text>
         </View>
     );
 };
@@ -817,6 +816,6 @@ export {
     uploadBlob,
     initWebPush,
     initFirebase,
-    StyleSheet, View, Text, TouchableOpacity, Image,
+    StyleSheet, View, Text, Image,
     showToast,
 };

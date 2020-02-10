@@ -1,12 +1,10 @@
 import React from 'react';
-import {withStyles} from '@material-ui/core/styles';
+import {Modal, WINDOW_INNER_WIDTH, withStyles} from '../../platform/Util';
 import {actionButton, getCtx, spacer} from "../../util/Util";
 import {TEAL_COLOR_THEME, TEXT_COLOR_LIGHT} from "../../styles/common";
 import SuperRoot from "../../widgets/SuperRoot";
-import Modal from "react-modal";
 import {CUSTOMER_CARE_HELPLINE, IS_MOBILE_SCREEN} from "../../constants/Constants";
 import window from 'global/window';
-import {WINDOW_INNER_WIDTH} from "../../platform/Util";
 
 
 class ConfirmOrderScreen extends React.Component {

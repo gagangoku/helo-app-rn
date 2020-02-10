@@ -10,10 +10,9 @@ import {
     staticMapsImg
 } from "../util/Util";
 import {GENDER_FEMALE} from "../constants/Constants";
-import Modal from "react-modal";
 import AudioAnalyser from "../audio/AudioAnalyser";
-import {Image, Text, View} from "../platform/Util";
-import TouchableAnim from "./TouchableAnim";
+import {Image, Modal, Text, View} from "../platform/Util";
+import TouchableAnim from "../platform/TouchableAnim";
 
 
 export default class JobDetailsWidget extends React.Component {
@@ -217,4 +216,3 @@ const modalStyle = {
         transform             : 'translate(-50%, -50%)'
     }
 };
-

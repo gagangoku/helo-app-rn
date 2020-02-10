@@ -1,6 +1,7 @@
 import React from "react";
-import {capitalizeFirstLetter, getKeysWhereValueIs, Text, TouchableOpacity, View} from '../util/Util';
+import {capitalizeFirstLetter, getKeysWhereValueIs, Text, View} from '../util/Util';
 import PropTypes from 'prop-types';
+import TouchableAnim from "../platform/TouchableAnim";
 
 
 export default class MultiSelectionWidget extends React.Component {
@@ -48,8 +49,8 @@ export default class MultiSelectionWidget extends React.Component {
             const isSelected = !(!(this.state[PREFIX + key]));
             return optionRenderFn(text, isSelected, () => this.toggle(key));
         });
-        const heading = this.props.heading ? <Text style={custom.heading}>{this.props.heading}</Text> : '';
-        const subheading = this.props.subHeading ? <Text style={custom.subHeading}>{this.props.subHeading}</Text> : '';
+        const heading = this.props.heading ? <Text style={custom.heading}>{this.props.heading}</Text> : <View />;
+        const subheading = this.props.subHeading ? <Text style={custom.subHeading}>{this.props.subHeading}</Text> : <View />;
 
         return (
             <View style={rootContainerStyle}>
@@ -94,9 +95,9 @@ export default class MultiSelectionWidget extends React.Component {
 
         return (
             <View style={[custom.boxContainer, boxStyle]} key={text}>
-                <TouchableOpacity onPress={cb} style={custom.justifyAlignCenter}>
+                <TouchableAnim onPress={cb} style={custom.justifyAlignCenter}>
                     <Text style={[custom.boxText, textStyle]}>{text}</Text>
-                </TouchableOpacity>
+                </TouchableAnim>
             </View>
         );
     };

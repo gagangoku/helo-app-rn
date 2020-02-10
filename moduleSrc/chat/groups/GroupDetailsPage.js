@@ -12,7 +12,7 @@ import {
     Text,
     View,
 } from "../../util/Util";
-import {Switch} from '../../platform/Util';
+import {Modal, Switch} from '../../platform/Util';
 import {
     CHAT_FONT_FAMILY,
     FIREBASE_GROUPS_DB_NAME,
@@ -20,16 +20,15 @@ import {
     MWEB_URL,
     RESTAURANT_JOBS_INDIA_GROUP_ADDITION
 } from "../../constants/Constants";
-import TouchableAnim from "../../widgets/TouchableAnim";
-import Modal from "react-modal";
+import TouchableAnim from "../../platform/TouchableAnim";
 import {USER_BACKGROUND_COLOR_DARK} from "../Constants";
 import {sendSms} from "../../util/Api";
 import window from "global";
 import format from 'string-format';
-import {StepViewPerson} from "../../controller/SupplyPageFlows";
 import EditableTopNameBar from "../../widgets/EditableTopNameBar";
 import {firebase} from '../../platform/firebase';
 import EditableImageWidget from "../../widgets/EditableImageWidget";
+import {GROUP_URLS} from "../../controller/Urls";
 
 
 export default class GroupDetailsPage extends React.Component {
@@ -52,7 +51,7 @@ export default class GroupDetailsPage extends React.Component {
 
         const isDebug = isDebugMode();
         const cbFn = async ({ groupInfo }) => {
-            await getPersonDetails(this.idToDetails, groupInfo.members, groupInfo.filteredMessages);
+            await getPersonDetails(this.idToDetails, groupInfo.members.slice(0, NUM_MEMBERS_TO_SHOW), groupInfo.filteredMessages);
             this.setState({ idToDetails: this.idToDetails, groupInfo });
         };
         const { docRef, groupInfo, observer } = await getAllInfoRelatedToGroup({ collection, groupId, cbFn, isDebug, dontProcessMessages: true });
@@ -64,7 +63,7 @@ export default class GroupDetailsPage extends React.Component {
             return;
         }
 
-        await getPersonDetails(this.idToDetails, groupInfo.members, groupInfo.filteredMessages);
+        await getPersonDetails(this.idToDetails, groupInfo.members.slice(0, NUM_MEMBERS_TO_SHOW), groupInfo.filteredMessages);
         this.setState({ idToDetails: this.idToDetails, groupInfo, roleId });
     }
 
@@ -78,7 +77,7 @@ export default class GroupDetailsPage extends React.Component {
         );
     };
     onPressMember = (member) => {
-        const url = format('{}?roleId={}', StepViewPerson.URL, member);
+        const url = format('{}?roleId={}', GROUP_URLS.viewPerson, member);
         window.open(url);
     };
 

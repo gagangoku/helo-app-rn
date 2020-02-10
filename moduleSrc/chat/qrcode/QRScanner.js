@@ -2,7 +2,8 @@ import React from "react";
 import {getCtx, setupDeviceId} from "../../util/Util";
 import {TOP_BAR_COLOR} from "../Constants";
 import uuidv1 from "uuid/v1";
-import TouchableAnim from "../../widgets/TouchableAnim";
+import TouchableAnim from "../../platform/TouchableAnim";
+import {WINDOW_INNER_HEIGHT} from "../../platform/Util";
 
 
 export default class QRScanner extends React.Component {
@@ -49,7 +50,7 @@ export default class QRScanner extends React.Component {
 
     render() {
         const result = this.state.result || '';
-        const H = window.innerHeight;
+        const H = WINDOW_INNER_HEIGHT;
         return (
             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
                 <h1 style={{}}>QR Code scanner</h1>

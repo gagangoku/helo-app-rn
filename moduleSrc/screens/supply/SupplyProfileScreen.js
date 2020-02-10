@@ -1,5 +1,5 @@
 import React from 'react';
-import {withStyles} from '@material-ui/core/styles';
+import {withStyles} from '../../platform/Util';
 import {awaitPromises, fireApiCalls, getCtx, View} from "../../util/Util";
 import SupplyProfileWidget from "./SupplyProfileWidget";
 import {getRecommendationsOfSupply, getSimilarSupply, getSupplyProfileById} from "../../util/Api";

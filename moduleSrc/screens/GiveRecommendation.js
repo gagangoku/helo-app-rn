@@ -1,5 +1,5 @@
 import React from 'react';
-import {withStyles} from '@material-ui/core/styles';
+import {Helmet, WINDOW_INNER_WIDTH, withStyles} from '../platform/Util';
 import {actionButton, getCtx, getKeysWhereValueIs, getUrlParam, removeNullUndefined, spacer} from "../util/Util";
 import {TEAL_COLOR_THEME} from "../styles/common";
 import classnames from 'classnames';
@@ -9,11 +9,9 @@ import MenuItem from "@material-ui/core/MenuItem/MenuItem";
 import xrange from 'xrange';
 import {giveMaidRecommendation} from "../util/Api";
 import StarRatingComponent from 'react-star-rating-component';
-import {Helmet} from "react-helmet";
 import window from 'global/window';
 import OptionPickerWidget from "../widgets/OptionPickerWidget";
 import {BAD_ATTRIBUTES, GOOD_ATTRIBUTES} from "../constants/Constants";
-import {WINDOW_INNER_WIDTH} from "../platform/Util";
 
 
 class GiveRecommendation extends React.Component {

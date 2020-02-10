@@ -13,7 +13,7 @@ import {
     View
 } from "../../util/Util";
 import uuidv1 from "uuid/v1";
-import TouchableAnim from "../../widgets/TouchableAnim";
+import TouchableAnim from "../../platform/TouchableAnim";
 import {CHAT_FONT_FAMILY, VIDEO_ANALYTICS_INTERVAL_SECONDS} from "../../constants/Constants";
 import xrange from 'xrange';
 import {ConfigurableTopBar} from "../messaging/TopBar";

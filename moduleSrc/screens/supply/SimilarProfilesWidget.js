@@ -1,5 +1,5 @@
 import React from 'react';
-import {withStyles} from '@material-ui/core/styles';
+import {withStyles} from '../../platform/Util';
 import {capitalizeFirstLetter, View} from "../../util/Util";
 import {TEXT_COLOR_LIGHT} from "../../styles/common";
 import {IS_MOBILE_SCREEN} from "../../constants/Constants";

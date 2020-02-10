@@ -10,12 +10,11 @@ import {
     NOTIFICATIONS_ICON,
     PHONE_WHITE_ICON
 } from "../../constants/Constants";
-import TouchableAnim from "../../widgets/TouchableAnim";
+import TouchableAnim from "../../platform/TouchableAnim";
 import {TOP_BAR_COLOR} from "../Constants";
 import format from "string-format";
-import {StepGroupAnalytics, StepViewPerson} from "../../controller/SupplyPageFlows";
-import {StepCreateGroup, StepGroupDetailsPage} from "../../controller/HomePageFlows";
 import window from 'global';
+import {GROUP_URLS} from "../../controller/Urls";
 
 
 export class GroupTopBar extends React.Component {
@@ -102,12 +101,12 @@ export class ConfigurableTopBar extends React.Component {
     showPersonDetailsPageOnclickFn = ({ data }) => {
         const { groupId, me } = data;
         const roleId = groupId.split(',').filter(x => x !== me.sender)[0];
-        const url = format('{}?roleId={}', StepViewPerson.URL, roleId);
+        const url = format('{}?roleId={}', GROUP_URLS.viewPerson, roleId);
         window.open(url);
     };
     showGroupDetailsPageOnclickFn = ({ data }) => {
         const { groupId } = data;
-        const url = format('{}?group={}', StepGroupDetailsPage.URL, groupId);
+        const url = format('{}?group={}', GROUP_URLS.groupDetails, groupId);
         window.open(url);
     };
     phoneIconOnclickFn = ({ data }) => {};
@@ -116,7 +115,7 @@ export class ConfigurableTopBar extends React.Component {
     analyticsOnclickFn = ({ data }) => {
         const { me, groupId, collection } = data;
         console.log('Group level analytics: ', me, groupId, collection);
-        const url = format('{}/?me={}&groupId={}&collection={}', StepGroupAnalytics.URL, me.sender, groupId, collection);
+        const url = format('{}/?me={}&groupId={}&collection={}', GROUP_URLS.groupAnalytics, me.sender, groupId, collection);
         window.open(url, '_blank');
     };
     leaderboardOnclickFn = ({ data }) => {
@@ -126,7 +125,7 @@ export class ConfigurableTopBar extends React.Component {
     };
     settingsOnclickFn = ({ data }) => {};
     newGroupOnclickFn = ({ data }) => {
-        window.open(StepCreateGroup.URL, '_blank');
+        window.open(GROUP_URLS.createGroup, '_blank');
     };
     newSuperGroupOnclickFn = ({ data }) => {};
 
@@ -285,12 +284,12 @@ export class ConfigurableTopBar extends React.Component {
         const right = sections.filter(s => s.float === 'right').map(fn);
 
         return (
-            <div style={{ ...custom.root, height: 60, width: '100%' }}>
-                <div style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+            <View style={{ ...custom.root, height: 60, width: '100%' }}>
+                <View style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                     <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>{left}</View>
                     <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', paddingRight: 5 }}>{right}</View>
-                </div>
-            </div>
+                </View>
+            </View>
         );
     };
 }
@@ -316,12 +315,12 @@ class DotDotDot extends React.Component {
 
         return (
             <View style={{}}>
-                <div ref={this.dotDotDotIconRef}>
+                <View ref={this.dotDotDotIconRef}>
                     <TouchableAnim onPress={() => this.setState({ isPopoverOpen: true })} style={{ height: 25, width: 25, marginTop: 0, marginLeft: 0, marginRight: 0, lineHeight: 'normal' }}>
                         <Image src={MORE_VERT_ICON} style={{ height: 25, width: 25 }} />
                     </TouchableAnim>
                     <Popover id='popover' open={this.state.isPopoverOpen}
-                             anchorEl={this.dotDotDotIconRef ? this.dotDotDotIconRef.current : null}
+                             anchorEl={this.dotDotDotIconRef && this.dotDotDotIconRef.current ? this.dotDotDotIconRef.current.divElement() : null}
                              onClose={() => this.setState({ isPopoverOpen: false })}
                              anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
                              transformOrigin={{ vertical: 'top', horizontal: 'right' }}
@@ -334,7 +333,7 @@ class DotDotDot extends React.Component {
                             ))}
                         </View>
                     </Popover>
-                </div>
+                </View>
             </View>
         );
     }

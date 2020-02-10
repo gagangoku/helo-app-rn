@@ -6,7 +6,7 @@ import {reducerFn} from '../reducers';
 import {renderToString} from 'react-dom/server';
 import {routes} from '../app';
 import {StaticRouter} from "react-router-dom";
-import {Helmet} from "react-helmet";
+import {Helmet} from "../platform/Util";
 import compression from 'compression';
 import * as URI from "uri-js";
 import {

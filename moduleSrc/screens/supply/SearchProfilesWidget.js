@@ -1,5 +1,5 @@
 import React, {Fragment} from 'react';
-import {withStyles} from '@material-ui/core/styles';
+import {Modal, withStyles} from '../../platform/Util';
 import {getCtx, priceFn, relevanceFn} from "../../util/Util";
 import Footer from "../../widgets/Footer";
 import {commonStyle} from "../../styles/common";
@@ -18,7 +18,6 @@ import {
     SORT_FILTER_COLOR,
     SORT_ICON
 } from "../../constants/Constants";
-import Modal from "react-modal";
 import AllFilters from "../../widgets/AllFilters";
 import {searchSupply} from "../../util/Api";
 import SupplyMiniProfile from "./SupplyMiniProfile";

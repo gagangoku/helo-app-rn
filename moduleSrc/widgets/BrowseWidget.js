@@ -1,12 +1,11 @@
 import React from 'react';
-import {withStyles} from '@material-ui/core/styles';
+import {Helmet, withStyles} from '../platform/Util';
 import {awaitPromises, fireApiCalls, getCtx, View} from "../util/Util";
 import {getAllSupplyNames} from "../util/Api";
 import SuperRoot from "./SuperRoot";
 import Header from "./Header";
 import Footer from "./Footer";
 import format from "string-format";
-import {Helmet} from "react-helmet";
 import {COOKS_PAGE_URL, MAIDS_PAGE_URL, NANNY_PAGE_URL, WRITE_SUPPLY_RECOMMENDATION} from "../controller/HomePageFlows";
 
 

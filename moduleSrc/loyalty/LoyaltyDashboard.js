@@ -1,8 +1,7 @@
 import React from "react";
 import window from "global";
 import {View} from "../util/Util";
-import {Helmet} from "react-helmet";
-import {WINDOW_INNER_HEIGHT, WINDOW_INNER_WIDTH} from "../platform/Util";
+import {Helmet, WINDOW_INNER_HEIGHT, WINDOW_INNER_WIDTH} from "../platform/Util";
 
 
 export class LoyaltyDashboard extends React.Component {
@@ -36,7 +35,7 @@ export class LoyaltyDashboard extends React.Component {
 const custom = {
     root: {
         backgroundColor: '#FFFFFF',
-        height: window.innerHeight,
+        height: WINDOW_INNER_HEIGHT,
         width: '100%',
         fontFamily: 'Nunito, Arial, "Helvetica Neue", Helvetica, sans-serif',
         fontWeight: '300',

@@ -1,5 +1,5 @@
 import React, {Fragment} from 'react';
-import {withStyles} from '@material-ui/core/styles';
+import {withStyles} from '../../platform/Util';
 import {actionButton, capitalizeEachWord, getCtx, getKeysWhereValueIs, spacer} from "../../util/Util";
 import {commonStyle, TEAL_COLOR_THEME} from "../../styles/common";
 import SuperRoot from "../../widgets/SuperRoot";

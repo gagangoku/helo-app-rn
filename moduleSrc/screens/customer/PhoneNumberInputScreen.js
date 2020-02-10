@@ -1,5 +1,5 @@
 import React from 'react';
-import {withStyles} from '@material-ui/core/styles';
+import {withStyles} from '../../platform/Util';
 import {actionButton, getCtx} from "../../util/Util";
 import {getOtp} from "../../util/Api";
 import {TEAL_COLOR_THEME} from "../../styles/common";

@@ -1,5 +1,5 @@
 import React from 'react';
-import {withStyles} from '@material-ui/core/styles';
+import {withStyles} from '../../platform/Util';
 import {getCtx} from "../../util/Util";
 import SuperRoot from "../../widgets/SuperRoot";
 import {getAllSupplyNames} from "../../util/Api";

@@ -20,13 +20,13 @@ import {
     OUTPUT_TEXT,
     OUTPUT_VIDEO
 } from "../Questions";
-import TouchableAnim from "../../widgets/TouchableAnim";
+import TouchableAnim from "../../platform/TouchableAnim";
 import window from "global";
 import {getPersonNamesByRoleId} from "../../util/Api";
 import lodash from 'lodash';
 import {ConfigurableTopBar} from "../messaging/TopBar";
-import {StepViewMyProfile} from "../../controller/SupplyPageFlows";
 import {WINDOW_INNER_WIDTH} from "../../platform/Util";
+import {GROUP_URLS} from "../../controller/Urls";
 
 
 /**
@@ -205,7 +205,7 @@ class GroupListUI extends React.PureComponent {
             { title: 'New group', type: ConfigurableTopBar.SECTION_DOTDOTDOT_NEW_GROUP },
             { title: 'New supergroup', type: ConfigurableTopBar.SECTION_DOTDOTDOT_NEW_SUPERGROUP, onClickFn: () => showToast('Coming soon') },
         ];
-        options.push({ title: 'Settings', type: ConfigurableTopBar.SECTION_DOTDOTDOT_SETTINGS, onClickFn: () => window.open(StepViewMyProfile.URL, '_blank') });
+        options.push({ title: 'Settings', type: ConfigurableTopBar.SECTION_DOTDOTDOT_SETTINGS, onClickFn: () => window.open(GROUP_URLS.viewMyProfile, '_blank') });
         const sections = [
             { float: 'left', name: ConfigurableTopBar.SECTION_NAME, displayProps: { name: { fontSize: 22 } }, data: { name: 'Messages' }, onClickFn: () => {} },
             { float: 'right', name: ConfigurableTopBar.SECTION_UNREADS, displayProps: {}, data: { unreads: this.props.numUnreadChats } },

@@ -370,3 +370,4 @@ export const EDIT_ICON = 'https://images-lb.heloprotocol.in/edit.png-3103-930245
 export const CHECK_TICK_ICON = 'https://images-lb.heloprotocol.in/check.png-3382-657889-1581279536007.png';
 export const MIC_BLACK_ICON = 'https://images-lb.heloprotocol.in/mic.png-1823-698503-1581282792227.png';
 export const MIC_RED_ICON = 'https://images-lb.heloprotocol.in/mic_red.png-4345-15722-1581282815406.png';
+export const STOP_ICON = 'https://images-lb.heloprotocol.in/stop.png-125-754019-1581287299173.png';

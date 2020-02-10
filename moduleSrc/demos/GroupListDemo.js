@@ -1,7 +1,7 @@
 import React from 'react';
-import {withStyles} from '@material-ui/core/styles';
+import {withStyles} from '../platform/Util';
 import {getCtx, getDetailsFromPhone} from "../util/Util";
-import {StepGroupList} from "../controller/HomePageFlows";
+import {GROUP_URLS} from "../controller/Urls";
 
 
 class GroupListDemo extends React.Component {
@@ -14,9 +14,9 @@ class GroupListDemo extends React.Component {
     async componentDidMount() {
         const { phone, id, name, role } = await getDetailsFromPhone();
         if (role && id) {
-            window.location.href = StepGroupList.URL;
+            window.location.href = GROUP_URLS.groupList;
         } else {
-            window.location.href = StepGroupList.URL + '?me=supply:352';
+            window.location.href = GROUP_URLS.groupList + '?me=supply:352';
         }
     }
 

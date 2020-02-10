@@ -1,5 +1,5 @@
 import React from 'react';
-import {withStyles} from '@material-ui/core/styles';
+import {withStyles} from '../platform/Util';
 import {getKeysWhereValueIs} from "../util/Util";
 import OptionPickerWidget from "../widgets/OptionPickerWidget";
 import {GENDER_FEMALE, GENDER_MALE, GENDER_OTHER, LANGUAGES} from "../constants/Constants";

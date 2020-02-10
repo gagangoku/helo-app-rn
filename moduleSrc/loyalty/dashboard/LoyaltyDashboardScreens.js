@@ -1,6 +1,6 @@
 import React from "react";
 import {actionButton, uploadBlob} from "../../util/Util";
-import TouchableAnim from "../../widgets/TouchableAnim";
+import TouchableAnim from "../../platform/TouchableAnim";
 
 
 export class LoyaltyEntryScreen extends React.Component {

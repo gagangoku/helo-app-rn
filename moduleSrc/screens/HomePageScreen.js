@@ -1,6 +1,6 @@
 import React, {Fragment} from 'react';
 import {actionButton, getCtx, Image, spacer, View} from "../util/Util";
-import {Helmet} from "react-helmet";
+import {Helmet} from "../platform/Util";
 import Header from "../widgets/Header";
 import Footer from "../widgets/Footer";
 import {IS_MOBILE_SCREEN} from "../constants/Constants";

@@ -21,6 +21,11 @@ import {MODE_BOT} from "../chat/Constants";
 import Modal from "react-modal";
 import Popover from "@material-ui/core/Popover";
 import PlacesAutocomplete, {geocodeByAddress, getLatLng} from "react-places-autocomplete";
+import {Route} from "react-router-dom";
+import {Helmet} from "react-helmet";
+import ReactMinimalPieChart from "react-minimal-pie-chart";
+import GoogleMapReact from 'google-map-react';
+import {confirmAlert} from 'react-confirm-alert';
 
 
 export const stopBodyOverflow = () => {
@@ -261,6 +266,12 @@ export class StyleSheet {
     }
 }
 export class View extends React.Component {
+    constructor(props) {
+        super(props);
+        this.ref = React.createRef();
+    }
+
+    divElement = () => this.ref.current;
     render() {
         return renderF(this);
     }
@@ -268,11 +279,6 @@ export class View extends React.Component {
 export class Text extends React.Component {
     render() {
         return renderF(this);
-    }
-}
-export class TouchableOpacity extends React.Component {
-    render() {
-        return renderF(this, {cursor: 'pointer'});
     }
 }
 export class Image extends React.Component {
@@ -289,12 +295,13 @@ const renderF = (obj, styleOverrides={}) => {
     const props = {...obj.props, style: s2};
     if (obj.props.onPress) {
         props.onClick = () => {
-            console.log('TouchableOpacity onclick');
+            console.log('renderF onclick');
             obj.props.onPress();
         };
         delete props.onPress;
     }
-    return (<div {...props}>{obj.props.children}</div>);
+    const refObj = obj.ref ? { ref: obj.ref } : {};
+    return (<div {...refObj} {...props}>{obj.props.children}</div>);
 };
 
 const flattenStyleArray = (s) => {
@@ -351,6 +358,7 @@ export const scrollToElemFn = (ref) => {
     }
 };
 
+
 export const WINDOW_INNER_WIDTH = window.innerWidth;
 export const WINDOW_INNER_HEIGHT = window.innerHeight;
 
@@ -359,5 +367,8 @@ export {
     AsyncStorage,
     Modal,
     Popover,
-    PlacesAutocomplete, geocodeByAddress, getLatLng,
+    PlacesAutocomplete, geocodeByAddress, getLatLng, GoogleMapReact,
+    Route, Helmet,
+    withStyles,
+    ReactMinimalPieChart, confirmAlert,
 }

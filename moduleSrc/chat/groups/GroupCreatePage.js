@@ -4,8 +4,8 @@ import {ConfigurableTopBar} from "../messaging/TopBar";
 import {CHAT_FONT_FAMILY, FIREBASE_GROUPS_DB_NAME} from "../../constants/Constants";
 import {firebase} from '../../platform/firebase';
 import window from 'global';
-import {StepGroupJoin} from "../../controller/HomePageFlows";
 import EditableImageWidget from "../../widgets/EditableImageWidget";
+import {GROUP_URLS} from "../../controller/Urls";
 
 
 export class GroupCreatePage extends React.Component {
@@ -79,7 +79,7 @@ export class GroupCreatePage extends React.Component {
 
         this.setState({ successText: 'Group created' });
         setTimeout(() => {
-            window.location.href = StepGroupJoin.URL + '?group=' + groupId;
+            window.location.href = GROUP_URLS.groupJoin + '?group=' + groupId;
         }, 1000);
     };
 

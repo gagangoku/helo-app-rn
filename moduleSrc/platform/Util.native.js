@@ -1,16 +1,5 @@
-import {
-    AsyncStorage,
-    Dimensions,
-    Image,
-    Modal,
-    StyleSheet,
-    Text,
-    ToastAndroid as Toast,
-    TouchableOpacity,
-    View
-} from 'react-native';
+import {AsyncStorage, Dimensions, Image, Modal, StyleSheet, Text, ToastAndroid as Toast, View} from 'react-native';
 import React from "react";
-import window from "global";
 
 
 // TODO: Implement
@@ -33,6 +22,34 @@ export class PlacesAutocomplete extends React.Component {
         return <View />;
     }
 }
+export class Route extends React.Component {
+    render() {
+        return <View />;
+    }
+}
+export class Helmet extends React.Component {
+    render() {
+        return <View />;
+    }
+}
+export class ReactMinimalPieChart extends React.Component {
+    render() {
+        return <View />;
+    }
+}
+export class Dummy extends React.Component {
+    render() {
+        return <View />;
+    }
+}
+export const GoogleMapReact = Dummy;
+
+export const withStyles = (styles) => {
+    return (component) => component;
+};
+
+
+export const confirmAlert = () => {};
 export const geocodeByAddress = () => {};
 export const getLatLng = () => {};
 
@@ -63,5 +80,5 @@ export const WINDOW_INNER_HEIGHT = Dimensions.get('window').height;
 
 
 export {
-    AsyncStorage, StyleSheet, View, Text, TouchableOpacity, Image, Modal, Toast,
+    AsyncStorage, StyleSheet, View, Text, Image, Modal, Toast,
 }

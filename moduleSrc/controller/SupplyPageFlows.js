@@ -1,10 +1,8 @@
 import React from "react";
 import {getCtx, getUrlParam, navigateTo, redirectIfNotFlow} from "../util/Util";
-import {Route} from "react-router-dom";
 import SupplySignupHomeScreen from "../screens/supply/signup/SupplySignupHomeScreen";
 import PhoneNumberInputScreen from "../screens/customer/PhoneNumberInputScreen";
-import AsyncStorage from "@callstack/async-storage";
-import {API_URL, CATEGORY_COOK, PARTNER_CARE_HELPLINE, PHONE_NUMBER_KEY} from "../constants/Constants";
+import {PARTNER_CARE_HELPLINE, PHONE_NUMBER_KEY} from "../constants/Constants";
 import OtpInputScreen from "../screens/customer/OtpInputScreen";
 import LocationInputScreen from "../screens/customer/LocationInputScreen";
 import RequirementsScreen from "../screens/supply/signup/RequirementsScreen";
@@ -12,15 +10,7 @@ import {getSupplyProfileById, newSupplySignup} from "../util/Api";
 import ConfirmOrderScreen from "../screens/supply/signup/ConfirmOrderScreen";
 import ThankYouScreen from "../screens/supply/signup/ThankYouScreen";
 import IDCard from "../chat/IDCard";
-import {QUESTION_WORK_CATEGORIES} from "../chat/Questions";
-import ChatBotClient from "../chat/bot/ChatBotClient";
-import ViewPersonProfile from "../chat/profile/ViewPersonProfile";
-import IDVerifier from "../chat/verifier/IDVerifier";
-import QRScanner from "../chat/qrcode/QRScanner";
-import LeaderBoard from "../chat/analytics/LeaderBoard";
-import GreyList from "../chat/verifier/GreyList";
-import GroupAnalytics from "../chat/analytics/GroupAnalytics";
-import MyProfile from "../chat/profile/MyProfile";
+import {AsyncStorage, Route} from '../platform/Util';
 
 
 export const SUPPLY_HOME_PAGE_URL = '/supply/home';
@@ -162,101 +152,6 @@ class StepThankYou extends React.Component {
     }
 }
 
-export class StepCookChatBot extends React.Component {
-    static URL = '/supply/chat';
-    static URL1 = '/supply/cook/chat';
-    constructor(props) {
-        super(props);
-        this.contextObj = getCtx(this);
-    }
-    render() {
-        console.log('rendering SupplyOnboardingChatBot');
-        const params = {};
-        (new URL(document.location || API_URL)).searchParams.forEach((v, k) => params[k] = v);
-        params[QUESTION_WORK_CATEGORIES] = CATEGORY_COOK;     // For cooks
-        return (<ChatBotClient location={this.props.location} history={this.props.history} params={params} />);
-    }
-}
-
-export class StepIDVerifier extends React.Component {
-    static URL = '/verifier';
-    static URL1 = '/verify';
-    constructor(props) {
-        super(props);
-        this.contextObj = getCtx(this);
-    }
-    render() {
-        return (<IDVerifier location={this.props.location} history={this.props.history} />);
-    }
-}
-
-export class StepGreyList extends React.Component {
-    static URL = '/greylist';
-    static URL1 = '/graylist';
-    constructor(props) {
-        super(props);
-        this.contextObj = getCtx(this);
-    }
-    render() {
-        return (<GreyList location={this.props.location} history={this.props.history} />);
-    }
-}
-
-export class StepQRCodeScanner extends React.Component {
-    static URL = '/qr';
-    constructor(props) {
-        super(props);
-        this.contextObj = getCtx(this);
-    }
-    render() {
-        return (<QRScanner location={this.props.location} history={this.props.history} />);
-    }
-}
-
-export class StepLeaderBoard extends React.Component {
-    static URL = '/leader';
-    static URL1 = '/leaderboard';
-    constructor(props) {
-        super(props);
-        this.contextObj = getCtx(this);
-    }
-    render() {
-        return (<LeaderBoard location={this.props.location} history={this.props.history} />);
-    }
-}
-
-export class StepGroupAnalytics extends React.Component {
-    static URL = '/group/analytics';
-    constructor(props) {
-        super(props);
-        this.contextObj = getCtx(this);
-    }
-    render() {
-        return (<GroupAnalytics location={this.props.location} history={this.props.history} />);
-    }
-}
-
-export class StepViewPerson extends React.Component {
-    static URL = '/view/person';
-    constructor(props) {
-        super(props);
-        this.contextObj = getCtx(this);
-    }
-    render() {
-        return (<ViewPersonProfile location={this.props.location} history={this.props.history} />);
-    }
-}
-
-export class StepViewMyProfile extends React.Component {
-    static URL = '/view/me';
-    constructor(props) {
-        super(props);
-        this.contextObj = getCtx(this);
-    }
-    render() {
-        return (<MyProfile location={this.props.location} history={this.props.history} />);
-    }
-}
 
 export class SupplyIDCard extends React.Component {
     static URL = '/supply/id-card';
@@ -297,18 +192,9 @@ const steps = [
     StepConfirm,
     StepThankYou,
 
-    StepViewPerson,
-    StepViewMyProfile,
-    StepCookChatBot,
-    StepIDVerifier,
-    StepGreyList,
-    StepQRCodeScanner,
-    StepLeaderBoard,
-    StepGroupAnalytics,
     SupplyIDCard,
 ];
-export const routes = (steps.map(x => <Route exact path={x.URL} component={x} key={x.URL} />));
-routes.push(<Route exact path={StepCookChatBot.URL1} component={StepCookChatBot} key={StepCookChatBot.URL1} />);
-routes.push(<Route exact path={StepGreyList.URL1} component={StepGreyList} key={StepGreyList.URL1} />);
-routes.push(<Route exact path={StepIDVerifier.URL1} component={StepIDVerifier} key={StepIDVerifier.URL1} />);
-routes.push(<Route exact path={StepLeaderBoard.URL1} component={StepLeaderBoard} key={StepLeaderBoard.URL1} />);
+export const routes = steps.flatMap(x => {
+    const urls = x.URLS ? x.URLS : [x.URL];
+    return urls.map(y => <Route exact path={y} component={x} key={y} />);
+});

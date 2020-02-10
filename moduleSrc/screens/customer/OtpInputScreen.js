@@ -1,5 +1,5 @@
 import React from 'react'
-import {withStyles} from '@material-ui/core/styles';
+import {withStyles} from '../../platform/Util';
 import {actionButton, getCtx} from "../../util/Util";
 import {getOtp, verifyOtp} from "../../util/Api";
 import {CUSTOMER_CARE_HELPLINE} from "../../constants/Constants";

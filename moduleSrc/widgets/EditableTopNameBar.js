@@ -2,8 +2,8 @@ import React from "react";
 import {Image, Text, View} from "../util/Util";
 import {TOP_BAR_COLOR} from "../chat/Constants";
 import {historyBack} from "../platform/Util";
-import TouchableAnim from "./TouchableAnim";
-import {CHEVRON_LEFT_ICON, EDIT_ICON, CHECK_TICK_ICON} from "../constants/Constants";
+import TouchableAnim from "../platform/TouchableAnim";
+import {CHECK_TICK_ICON, CHEVRON_LEFT_ICON, EDIT_ICON} from "../constants/Constants";
 
 
 export default class EditableTopNameBar extends React.Component {

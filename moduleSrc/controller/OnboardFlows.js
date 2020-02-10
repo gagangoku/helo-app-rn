@@ -200,4 +200,7 @@ const steps = [
     StepPhoto,
     StepDone,
 ];
-export const routes = (steps.map(x => <Route exact path={x.URL} component={x} key={x.URL} />));
+export const routes = steps.flatMap(x => {
+    const urls = x.URLS ? x.URLS : [x.URL];
+    return urls.map(y => <Route exact path={y} component={x} key={y} />);
+});

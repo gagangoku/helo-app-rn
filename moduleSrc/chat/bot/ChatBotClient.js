@@ -1,16 +1,16 @@
 import React, {Fragment} from "react";
 import {getCtx, setupDeviceId, View} from "../../util/Util";
 import MessagingUI from "../messaging/MessagingUI";
-import TouchableAnim from "../../widgets/TouchableAnim";
+import TouchableAnim from "../../platform/TouchableAnim";
 import {MODE_BOT, TOP_BAR_COLOR} from "../Constants";
 import {LANG_ENGLISH, LANG_HINDI, LANG_HINGLISH, LANG_THAI, SENDER_VISITOR} from "../Questions";
 import {COOK_ONBOARDING_FLOW, COOK_ONBOARDING_FLOW_NAME, getChatContext} from "./ChatUtil";
-import Modal from "react-modal";
+import {Modal} from '../../platform/Util';
 import OptionPickerWidget from "../../widgets/OptionPickerWidget";
 import uuidv1 from "uuid/v1";
 import {WEBSOCKET_URL} from "../../constants/Constants";
-import {StepGroupList} from "../../controller/HomePageFlows";
 import window from "global";
+import {GROUP_URLS} from "../../controller/Urls";
 
 
 export default class ChatBotClient extends React.Component {
@@ -109,7 +109,7 @@ export default class ChatBotClient extends React.Component {
     callFn = () => {};
     openChat = () => {
         if (this.supplyId && this.supplyId > 0) {
-            window.open(StepGroupList.URL + '?me=supply:' + this.supplyId, '_blank');
+            window.open(GROUP_URLS.groupList + '?me=supply:' + this.supplyId, '_blank');
         }
     };
 

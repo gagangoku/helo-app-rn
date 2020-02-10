@@ -1,11 +1,10 @@
 import React from 'react'
-import {withStyles} from '@material-ui/core/styles'
+import {Helmet, withStyles} from '../../platform/Util';
 import SuperRoot from "../../widgets/SuperRoot";
 import {COLOR_WHITE_GRAY, TEAL_COLOR_THEME} from "../../styles/common";
 import Header from "../../widgets/Header";
 import {getCtx, spacer} from "../../util/Util";
 import Footer from "../../widgets/Footer";
-import {Helmet} from "react-helmet";
 import MobileDetect from "mobile-detect";
 import {
     APP_STORE_DOWNLOAD_ICON,

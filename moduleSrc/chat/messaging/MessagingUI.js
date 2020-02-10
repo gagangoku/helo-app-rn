@@ -1,4 +1,4 @@
-import React, {Fragment} from 'react';
+import React from 'react';
 import window from "global/window";
 import {
     actionButton,
@@ -17,10 +17,10 @@ import {
     recordAudio,
     spacer,
     staticMapsImg,
-    Text,
     uploadBlob,
     View
 } from "../../util/Util";
+import {Text} from '../../platform/Util';
 import OptionPickerWidget from "../../widgets/OptionPickerWidget";
 import IDCard from "../IDCard";
 import {
@@ -68,7 +68,7 @@ import {
 import assert from 'assert';
 import MicRecorderWidget from "../../widgets/MicRecorderWidget";
 import BlinkingAttachIcon from "../../widgets/BlinkingAttachIcon";
-import TouchableAnim from "../../widgets/TouchableAnim";
+import TouchableAnim from "../../platform/TouchableAnim";
 import {
     DOWNLOAD_FILE_BUTTON,
     FONT_COLOR,
@@ -90,9 +90,6 @@ import format from 'string-format';
 import BlinkingIcon from "../../widgets/BlinkingIcon";
 import {getKeyFromKVStore, setKeyValueFromKVStore} from "../../util/Api";
 import {GroupTopBar, PersonalMessagingTopBar} from "./TopBar";
-import VideoWithAnalytics from "../../screens/VideoWithAnalytics";
-import {StepViewPerson} from "../../controller/SupplyPageFlows";
-import {StepPersonalMessaging} from "../../controller/HomePageFlows";
 import {
     bodyOverflowAuto,
     mobileDetect,
@@ -102,9 +99,10 @@ import {
     reverseGeocode,
     scrollToBottomFn,
     scrollToElemFn,
-    stopBodyOverflow,
+    stopBodyOverflow, WINDOW_INNER_HEIGHT,
     WINDOW_INNER_WIDTH,
 } from "../../platform/Util";
+import {GROUP_URLS, HOME_PAGE_URLS} from "../../controller/Urls";
 
 
 /**
@@ -662,7 +660,7 @@ class MessageShell extends React.PureComponent {
         const { type, timestamp, sender, loc } = message;
         const senderName = (idToDetails && sender in idToDetails) ? idToDetails[sender].person.name : sender;
         let senderNameDebug = '';
-        const isDebug = isDebugMode();
+        const isDebug = false;
         let distKms = 1000;
         if (ipLocation && loc) {
             distKms = haversineDistanceKms(ipLocation, loc);
@@ -682,28 +680,25 @@ class MessageShell extends React.PureComponent {
         const paddingTop = showSenderLine || type !== OUTPUT_TEXT ? 5 : 20;
         const parentDivStyle = isOwn ? mStyle.userMessage : mStyle.otherGuyMessage;
         const style = this.props.style || {};
-        const timeDisplayDiv = !timestamp ? '' : <View style={mStyle.timeDisplayDiv}>{dateDisplay(timestamp)}</View>;
+        const timeDisplayDiv = !timestamp ? <View /> : <Text style={mStyle.timeDisplayDiv}>{dateDisplay(timestamp)}</Text>;
         const senderNameDiv = (
             <TouchableAnim onPress={() => this.setState({ modalOpen: true })}>
-                <View style={{...customStyle.senderLine, paddingLeft: 20-paddingLeft}}>{senderName} {senderNameDebug}</View>
+                <Text style={{...customStyle.senderLine, paddingLeft: 20-paddingLeft}}>{senderName} {senderNameDebug}</Text>
             </TouchableAnim>
         );
 
-        const modal = !this.state.modalOpen ? '' : <MessageAPersonModal key={'modal-' + idx} sender={sender} {...this.props}
-                                                                        modalOpen={true} closeFn={() => this.setState({ modalOpen: false })} />;
+        const modal = !this.state.modalOpen ? <View /> : <MessageAPersonModal key={'modal-' + idx} sender={sender} {...this.props}
+                                                                              modalOpen={true} closeFn={() => this.setState({ modalOpen: false })} />;
         return (
-            <Fragment key={idx}>
-                <View key={idx} style={{ ...mStyle.message, alignItems: isOwn ? 'flex-end' : 'flex-start', ...style }}>
-                    <View style={{...parentDivStyle, position: 'relative', maxWidth: INNER_WIDTH_MAX - 100, minWidth: 60, fontSize: 15,
-                        paddingTop, paddingLeft, paddingRight, paddingBottom: 20 }}>
-                        {showSenderLine ? senderNameDiv : ''}
-                        {this.props.children}
-                        {timeDisplayDiv}
-                    </View>
+            <View key={idx} style={{ ...mStyle.message, alignItems: isOwn ? 'flex-end' : 'flex-start', ...style }}>
+                <View style={{...parentDivStyle, position: 'relative', maxWidth: INNER_WIDTH_MAX - 100, minWidth: 60, fontSize: 15,
+                    paddingTop, paddingLeft, paddingRight, paddingBottom: 20 }}>
+                    {showSenderLine ? senderNameDiv : <View />}
+                    {this.props.children}
+                    {timeDisplayDiv}
                 </View>
-
                 {modal}
-            </Fragment>
+            </View>
         );
     }
 }
@@ -730,7 +725,7 @@ class MessageAPersonModal extends React.PureComponent {
 
         const onPressMessage = () => {
             const url = format('{}?other={}&me={}&collection=chat-messages&ipLocation={}',
-                StepPersonalMessaging.URL,
+                GROUP_URLS.personalMessaging,
                 encodeURIComponent(JSON.stringify(other)),
                 encodeURIComponent(JSON.stringify(me)),
                 encodeURIComponent(JSON.stringify(ipLocation)));
@@ -738,7 +733,7 @@ class MessageAPersonModal extends React.PureComponent {
             this.props.closeFn();
         };
         const onPressView = () => {
-            const url = format('{}?roleId={}', StepViewPerson.URL, sender);
+            const url = format('{}?roleId={}', GROUP_URLS.viewPerson, sender);
             window.open(url);
             this.props.closeFn();
         };
@@ -797,14 +792,14 @@ class TextMessage extends React.PureComponent {
         }
         text = addPhoneTracking(text, me.sender, message.sender);
 
-        if (text.includes('<div') || text.includes('<b') || text.includes('<a')) {
-            text = <Text dangerouslySetInnerHTML={{__html: text}} />
-        }
+        // if (text.includes('<div') || text.includes('<b') || text.includes('<a')) {
+        //     text = <Text dangerouslySetInnerHTML={{__html: text}} />
+        // }
         const styleObj = (language === LANG_HINDI || language === LANG_THAI) ? customStyle.textMessageDivLarger : customStyle.textMessageDivNormal;
         return (
-            <MessageShell key={idx} {...this.props} message={{...message, type: OUTPUT_TEXT}}>
-                <View style={styleObj}>{text}</View>
-            </MessageShell>
+            <View key={idx} {...this.props} message={{...message, type: OUTPUT_TEXT}}>
+                <Text style={styleObj}>{text}</Text>
+            </View>
         );
     }
 }
@@ -821,7 +816,7 @@ class ProgressiveModule extends React.PureComponent {
         const { collection, groupId, idx, message, me } = this.props;
         const { videoUrl } = message;
         console.log('[analytics] openProgressiveModule: ', collection, groupId, idx, me.sender);
-        const url = format('{}?collection={}&groupId={}&idx={}&user={}&videoUrl={}', VideoWithAnalytics.URL, collection, groupId, idx, me.sender, encodeURIComponent(videoUrl));
+        const url = format('{}?collection={}&groupId={}&idx={}&user={}&videoUrl={}', HOME_PAGE_URLS.videoAnalytics, collection, groupId, idx, me.sender, encodeURIComponent(videoUrl));
         window.open(url, '_blank');
     };
 
@@ -900,7 +895,7 @@ class ImageMessage extends React.PureComponent {
         }
         return (
             <MessageShell key={idx} {...this.props}>
-                <img src={imageUrl} style={customStyle.imageMessage} onClick={this.openPic} />
+                <Image src={imageUrl} style={customStyle.imageMessage} onClick={this.openPic} />
             </MessageShell>
         );
     }
@@ -930,9 +925,7 @@ class AudioMessage extends React.PureComponent {
         }
         return (
             <MessageShell key={idx} {...this.props}>
-                <audio controls onTimeUpdate={this.onTimeUpdate}>
-                    <source src={u}/>
-                </audio>
+                <Text>audio message</Text>
             </MessageShell>
         );
     }
@@ -961,19 +954,14 @@ class VideoMessage extends React.PureComponent {
         }
 
         const msg = videoUrl.includes('youtube.com') || videoUrl.includes('helloeko.com') ?
-            <iframe width="300px" height="300px" allowFullScreen={true} webkitallowfullscreen="true" mozallowfullscreen="true" allow="autoplay; fullscreen" src={videoUrl} /> :
-            <video width="250" height="250" controls onTimeUpdate={this.onTimeUpdate}>
-                <source src={videoUrl} type="video/mp4"/>
-                Your browser does not support the video tag.
-            </video>;
+            <Text>video iframe</Text> :
+            <Text>video</Text>;
         return (
-            <MessageShell key={idx} {...this.props}>
-                <View>
-                    <View style={{ borderRadius: 16, transform: 'translateY(0px)', padding: 5 }}>
-                        {msg}
-                    </View>
-                    <LikesWidget id={idx} />
+            <MessageShell key={'' + idx} {...this.props}>
+                <View style={{ borderRadius: 16, padding: 5 }}>
+                    {msg}
                 </View>
+                <LikesWidget id={idx} />
             </MessageShell>
         );
     }
@@ -1091,7 +1079,7 @@ class LocationMessage extends React.PureComponent {
                                  style={customStyle.locationImg}/>
                         </TouchableAnim>
                     </View>
-                    <View style={customStyle.locationText}>{text}</View>
+                    <Text style={customStyle.locationText}>{text}</Text>
                 </View>
             </MessageShell>
         );
@@ -1161,10 +1149,10 @@ class PlacesAutocompleteMessage extends React.PureComponent {
                                       onSelectFn={this.onSelectFn} key={widgetKey} />
         );
         return (
-            <Fragment key={'places-autocomplete-' + widgetKey}>
+            <View key={'places-autocomplete-' + widgetKey}>
                 {textDisplay}
                 {enabled ? placesWidget : ''}
-            </Fragment>
+            </View>
         );
     }
 }
@@ -1221,16 +1209,16 @@ class OptionsMessage extends React.PureComponent {
         const textDisplay = <TextMessage idx={idx} key={idx} text={text}
                                          message={{...message, type: OUTPUT_TEXT, askInput: false}} me={me} otherGuy={otherGuy} />;
         return (
-            <Fragment key={'options-key-' + idx}>
+            <View key={'options-key-' + idx}>
                 {textDisplay}
                 <OptionPickerWidget optionList={options} displayFn={displayFn} toggleFn={toggleFn}
                                     initialSelected={initialSelected} singleSelection={singleSelection}
                                     theme={theme} disabled={'' + !enabled}
                                     key={widgetKey} />
                 <View style={{ justifyContent: 'center', alignItems: 'center', display: 'flex' }}>
-                    {enabled && !singleSelection ? doneBtn : ''}
+                    {enabled && !singleSelection ? doneBtn : <View />}
                 </View>
-            </Fragment>
+            </View>
         );
     }
 }
@@ -1275,14 +1263,14 @@ class JobMessage extends React.PureComponent {
         const textDisplay = <TextMessage idx={idx} key={idx} text={text}
                                          message={{...message, type: OUTPUT_TEXT, askInput: false}} me={me} otherGuy={otherGuy} />;
         return (
-            <Fragment>
+            <View>
                 {textDisplay}
                 <View style={blurStyle}>
                     <JobDetailsWidget jobDetails={job} supplyId={-1} highlightJob={false}
                                       actionPanel={actionPanel} language={language}
                                       key={key} styleOverrides={styleOverrides} />
                 </View>
-            </Fragment>
+            </View>
         );
     }
 }
@@ -1464,15 +1452,15 @@ class LikesWidget extends React.PureComponent {
         return (
             <View key={id} style={customStyle.likes}>
                 <TouchableAnim style={customStyle.likes} onPress={() => this.increment('views')}>
-                    <View style={{ fontSize: 24, marginRight: 2, marginTop: 2 }}>👀</View>
-                    <View style={{ fontSize: 14, color: 'rgb(3, 102, 214)', letterSpacing: 1 }}>{views}</View>
+                    <Text style={{ fontSize: 24, marginRight: 2, marginTop: 2 }}>👀</Text>
+                    <Text style={{ fontSize: 14, color: 'rgb(3, 102, 214)', letterSpacing: 1 }}>{views}</Text>
                 </TouchableAnim>
                 {spacer(0, 20)}
                 <TouchableAnim style={customStyle.likes} onPress={() => this.increment('likes')}>
                     <View style={{ marginRight: 2 }}>
                         <Image src={'https://images-lb.heloprotocol.in/thumbsUp.png-6007-940874-1575953003289.png'} style={{ marginTop: 1, height: 25, width: 25 }} />
                     </View>
-                    <View style={{ fontSize: 14, color: 'rgb(3, 102, 214)', letterSpacing: 1 }}>{likes}</View>
+                    <Text style={{ fontSize: 14, color: 'rgb(3, 102, 214)', letterSpacing: 1 }}>{likes}</Text>
                 </TouchableAnim>
             </View>
         );
@@ -1524,10 +1512,10 @@ const renderAttachIcon = ({message, idx, type, enabled, disableFn, onNewMsgFn, m
     const textDisplay = <TextMessage idx={idx} key={idx} text={message.text}
                                      message={{...message, type: OUTPUT_TEXT, askInput: false}} me={me} otherGuy={otherGuy} />;
     return (
-        <Fragment key={'attach-' + idx}>
+        <View key={'attach-' + idx}>
             {textDisplay}
             {enabled ? (type === OUTPUT_AUDIO ? audioAttachIcon : attachIcon) : ''}
-        </Fragment>
+        </View>
     );
 };
 
@@ -1545,7 +1533,7 @@ const addPhoneTracking = (text, me, messageSender) => {
 const SHOW_NEW_JOINEE_DISTANCE_THRESHOLD_KM = 10;
 const MIN_SPEECH_RECOGNITION_MS = 3 * 1000;
 const MAX_SPEECH_RECOGNITION_MS = 8 * 1000;
-const INNER_HEIGHT = window.innerHeight - 55 - 56;
+const INNER_HEIGHT = WINDOW_INNER_HEIGHT - 55 - 56;
 const INNER_WIDTH_MAX = Math.min(WINDOW_INNER_WIDTH, 450);
 const SCR_WIDTH = Math.min(WINDOW_INNER_WIDTH - 2, INNER_WIDTH_MAX);
 const SEND_ICON = 'https://images-lb.heloprotocol.in/sendButton.png-6412-355572-1556567055483.png';
@@ -1719,7 +1707,7 @@ const customStyle = {
         maxWidth: STATIC_MAPS_IMG_WIDTH,
 
         fontFamily: CHAT_FONT_FAMILY,
-        fontWeight: 500,
+        fontWeight: '500',
         WebkitFontSmoothing: "antialiased",
         MozOsxFontSmoothing: "grayscale",
     },

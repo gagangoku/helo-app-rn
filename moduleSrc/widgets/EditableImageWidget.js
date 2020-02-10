@@ -1,6 +1,6 @@
 import React from "react";
 import {getImageUrl, Image, uploadBlob, View} from "../util/Util";
-import TouchableAnim from "./TouchableAnim";
+import TouchableAnim from "../platform/TouchableAnim";
 import {ADD_PHOTO_ICON} from "../constants/Constants";
 
 

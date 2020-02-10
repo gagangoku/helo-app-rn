@@ -21,16 +21,15 @@ import {
     PHONE_BLACK_ICON
 } from "../../constants/Constants";
 import {crudsRead, crudsUpdate} from "../../util/Api";
-import TouchableAnim from "../../widgets/TouchableAnim";
+import TouchableAnim from "../../platform/TouchableAnim";
 import {WHATSAPP_ICON} from "../Constants";
 import format from "string-format";
-import {StepPersonalMessaging} from "../../controller/HomePageFlows";
 import window from "global";
 import EditableTopNameBar from "../../widgets/EditableTopNameBar";
 import EditableImageWidget from "../../widgets/EditableImageWidget";
-import {StepViewMyProfile} from "../../controller/SupplyPageFlows";
 import {firebase} from '../../platform/firebase';
 import lodash from 'lodash';
+import {GROUP_URLS} from "../../controller/Urls";
 
 
 export default class ViewPersonProfile extends React.Component {
@@ -56,7 +55,7 @@ export default class ViewPersonProfile extends React.Component {
         console.log('role, id: ', role, id);
         if (detailsFromPhone.role === role && detailsFromPhone.id === id) {
             // My profile
-            window.location.href = StepViewMyProfile.URL;
+            window.location.href = GROUP_URLS.viewMyProfile;
             return;
         }
 
@@ -102,7 +101,7 @@ export default class ViewPersonProfile extends React.Component {
 
     gotoGroup = (groupId) => {};
     chatFn = (roleId) => {
-        const url = format('{}?otherPerson={}', StepPersonalMessaging.URL, roleId);
+        const url = format('{}?otherPerson={}', GROUP_URLS.personalMessaging, roleId);
         window.open(url);
     };
     callFn = (phone) => {

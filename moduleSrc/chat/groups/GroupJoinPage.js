@@ -24,19 +24,15 @@ import {
     FIREBASE_GROUPS_DB_NAME,
     PHONE_NUMBER_KEY
 } from "../../constants/Constants";
-import Modal from "react-modal";
+import {AsyncStorage, confirmAlert, Modal, WINDOW_INNER_WIDTH} from '../../platform/Util';
 import {crudsCreate, crudsSearch, getLocationFromIPAddress, getOtp, logDataToServer, verifyOtp} from "../../util/Api";
 import {USER_BACKGROUND_COLOR_DARK} from "../Constants";
-import AsyncStorage from "@callstack/async-storage";
 import {firebase} from '../../platform/firebase';
-import {confirmAlert} from 'react-confirm-alert';
 import window from 'global';
 import GA from "../../util/GoogleAnalytics";
 import {OUTPUT_NEW_JOINEE, OUTPUT_PROGRESSIVE_MODULE} from "../Questions";
-import {StepCookChatBot, StepLeaderBoard} from "../../controller/SupplyPageFlows";
 import format from 'string-format';
-import {StepGroupList} from "../../controller/HomePageFlows";
-import {WINDOW_INNER_WIDTH} from "../../platform/Util";
+import {GROUP_URLS} from "../../controller/Urls";
 
 
 export class GroupJoinPage extends React.Component {
@@ -280,7 +276,7 @@ export class GroupJoinPage extends React.Component {
     };
 
     takeToChatBot = () => {
-        window.open(StepCookChatBot.URL, '_blank');
+        window.open(GROUP_URLS.chatBot, '_blank');
     };
 
     bellFn = ({ me, groupId, collection }) => {
@@ -291,11 +287,11 @@ export class GroupJoinPage extends React.Component {
         const { photo, name, members } = this.state.groupInfo;
 
         const url = format('{}/?idx={}&me={}&groupId={}&collection={}&groupName={}&groupPhoto={}&moduleName={}&members={}',
-            StepLeaderBoard.URL, idx, me.sender, groupId, collection, name, encodeURIComponent(photo), moduleName || '', members.join(','));
+            GROUP_URLS.leaderboard, idx, me.sender, groupId, collection, name, encodeURIComponent(photo), moduleName || '', members.join(','));
         window.open(url, '_blank');
     };
 
-    goBackFn = () => window.open(StepGroupList.URL);
+    goBackFn = () => window.open(GROUP_URLS.groupList);
 
     render() {
         const { init, userDetails, groupInfo, ipLocationResponse, idToDetails } = this.state;

@@ -7,9 +7,10 @@ import {routes as customerRoutes} from './controller/CustomerSignupFlow';
 import {routes as supplyRoutes} from './controller/SupplyPageFlows';
 import {routes as onboardRoutes} from './controller/OnboardFlows';
 import {routes as demoRoutes} from './controller/DemoRoutes';
+import {routes as groupRoutes} from './controller/GroupsFlows';
 import {routes as loyaltyPageRoutes} from './controller/LoyaltyPageFlows';
 import {routes as loyaltyDashboardRoutes} from './controller/LoyaltyDashboardFlows';
-import {Switch} from "react-router-dom";
+import {Route, Switch} from "react-router-dom";
 import {commonStyle} from "./styles/common";
 import {ToastContainer} from "react-toastify";
 import GA from './util/GoogleAnalytics';
@@ -24,7 +25,7 @@ initFirebase();
 
 export const routes = (
     <div>
-        { GA.init() && <GA.RouteTracker /> }
+        { GA.init() && <Route component={GA.GoogleAnalytics} /> }
 
         <Switch>
             {homeRoutes}
@@ -32,6 +33,7 @@ export const routes = (
             {supplyRoutes}
             {onboardRoutes}
             {demoRoutes}
+            {groupRoutes}
             {loyaltyPageRoutes}
             {loyaltyDashboardRoutes}
         </Switch>

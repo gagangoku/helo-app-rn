@@ -1,7 +1,7 @@
 import React from 'react';
 import {recordAudio, spacer} from "../util/Util";
 import {MIC_BLACK_ICON, MIC_RED_ICON} from "../constants/Constants";
-import TouchableAnim from "./TouchableAnim";
+import TouchableAnim from "../platform/TouchableAnim";
 import {Image} from "../platform/Util";
 
 

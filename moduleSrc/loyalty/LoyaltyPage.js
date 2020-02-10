@@ -1,10 +1,9 @@
 import React, {Fragment} from 'react';
 import {differenceFn, hashCode, spacer, View} from '../util/Util';
 import window from 'global';
-import TouchableAnim from "../widgets/TouchableAnim";
+import TouchableAnim from "../platform/TouchableAnim";
 import Slider from "react-slick/lib";
-import {Helmet} from "react-helmet";
-import Modal from "react-modal";
+import {Helmet, Modal, WINDOW_INNER_HEIGHT, WINDOW_INNER_WIDTH} from '../platform/Util';
 import xrange from 'xrange';
 import {
     GUEST_LIST_STATUS_CLOSED,
@@ -13,7 +12,6 @@ import {
     GUEST_LIST_STATUS_FULL,
     GUEST_LIST_STATUS_WAITLIST
 } from "./Constants";
-import {WINDOW_INNER_HEIGHT, WINDOW_INNER_WIDTH} from "../platform/Util";
 
 
 export class SilverGoldPlatinumMemberPage extends React.Component {
@@ -648,7 +646,7 @@ const gradientBackground = `linear-gradient(to right, ${COLOR_1}, ${COLOR_2}, ${
 const IMG = 'https://images-lb.heloprotocol.in/bygGold.png-263793-860239-1570179823980.png';
 const custom = {
     root: {
-        height: window.innerHeight,
+        height: WINDOW_INNER_HEIGHT,
         overflowY: 'scroll',
         overflowX: 'hidden',
         width: '100%',

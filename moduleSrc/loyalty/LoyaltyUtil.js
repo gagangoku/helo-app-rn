@@ -8,7 +8,7 @@ import {
     GOLD_TABLE_CHECKIN_EXPIRY_SEC,
     PHONE_NUMBER_KEY
 } from "../constants/Constants";
-import AsyncStorage from "@callstack/async-storage";
+import {AsyncStorage} from "../platform/Util";
 import format from 'string-format';
 
 

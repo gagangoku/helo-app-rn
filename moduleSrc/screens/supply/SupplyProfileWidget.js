@@ -11,12 +11,10 @@ import {
     Image,
     navigateTo,
     spacer,
-    TouchableOpacity,
     View,
 } from "../../util/Util";
 import xrange from 'xrange';
 import {TEXT_COLOR_LIGHT} from "../../styles/common";
-import FullPhotoScreen from "../FullPhotoScreen";
 import {
     CATEGORY_COOK,
     cookingCharges,
@@ -26,7 +24,7 @@ import {
     IS_MOBILE_SCREEN
 } from "../../constants/Constants";
 import Slider from "react-slick/lib";
-import {Helmet} from "react-helmet";
+import {Helmet, WINDOW_INNER_WIDTH} from "../../platform/Util";
 import StarRatingComponent from 'react-star-rating-component';
 import Header from "../../widgets/Header";
 import SimilarProfilesWidget from "./SimilarProfilesWidget";
@@ -36,7 +34,8 @@ import {Comments, FacebookProvider} from "react-facebook";
 import window from 'global/window';
 import MobileDetect from "mobile-detect";
 import Footer from "../../widgets/Footer";
-import {WINDOW_INNER_WIDTH} from "../../platform/Util";
+import {HOME_PAGE_URLS} from "../../controller/Urls";
+import TouchableAnim from "../../platform/TouchableAnim";
 
 
 export default class SupplyProfileWidget extends React.Component {
@@ -171,9 +170,9 @@ export default class SupplyProfileWidget extends React.Component {
         const items = photos.map(x => (
             <View key={x}>
                 <View style={{ marginRight: 20 }}>
-                    <TouchableOpacity onPress={() => navigateTo(this, FullPhotoScreen.URL.replace(':id', x), this.contextObj, {})}>
+                    <TouchableAnim onPress={() => navigateTo(this, HOME_PAGE_URLS.fullImage.replace(':id', x), this.contextObj, {})}>
                         <Image source={getImageUrl(x)} style={{ width: w, height: w }} />
-                    </TouchableOpacity>
+                    </TouchableAnim>
                 </View>
             </View>
         ));
@@ -511,9 +510,9 @@ export default class SupplyProfileWidget extends React.Component {
                 {header}
                 <View style={custom.imgStrip}>
                     <View style={custom.imgContainer}>
-                        <TouchableOpacity onPress={() => navigateTo(this, FullPhotoScreen.URL.replace(':id', imageId), this.contextObj, {})}>
+                        <TouchableAnim onPress={() => navigateTo(this, HOME_PAGE_URLS.fullImage.replace(':id', imageId), this.contextObj, {})}>
                             <Image source={thumbImageUrl} style={custom.cookThumbImg} />
-                        </TouchableOpacity>
+                        </TouchableAnim>
                     </View>
                     <View style={custom.cookNameContainer}>
                         {spacer(0.05 * INNER_HEIGHT)}
