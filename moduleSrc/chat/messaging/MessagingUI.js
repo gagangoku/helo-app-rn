@@ -2,9 +2,7 @@ import React, {Fragment} from 'react';
 import window from "global/window";
 import {
     actionButton,
-    checkFileType,
     getCtx,
-    getFieldNameFromType,
     getGpsLocation,
     getKeysWhereValueIs,
     getUrlParam,
@@ -14,7 +12,6 @@ import {
     isDebugMode,
     navigateToLatLon,
     recognizeSpeechMinMaxDuration,
-    recordAudio,
     spacer,
     staticMapsImg,
     uploadBlob,
@@ -23,18 +20,17 @@ import {
 import {
     AudioElem,
     bodyOverflowAuto,
+    HEIGHT_BUFFER,
+    ImageBackground,
     InputElem,
-    mobileDetect,
     Modal,
-    Popover,
     renderHtmlText,
-    resizeForKeyboard,
     reverseGeocode,
     scrollToBottomFn,
     scrollToElemFn,
+    ScrollView,
     stopBodyOverflow,
     Text,
-    TextareaElem,
     VideoElem,
     WINDOW_INNER_HEIGHT,
     WINDOW_INNER_WIDTH
@@ -46,10 +42,8 @@ import {
     BANGALORE_LNG,
     CALL_MISSED_ICON,
     CHAT_FONT_FAMILY,
-    FILE_ICON_IMG,
     FIREBASE_CHAT_MESSAGES_DB_NAME,
     GROUPS_SUPER_ADMINS,
-    IMAGE_ICON_IMG,
     PLAY_ARROW_ICON,
     TROPHY_IMG
 } from "../../constants/Constants";
@@ -97,17 +91,15 @@ import {
     USER_BACKGROUND_COLOR_DARK,
     WHATSAPP_BACKGROUND_IMAGE
 } from '../Constants';
-import AttachIcon from "../../widgets/AttachIcon";
-import xrange from 'xrange';
 import {getJobId} from "../bot/ChatUtil";
 import {enqueueSpeechWithPolly, isBotSpeaking} from "../../audio/AwsPolly";
 import BriefJobDetailsWidget from "../../widgets/BriefJobDetailsWidget";
 import GA from '../../util/GoogleAnalytics';
 import format from 'string-format';
-import BlinkingIcon from "../../widgets/BlinkingIcon";
 import {getKeyFromKVStore, setKeyValueFromKVStore} from "../../util/Api";
-import {GroupTopBar, PersonalMessagingTopBar} from "./TopBar";
+import {ConfigurableTopBar, GroupTopBar, PersonalMessagingTopBar} from "./TopBar";
 import {GROUP_URLS, HOME_PAGE_URLS} from "../../controller/Urls";
+import {InputLine} from '../../platform/InputLine';
 
 
 /**
@@ -122,22 +114,29 @@ export default class MessagingUI extends React.PureComponent {
             keyboardOpen: false,
             selectedOptions: {},
             micListening: false,
+            keyboardHeight: 0,
         };
         this.speechDisabledMap = {};
+        this.chatRootRef = React.createRef();
 
         console.log('MessagingUI constructor: ', props);
     }
 
     componentDidMount() {
         console.log('MessagingUI componentDidMount: ', this.props);
-        const { mode, msgToScrollTo } = this.props;
-        resizeForKeyboard({ mode, msgToScrollTo, cbFn: (keyboardOpen) => this.setState({ keyboardOpen }) });
+        const { msgToScrollTo } = this.props;
+        if (msgToScrollTo) {
+            // TODO: Scroll to the message
+        } else {
+            scrollToBottomFn(this.chatRootRef.current);
+        }
         stopBodyOverflow();
     }
     componentWillUnmount() {
         bodyOverflowAuto();
     }
 
+    setKeyboardHeightFn = (keyboardHeight) => this.setState({ keyboardHeight });
     setMicListeningFn = (micListening) => this.setState({ micListening });
 
     displayMessages = (messages) => {
@@ -250,7 +249,7 @@ export default class MessagingUI extends React.PureComponent {
                 break;
         }
 
-        this.props.mode === MODE_BOT && scrollToBottomFn();
+        this.props.mode === MODE_BOT && scrollToBottomFn(this.chatRootRef.current);
     };
 
     callFn = () => {
@@ -274,379 +273,39 @@ export default class MessagingUI extends React.PureComponent {
         const displayMsgs = this.displayMessages(messages);
 
         const inputLine = <InputLine onNewMsgFn={this.onNewMsgFn} micListening={this.state.micListening} mode={mode}
+                                     chatRootRef={this.chatRootRef} setKeyboardHeightFn={this.setKeyboardHeightFn}
                                      keyboardInputDisabled={keyboardInputDisabled} enableSpeechRecognition={enableSpeechRecognition} />;
         const adminOnlyText = (
             <View style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
                           fontSize: 15, backgroundColor: '#f4f4f4', color: '#505050', border: '0px solid #000000',
                           height: '100%', width: '100%', userSelect: 'none',
             }}>
-                Only admins can send messages
+                <Text>Only admins can send messages</Text>
             </View>
         );
 
         console.log('display messages: ', messages, displayMsgs, keyboardInputDisabled);
 
+        const INNER_HEIGHT = WINDOW_INNER_HEIGHT - ConfigurableTopBar.HEIGHT - InputLine.HEIGHT - HEIGHT_BUFFER - this.state.keyboardHeight;
         const amIAdmin = admins.includes(me.sender) || GROUPS_SUPER_ADMINS.includes(me.sender);
         return (
             <View style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}>
                 <View style={customStyle.paper}>
                     {this.props.topBar || this.topBar()}
 
-                    <View style={customStyle.chatRootCtr} id="chatRoot">
-                        <View style={customStyle.chatRoot}>
-                            {spacer(5)}
-                            {displayMsgs}
-                        </View>
-                    </View>
+                    <ImageBackground style={{ width: '100%', height: INNER_HEIGHT }} source={{ uri: WHATSAPP_BACKGROUND_IMAGE }}>
+                        <ScrollView style={{...customStyle.chatRootCtr, height: INNER_HEIGHT}} ref={this.chatRootRef}>
+                            <View style={customStyle.chatRoot}>
+                                {spacer(5)}
+                                {displayMsgs}
+                            </View>
+                        </ScrollView>
+                    </ImageBackground>
 
                     <View style={customStyle.inputLine}>
                         {isAdminPosting && !amIAdmin ? adminOnlyText : inputLine}
                     </View>
                 </View>
-            </View>
-        );
-    }
-}
-
-
-class InputLine extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            typed: '',
-            showExpanded: false,
-            recordingStartTimeMs: -1,
-            numDots: 0,
-
-            isPopoverOpen: false,
-            isTrainingModuleFlowOpen: false,
-            videoUrl: '',
-        };
-        this.textInputRef = React.createRef();
-        this.attachIconParentRef = React.createRef();
-    }
-
-    componentDidMount() {
-        this.mobileDetect = mobileDetect();
-    }
-
-    componentDidUpdate() {
-        this.props.mode === MODE_BOT && scrollToBottomFn();
-    }
-
-    submitText = async () => {
-        const answer = (this.state.typed || '').replace(/\n/g, '<br>');
-        await this.props.onNewMsgFn({ answer });
-        this.setState({ typed: '' });
-
-        // Scroll to bottom of the page
-        this.textInputRef.current.refElem().focus();
-        scrollToBottomFn();
-    };
-
-    handleKeyDown = async (event) => {
-        const { isAndroid, isIphone } = this.mobileDetect;
-        if (event.key === 'Enter' && !isAndroid && !isIphone) {
-            // Treat Enter key on desktop as submit action
-            await this.submitText();
-        }
-    };
-
-    startRecording = async () => {
-        this.recorder = await recordAudio();
-        this.recorder.start();
-    };
-    stopRecording = async () => {
-        const obj = await this.recorder.stop();
-        const blob = obj.audioBlob;
-        const file = new File([blob], "recording." + blob.type.split('/')[1], {lastModified: new Date().getTime(), type: blob.type});
-        console.log('Audio file: ', file);
-
-        const audioUrl = await uploadBlob(file);
-        console.log('audioUrl: ', audioUrl);
-
-        await this.props.onNewMsgFn({ answer: '', type: OUTPUT_AUDIO, audioUrl });
-    };
-
-    onTouchStart = () => {
-        const { keyboardInputDisabled, enableSpeechRecognition } = this.props;
-        if (!keyboardInputDisabled && enableSpeechRecognition) {
-            console.log('mic micMouseDown');
-            this.micMouseDown();
-        }
-    };
-    micMouseDown = () => {
-        const { keyboardInputDisabled, enableSpeechRecognition } = this.props;
-        if (!keyboardInputDisabled && enableSpeechRecognition) {
-            console.log('mic micMouseDown');
-            this.setState({showExpanded: true, recordingStartTimeMs: new Date().getTime(), numDots: 0});
-            this.intervalId = setInterval(() => this.setState({numDots: this.state.numDots + 1}), 200);
-            this.timeoutId = setTimeout(this.startRecording, 500);
-        }
-    };
-    onTouchEnd = () => {
-        const { keyboardInputDisabled, enableSpeechRecognition } = this.props;
-        if (!keyboardInputDisabled && enableSpeechRecognition) {
-            console.log('mic onTouchEnd');
-            this.micMouseUp();
-        }
-    };
-    micMouseUp = () => {
-        const { keyboardInputDisabled, enableSpeechRecognition } = this.props;
-        if (!keyboardInputDisabled && enableSpeechRecognition) {
-            console.log('mic micMouseUp');
-            clearTimeout(this.timeoutId);
-            clearInterval(this.intervalId);
-            this.setState({showExpanded: false, recordingStartTimeMs: -1, numDots: 0});
-
-            this.stopRecording();
-        }
-    };
-
-    onAttachBtnClickFn = () => {
-        const { keyboardInputDisabled } = this.props;
-        if (!keyboardInputDisabled) {
-            this.setState({ isPopoverOpen: true });
-        }
-    };
-
-    onChooseTrainingVideo = (videoUrl) => {
-        this.setState({ isTrainingModuleFlowOpen: true, videoUrl, isPopoverOpen: false });
-    };
-    onAttachCompleteFn = (obj) => {
-        console.log('onAttachCompleteFn: ', obj);
-        if (obj) {
-            this.props.onNewMsgFn(obj);
-        }
-        this.setState({ isPopoverOpen: false, isTrainingModuleFlowOpen: false });
-    };
-    submitTrainingModuleFn = ({ imageUrl, moduleName, duration }) => {
-        const { videoUrl } = this.state;
-        this.onAttachCompleteFn({ imageUrl, moduleName, videoUrl });
-        this.props.onNewMsgFn({ answer: moduleName, type: OUTPUT_PROGRESSIVE_MODULE, imageUrl, videoUrl, duration });
-    };
-
-    render() {
-        const { keyboardInputDisabled, enableSpeechRecognition, micListening } = this.props;
-        const { showExpanded, typed, numDots, isPopoverOpen, isTrainingModuleFlowOpen } = this.state;
-
-        const inputStyle = {
-            ...customStyle.inputMessage,
-            backgroundColor: keyboardInputDisabled ? '#808080b0' : 'white',
-            color: keyboardInputDisabled ? 'white' : 'black',
-        };
-        const inputClassAttr = {};
-
-        // TODO: Disallow svg etc
-        const expandedStyle = showExpanded ? customStyle.sendButtonExpanded : customStyle.sendButton;
-        const sendBtn = <View style={{...customStyle.sendButton, backgroundImage: `url(${SEND_ICON})` }}
-                              onClick={() => keyboardInputDisabled ? '' : this.submitText()} />;
-
-        const micIcon = enableSpeechRecognition ? MIC_ICON : MIC_ICON_DISABLED;
-        const micBtn  = <View style={{...expandedStyle, backgroundImage: `url(${micIcon})` }}
-                              onMouseDown={this.micMouseDown} onTouchStart={this.onTouchStart}
-                              onMouseUp={this.micMouseUp} onTouchEnd={this.onTouchEnd} />;
-
-        const ffff = () => this.setState({ isPopoverOpen: false, isTrainingModuleFlowOpen: false });
-        const attachIcon = (
-            <View style={{ height: 40, width: 40 }} ref={this.attachIconParentRef}>
-                <View style={{ marginTop: 5 }}>
-                    <AttachIcon onClickFn={this.onAttachBtnClickFn} size={30} opacity={0.5} />
-                </View>
-                <Popover id='popover' open={isPopoverOpen}
-                         anchorEl={isPopoverOpen ? this.attachIconParentRef.current.divElement() : null}
-                         onClose={() => this.setState({ isPopoverOpen: false })}
-                         anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-                         transformOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                >
-                    <View style={{ display: 'flex', flexDirection: 'column', fontFamily: CHAT_FONT_FAMILY, padding: 10 }}>
-                        <AttachPopup onChooseTrainingVideo={this.onChooseTrainingVideo} onCompleteFn={this.onAttachCompleteFn} />
-                    </View>
-                </Popover>
-                <Modal isOpen={isTrainingModuleFlowOpen} onRequestClose={ffff}
-                       style={modalStyle} onAfterOpen={() => {}} contentLabel="Example Modal">
-                    <TrainingModuleThumbnailName videoUrl={this.state.videoUrl} onSubmitFn={this.submitTrainingModuleFn} />
-                </Modal>
-            </View>
-        );
-        const inputBox = (
-            <View style={customStyle.inputBox}>
-                <TextareaElem style={inputStyle} placeholder="  Type here ..." type="text" {...inputClassAttr}
-                              onKeyDown={this.handleKeyDown} ref={this.textInputRef}
-                              disabled={keyboardInputDisabled}
-                              value={typed} onChange={(v) => this.setState({ typed: v.target.value })} />
-            </View>
-        );
-
-        const numDotsStr = xrange(0, numDots % 5).toArray().map(x => '.').join(' ');
-        const recordingTime = (
-            <View style={customStyle.inputBox}>
-                <InputElem style={inputStyle} placeholder={'  Recording ' + numDotsStr} type="text" {...inputClassAttr}
-                           disabled={true} value={typed} />
-            </View>
-        );
-
-        const micListeningDiv = (
-            <View style={{ height: 40, width: 10, marginRight: 10 }}>
-                <BlinkingIcon style={{ height: 40, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    <Image src='/static/redCircleIcon.png' style={{ height: 15, width: 15 }} />
-                </BlinkingIcon>
-            </View>
-        );
-
-        return (
-            <View style={customStyle.inputContainterKeyboardClosed} key={keyboardInputDisabled + '-'}>
-                {!showExpanded ? inputBox : recordingTime}
-                <View style={{ position: 'absolute', right: 0, top: 0,
-                               display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                    {micListening ? micListeningDiv : <View />}
-                    {!typed && !showExpanded ? attachIcon : <View />}
-                    {typed ? sendBtn : micBtn}
-                </View>
-            </View>
-        );
-    }
-}
-
-class AttachPopup extends React.PureComponent {
-    constructor(props) {
-        super(props);
-        this.state = {
-            videoUrl: '',
-        };
-
-        this.INPUT_TYPES = [{
-            text: 'Media',
-            image: IMAGE_ICON_IMG,
-            accept: 'audio/*,video/*,image/*',
-            ref: React.createRef(),
-            isTraining: false,
-        }, {
-            text: 'File',
-            image: FILE_ICON_IMG,
-            accept: 'application/pdf,application/msword',
-            ref: React.createRef(),
-            isTraining: false,
-        }, {
-            text: 'Training',
-            image: TROPHY_IMG,
-            accept: 'video/*',
-            ref: React.createRef(),
-            isTraining: true,
-        }];
-        this.INPUT_TYPES.forEach(x => {
-            x.onClickFn = () => {
-                console.log('form hidden onlick: ', x.ref);
-                x.ref.current.refElem().click();
-            };
-        });
-    }
-
-    onSelectFile = async (files, isTraining) => {
-        console.log('Files: ', files, isTraining);
-        for (let i = 0; i < files.length; i++) {
-            const file = files[i];
-            const blobUrl = await uploadBlob(file);
-
-            const { type } = checkFileType(file.name, file.type);
-            const key = getFieldNameFromType(type);
-            if (isTraining) {
-                this.setState({ videoUrl: blobUrl });
-                this.props.onChooseTrainingVideo(blobUrl);
-            } else {
-                this.props.onCompleteFn({ answer: '', type, [key]: blobUrl });
-            }
-        }
-    };
-
-    imageTextFn = ({ image, text, onClickFn }) => {
-        return (
-            <TouchableAnim style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}
-                           onPress={onClickFn} key={image + '-' + text}>
-                <Image src={image} style={{ height: 45, width: 45, marginBottom: 10 }} />
-                <Text style={{ fontSize: 13 }}>{text}</Text>
-            </TouchableAnim>
-        );
-    };
-
-    render() {
-        const { videoUrl } = this.state;
-        const inputTypes = this.INPUT_TYPES;
-        const inputTypeTraining = inputTypes.filter(x => x.isTraining === true)[0];
-        const inputTypeOthers = inputTypes.filter(x => x.isTraining !== true);
-        return (
-            <View key="hidden-forms" style={{ width: 200, height: 80, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
-                {this.INPUT_TYPES.map(x => <InputElem type="file" accept={x.accept} ref={x.ref} style={{ display: 'none' }} key={x.text}
-                                                      onChange={() => this.onSelectFile(x.ref.current.refElem().files, x.isTraining)} />)}
-
-                {inputTypeOthers.map(x => this.imageTextFn(x))}
-                {this.imageTextFn(inputTypeTraining)}
-            </View>
-        );
-    }
-}
-
-class TrainingModuleThumbnailName extends React.PureComponent {
-    constructor(props) {
-        super(props);
-        this.state = {
-            moduleName: '',
-            imageUrl: '',
-        };
-        this.imageRef = React.createRef();
-        this.videoRef = React.createRef();
-    }
-
-    onSelectFile = async (files) => {
-        console.log('Files: ', files);
-        for (let i = 0; i < files.length; i++) {
-            const file = files[i];
-            const blobUrl = await uploadBlob(file);
-            this.setState({ imageUrl: blobUrl });
-        }
-    };
-    submitFn = () => {
-        const { moduleName, imageUrl } = this.state;
-        const { videoUrl } = this.props;
-        if (!moduleName || moduleName.length <= 3) {
-            return;
-        }
-        if (!imageUrl) {
-            window.alert('Choose thumbnail');
-            return;
-        }
-
-        const duration = this.videoRef.current.refElem().duration;
-        this.props.onSubmitFn({ moduleName, imageUrl, videoUrl, duration });
-    };
-
-    render() {
-        const { videoUrl } = this.props;
-        const { moduleName, imageUrl } = this.state;
-        const accept = 'image/*';
-
-        const btnStyle = moduleName.length <= 3 ? { backgroundColor: '#b9b9b9' } : { backgroundColor: USER_BACKGROUND_COLOR_DARK };
-        const img = !imageUrl ? <View /> : <Image src={imageUrl} style={{ maxHeight: 100, maxWidth: 100 }} />;
-        return (
-            <View style={{ width: 250, height: 400, fontFamily: CHAT_FONT_FAMILY,
-                           display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-evenly' }}>
-                <VideoElem src={videoUrl} width="150" height="150" ref={this.videoRef} />
-                <InputElem placeholder='  Module name' type="text" style={{fontSize: 14, width: '80%', height: 40, letterSpacing: 1, textAlign: 'center'}}
-                       value={moduleName} onChange={(elem) => this.setState({ moduleName: elem.target.value })} />
-                {spacer(10)}
-
-                <InputElem type="file" accept={accept} ref={this.imageRef} style={{ display: 'none' }}
-                           onChange={() => this.onSelectFile(this.imageRef.current.refElem().files)} />
-                <TouchableAnim style={{ }} onPress={() => this.imageRef.current.refElem().click()}>
-                    <Text>Choose thumbnail</Text>
-                </TouchableAnim>
-                {spacer(10)}
-
-                {img}
-
-                {spacer(10)}
-                {actionButton('Upload', this.submitFn, { width: 100, height: 50, style: btnStyle})}
             </View>
         );
     }
@@ -1538,7 +1197,6 @@ const addPhoneTracking = (text, me, messageSender) => {
 const SHOW_NEW_JOINEE_DISTANCE_THRESHOLD_KM = 10;
 const MIN_SPEECH_RECOGNITION_MS = 3 * 1000;
 const MAX_SPEECH_RECOGNITION_MS = 8 * 1000;
-const INNER_HEIGHT = WINDOW_INNER_HEIGHT - 55 - 56;
 const INNER_WIDTH_MAX = Math.min(WINDOW_INNER_WIDTH, 450);
 const SCR_WIDTH = Math.min(WINDOW_INNER_WIDTH - 2, INNER_WIDTH_MAX);
 const SEND_ICON = 'https://images-lb.heloprotocol.in/sendButton.png-6412-355572-1556567055483.png';
@@ -1553,6 +1211,7 @@ const customStyle = {
         height: '100%',
         fontFamily: CHAT_FONT_FAMILY,
         overflow: 'hidden',
+        backgroundColor: '#ffffff',
     },
     topBar: {
         width: SCR_WIDTH,
@@ -1571,15 +1230,13 @@ const customStyle = {
     chatRootCtr: {
         paddingLeft: 1,
         paddingRight: 1,
-        overflowY: 'auto',
-        height: INNER_HEIGHT,
-        background: `url(${WHATSAPP_BACKGROUND_IMAGE})`,
+        overflowY: 'scroll',
     },
     chatRoot: {
         // backgroundColor: 'rgb(255, 255, 255, 0.7)',
     },
     inputLine: {
-        height: 55,
+        height: InputLine.HEIGHT,
     },
 
     heloMessage: {},
@@ -1633,47 +1290,6 @@ const customStyle = {
         borderRadius: 10,
         // maxWidth: INNER_WIDTH_MAX - 100,
         // width: 'fit-content',
-    },
-
-    inputContainterKeyboardClosed: {
-        width: '100%',
-        // marginTop: 20,
-        position: 'relative',
-    },
-    inputBox: {
-        width: '100%',
-    },
-    inputMessage: {
-        width: '97%',
-        height: 30,
-        paddingTop: 10,
-        border: '1.5px solid #a9a9a9',
-        borderRadius: 40,
-        outline: 'none',
-        paddingLeft: 10,
-        fontSize: 16,
-        fontFamily: CHAT_FONT_FAMILY,
-    },
-
-    sendButton: {
-        flex: 1,
-        backgroundSize: 'contain',
-        backgroundRepeat: 'no-repeat',
-        border: '0px',
-        height: 40,
-        width: 40,
-        marginTop: 2,
-        marginRight: 2
-    },
-    sendButtonExpanded: {
-        flex: 1,
-        backgroundSize: 'contain',
-        backgroundRepeat: 'no-repeat',
-        border: '0px',
-        height: 80,
-        width: 80,
-        marginTop: 2,
-        marginRight: 2
     },
 
     attachButton: {

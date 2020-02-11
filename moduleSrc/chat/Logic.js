@@ -48,7 +48,8 @@ import {
     SENDER_HELO,
     SENDER_VISITOR
 } from "./Questions";
-import {ageFn, getImageUrl, getUrlPath, removeNullUndefined, sumFn} from "../util/Util";
+import {ageFn, getImageUrl, removeNullUndefined, sumFn} from "../util/Util";
+import {getUrlPath} from '../platform/Util';
 import assert from 'assert';
 
 

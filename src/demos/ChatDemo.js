@@ -30,7 +30,7 @@ export default class ChatDemo extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            messages: INITIAL_MESSAGES,
+            messages: INITIAL_MESSAGES2,
         };
     }
 
@@ -75,7 +75,7 @@ export default class ChatDemo extends React.Component {
         return (
             <Fragment>
                 <MessagingUI location={this.props.location} history={this.props.history}
-                             topBar={null} me={me} otherGuy={heloBot}
+                             me={me} otherGuy={heloBot}
                              chatContext={chatContext}
                              collection={'test'} groupId={'demo'}
                              groupInfo={groupInfo} messages={this.state.messages} onUserMsg={this.onUserMsg}

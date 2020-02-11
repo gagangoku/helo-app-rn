@@ -78,6 +78,7 @@ export class ConfigurableTopBar extends React.Component {
     constructor(props) {
         super(props);
     }
+    static HEIGHT = 60;
     static SECTION_BACK = 'back';
     static SECTION_AVATAR = 'avatar';
     static SECTION_NAME = 'name';
@@ -284,7 +285,7 @@ export class ConfigurableTopBar extends React.Component {
         const right = sections.filter(s => s.float === 'right').map(fn);
 
         return (
-            <View style={{ ...custom.root, height: 60, width: '100%' }}>
+            <View style={{ ...custom.root, height: ConfigurableTopBar.HEIGHT, width: '100%' }}>
                 <View style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                     <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>{left}</View>
                     <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', paddingRight: 5 }}>{right}</View>
@@ -320,7 +321,7 @@ class DotDotDot extends React.Component {
                         <Image src={MORE_VERT_ICON} style={{ height: 25, width: 25 }} />
                     </TouchableAnim>
                     <Popover id='popover' open={this.state.isPopoverOpen}
-                             anchorEl={this.dotDotDotIconRef && this.dotDotDotIconRef.current ? this.dotDotDotIconRef.current.divElement() : null}
+                             anchorEl={this.dotDotDotIconRef && this.dotDotDotIconRef.current ? this.dotDotDotIconRef.current.refElem() : null}
                              onClose={() => this.setState({ isPopoverOpen: false })}
                              anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
                              transformOrigin={{ vertical: 'top', horizontal: 'right' }}

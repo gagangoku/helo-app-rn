@@ -2,9 +2,12 @@ import {
     AsyncStorage,
     Dimensions,
     Image as ImageOrig,
+    ImageBackground,
     Modal,
+    ScrollView,
     StyleSheet,
     Text as TextOrig,
+    TextInput,
     ToastAndroid as Toast,
     View as ViewOrig,
 } from 'react-native';
@@ -12,21 +15,19 @@ import React from "react";
 import {flattenStyleArray} from "../util/Util";
 
 
+export const HEIGHT_BUFFER = 30;
+
 // TODO: Implement
 export const stopBodyOverflow = () => {};
 export const bodyOverflowAuto = () => {};
 export const historyBack = () => {};
 
 
-export class Dummy extends React.Component {
-    render() {
-        return <ViewOrig />;
-    }
-}
 export class View extends React.Component {
+    refElem = () => null;
     render() {
         // React Native expects fontWeight to be string
-        const style = Array.isArray(this.props.style) ? flattenStyleArray(this.props.style) : (this.props.style || {});
+        const style = Array.isArray(this.props.style) ? flattenStyleArray(this.props.style) : ({...this.props.style} || {});
         const { fontWeight } = style;
         if (Number.isInteger(fontWeight)) {
             style.fontWeight = '' + fontWeight;
@@ -43,7 +44,7 @@ export class View extends React.Component {
 export class Text extends React.Component {
     render() {
         // React Native expects fontWeight to be string
-        const style = Array.isArray(this.props.style) ? flattenStyleArray(this.props.style) : (this.props.style || {});
+        const style = Array.isArray(this.props.style) ? flattenStyleArray(this.props.style) : ({...this.props.style} || {});
         if (Number.isInteger(style.fontWeight)) {
             style.fontWeight = '' + style.fontWeight;
         }
@@ -80,6 +81,11 @@ export class Image extends React.Component {
     }
 }
 
+export class Dummy extends React.Component {
+    render() {
+        return <Text>dummy</Text>;
+    }
+}
 export class AudioElem extends React.Component {
     render() {
         return <Text>audio element</Text>;
@@ -97,7 +103,12 @@ export class InputElem extends React.Component {
 }
 export class TextareaElem extends React.Component {
     render() {
-        return <Text>textarea elem</Text>;
+        const style = Array.isArray(this.props.style) ? flattenStyleArray(this.props.style) : ({...this.props.style} || {});
+        style.height = 50;
+        const props = {...this.props, style, multiline: true};
+        return (
+            <TextInput {...props} />
+        );
     }
 }
 
@@ -158,7 +169,9 @@ export const resizeForKeyboard = ({ mode, msgToScrollTo, cbFn }) => {};
 export const WINDOW_INNER_WIDTH = Dimensions.get('window').width;
 export const WINDOW_INNER_HEIGHT = Dimensions.get('window').height;
 
+console.log('WINDOW_INNER_WIDTH: ', WINDOW_INNER_WIDTH);
+console.log('WINDOW_INNER_HEIGHT: ', WINDOW_INNER_HEIGHT);
 
 export {
-    AsyncStorage, StyleSheet, Modal, Toast,
+    AsyncStorage, StyleSheet, Modal, Toast, ScrollView, ImageBackground,
 }

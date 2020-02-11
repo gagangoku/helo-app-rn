@@ -1,9 +1,10 @@
+export const USER_BACKGROUND_COLOR_LIGHT = '#0085fff0';
+
 export const OTHER_GUY_BACKGROUND_COLOR = 'rgba(222, 221, 221, 0.4)';
 export const TOP_BAR_COLOR = '#3c50c8';
-export const USER_BACKGROUND_COLOR = 'rgb(210, 220, 249, 0.8)';
+export const USER_BACKGROUND_COLOR = 'rgba(210, 220, 249, 0.8)';
 export const USER_BACKGROUND_COLOR_DARK = '#425eef';
 
-export const USER_BACKGROUND_COLOR_LIGHT = '#0085fff0';
 export const FONT_COLOR = 'black';
 export const WHATSAPP_BACKGROUND_IMAGE = 'https://images-lb.heloprotocol.in/whatsappBackground.png-392529-25778-1562159811463.png';
 export const WHATSAPP_ICON = 'https://images-lb.heloprotocol.in/whatsapp.png-17740-550780-1581008533645.png';

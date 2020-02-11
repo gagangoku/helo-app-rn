@@ -18,7 +18,6 @@ import {commonStyle} from "../styles/common";
 import document from "global/document";
 import {Switch as Switch2, withStyles} from "@material-ui/core";
 import MobileDetect from "mobile-detect";
-import {MODE_BOT} from "../chat/Constants";
 import Modal from "react-modal";
 import Popover from "@material-ui/core/Popover";
 import PlacesAutocomplete, {geocodeByAddress, getLatLng} from "react-places-autocomplete";
@@ -29,6 +28,7 @@ import GoogleMapReact from 'google-map-react';
 import {confirmAlert} from 'react-confirm-alert';
 
 
+export const HEIGHT_BUFFER = 0;
 export const stopBodyOverflow = () => {
     document && document.body && (document.body.style.overflowY = 'hidden');
 };
@@ -272,7 +272,7 @@ export class View extends React.Component {
         this.ref = React.createRef();
     }
 
-    divElement = () => this.ref.current;
+    refElem = () => this.ref.current;
     render() {
         return renderF(this);
     }
@@ -284,8 +284,8 @@ export class Text extends React.Component {
 }
 export class Image extends React.Component {
     render() {
-        const obj = Array.isArray(this.props.style) ? flattenStyleArray(this.props.style) : this.props.style;
-        const props = {...this.props, style: obj};
+        const style = Array.isArray(this.props.style) ? flattenStyleArray(this.props.style) : ({...this.props.style} || {});
+        const props = {...this.props, style};
         return (<img src={this.props.source} {...props} />);
     }
 }
@@ -340,8 +340,53 @@ export class TextareaElem extends React.Component {
     }
     refElem = () => this.ref.current;
     render() {
+        const props = {...this.props};
+        props.onChange = (v) => props.onChangeText(v.target.value);
         return (
-            <textarea {...this.props} ref={this.ref} />
+            <textarea {...props} ref={this.ref} />
+        );
+    }
+}
+
+export class ScrollView extends React.Component {
+    constructor(props) {
+        super(props);
+        this.ref = React.createRef();
+    }
+    refElem = () => this.ref.current;
+    render() {
+        const props = {...this.props};
+        const style = Array.isArray(props.style) ? flattenStyleArray(props.style) : ({...props.style} || {});
+        props.style && delete props.style;
+        props.children && delete props.children;
+
+        if (props.horizontal) {
+            style.overflowX = 'scroll';
+        } else {
+            style.overflowY = 'scroll';
+        }
+        return (
+            <div {...props} style={style} ref={this.ref}>
+                {this.props.children}
+            </div>
+        );
+    }
+}
+
+export class ImageBackground extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+    render() {
+        const props = {...this.props};
+        const style = Array.isArray(props.style) ? flattenStyleArray(props.style) : ({...props.style} || {});
+        props.style && delete props.style;
+        props.children && delete props.children;
+        style.background = `url(${props.source.uri})`;
+        return (
+            <div {...props} style={style}>
+                {this.props.children}
+            </div>
         );
     }
 }
@@ -386,29 +431,11 @@ export const mobileDetect = () => {
     return { isAndroid, isIphone };
 };
 
-export const resizeForKeyboard = ({ mode, msgToScrollTo, cbFn }) => {
-    const origHeight = window.innerHeight;
-    if (mode === MODE_BOT) {
-        window.addEventListener('resize', () => {
-            console.log('resize event fired');
-            if (window.innerHeight !== origHeight) {
-                console.log('keyboard open');
-                cbFn(true);
-            } else {
-                console.log('keyboard closed');
-                cbFn(false);
-            }
-            scrollToBottomFn();
-        }, true);
-    }
-
-    !msgToScrollTo && scrollToBottomFn();
-};
-
-export const scrollToBottomFn = () => {
-    console.log('scrollToBottomFn');
+export const scrollToBottomFn = (element) => {
+    console.log('scrollToBottomFn: ', element);
+    const elem = element.refElem();
+    console.log('scrollToBottomFn: ', element, elem);
     try {
-        const elem = document.getElementById('chatRoot');
         elem.scrollTop = elem.scrollHeight;
         window.scrollTo(0, document.body.scrollHeight);
     } catch (e) {
@@ -416,9 +443,10 @@ export const scrollToBottomFn = () => {
     }
 };
 export const scrollToElemFn = (ref) => {
-    console.log('scrollToElemFn');
+    const elem = ref.refElem();
+    console.log('scrollToElemFn: ', ref, elem);
     try {
-        ref.scrollIntoView({ behavior: 'instant' });
+        elem.scrollIntoView({ behavior: 'instant' });
     } catch (e) {
         console.log('Exception in scrollToElemFn: ', e);
     }

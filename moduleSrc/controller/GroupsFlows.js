@@ -6,12 +6,12 @@ import {
     getImageUrl,
     getPersonDetails,
     getUrlParam,
-    getUrlSearchParams,
     isDebugMode,
     navigateTo,
     setupDeviceId,
     View
 } from "../util/Util";
+import {getUrlSearchParams} from '../platform/Util';
 import {crudsRead, getLocationFromIPAddress, getPersonNamesByRoleId} from "../util/Api";
 import {
     API_URL,

@@ -301,6 +301,7 @@ const steps = [
     FullPhotoScreen,
     VideoWithAnalyticsScreen,
 
+    SupplyProfileScr,
     SearchSupplyScreen,
     BrowseScreen,
     SupplyJobsScreen,
