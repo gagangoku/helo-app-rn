@@ -1,8 +1,8 @@
 import React from 'react';
-import {recordAudio, spacer} from "../util/Util";
+import {recordAudio, spacer, View} from "../util/Util";
 import {MIC_BLACK_ICON, MIC_RED_ICON} from "../constants/Constants";
 import TouchableAnim from "../platform/TouchableAnim";
-import {Image} from "../platform/Util";
+import {Image, Text} from "../platform/Util";
 
 
 export default class MicRecorderWidget extends React.Component {
@@ -81,13 +81,13 @@ export default class MicRecorderWidget extends React.Component {
         );
 
         return (
-            <div>
-                <div style={custom.root}>
+            <View>
+                <View style={custom.root}>
                     {micIcon}
                     {spacer(0, 10)}
-                    <span style={custom.text}>{mins}:{secs}</span>
-                </div>
-            </div>
+                    <Text style={custom.text}>{mins}:{secs}</Text>
+                </View>
+            </View>
         );
     }
 }

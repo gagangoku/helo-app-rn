@@ -4,9 +4,11 @@ import format from "string-format";
 import {API_URL, PHONE_NUMBER_KEY, TOAST_DURATION_MS, VAPID_PUBLIC_KEY} from "../constants/Constants";
 import {
     checkFileType,
+    flattenStyleArray,
     getCityFromResults,
     getStateFromResults,
     getSublocalityFromResults,
+    getUrlParam,
     setupDeviceId,
     urlBase64ToUint8Array
 } from "../util/Util";
@@ -289,6 +291,62 @@ export class Image extends React.Component {
     }
 }
 
+export class AudioElem extends React.Component {
+    constructor(props) {
+        super(props);
+        this.ref = React.createRef();
+    }
+    refElem = () => this.ref.current;
+    render() {
+        return (
+            <audio controls={true} onTimeUpdate={this.props.onTimeUpdate} ref={this.ref}>
+                <source src={this.props.src}/>
+            </audio>
+        );
+    }
+}
+export class VideoElem extends React.Component {
+    constructor(props) {
+        super(props);
+        this.ref = React.createRef();
+    }
+    refElem = () => this.ref.current;
+    render() {
+        const { src, width=250, height=250, controls=true, type='video/mp4', onTimeUpdate } = this.props;
+        return src.includes('youtube.com') || src.includes('helloeko.com') ?
+            <iframe width="300px" height="300px" allowFullScreen={true} webkitallowfullscreen="true" mozallowfullscreen="true" allow="autoplay; fullscreen" src={src} /> :
+            <video width={width} height={height} controls={controls} onTimeUpdate={onTimeUpdate} ref={this.ref}>
+                <source src={src} type={type} />
+                Your browser does not support the video tag.
+            </video>;
+    }
+}
+
+export class InputElem extends React.Component {
+    constructor(props) {
+        super(props);
+        this.ref = React.createRef();
+    }
+    refElem = () => this.ref.current;
+    render() {
+        return (
+            <input {...this.props} ref={this.ref} />
+        );
+    }
+}
+export class TextareaElem extends React.Component {
+    constructor(props) {
+        super(props);
+        this.ref = React.createRef();
+    }
+    refElem = () => this.ref.current;
+    render() {
+        return (
+            <textarea {...this.props} ref={this.ref} />
+        );
+    }
+}
+
 const renderF = (obj, styleOverrides={}) => {
     const s = Array.isArray(obj.props.style) ? flattenStyleArray(obj.props.style) : (obj.props.style || {});
     const s2 = {...styleOverrides, ...s};
@@ -304,12 +362,11 @@ const renderF = (obj, styleOverrides={}) => {
     return (<div {...refObj} {...props}>{obj.props.children}</div>);
 };
 
-const flattenStyleArray = (s) => {
-    let obj = {};
-    for (let i = 0; i < s.length; i++) {
-        obj = {...obj, ...s[i]};
-    }
-    return obj;
+export const renderHtmlText = (text) => <div dangerouslySetInnerHTML={{__html: text}} />;
+
+
+export const isDebugMode = () => {
+    return getUrlParam('debug') === 'true' || getUrlParam('debug') === 'yes';
 };
 
 export const mobileDetect = () => {

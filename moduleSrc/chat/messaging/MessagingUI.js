@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Fragment} from 'react';
 import window from "global/window";
 import {
     actionButton,
@@ -20,7 +20,25 @@ import {
     uploadBlob,
     View
 } from "../../util/Util";
-import {Text} from '../../platform/Util';
+import {
+    AudioElem,
+    bodyOverflowAuto,
+    InputElem,
+    mobileDetect,
+    Modal,
+    Popover,
+    renderHtmlText,
+    resizeForKeyboard,
+    reverseGeocode,
+    scrollToBottomFn,
+    scrollToElemFn,
+    stopBodyOverflow,
+    Text,
+    TextareaElem,
+    VideoElem,
+    WINDOW_INNER_HEIGHT,
+    WINDOW_INNER_WIDTH
+} from '../../platform/Util';
 import OptionPickerWidget from "../../widgets/OptionPickerWidget";
 import IDCard from "../IDCard";
 import {
@@ -36,7 +54,6 @@ import {
     TROPHY_IMG
 } from "../../constants/Constants";
 import PlacesAutocompleteWidget from "../../widgets/PlacesAutocompleteWidget";
-import JobDetailsWidget from "../../widgets/JobDetailsWidget";
 import {
     ASK_INPUT,
     ENABLE_SPEECH_RECOGNITION,
@@ -90,18 +107,6 @@ import format from 'string-format';
 import BlinkingIcon from "../../widgets/BlinkingIcon";
 import {getKeyFromKVStore, setKeyValueFromKVStore} from "../../util/Api";
 import {GroupTopBar, PersonalMessagingTopBar} from "./TopBar";
-import {
-    bodyOverflowAuto,
-    mobileDetect,
-    Modal,
-    Popover,
-    resizeForKeyboard,
-    reverseGeocode,
-    scrollToBottomFn,
-    scrollToElemFn,
-    stopBodyOverflow, WINDOW_INNER_HEIGHT,
-    WINDOW_INNER_WIDTH,
-} from "../../platform/Util";
 import {GROUP_URLS, HOME_PAGE_URLS} from "../../controller/Urls";
 
 
@@ -336,7 +341,7 @@ class InputLine extends React.Component {
         this.setState({ typed: '' });
 
         // Scroll to bottom of the page
-        this.textInputRef.current.focus();
+        this.textInputRef.current.refElem().focus();
         scrollToBottomFn();
     };
 
@@ -446,9 +451,11 @@ class InputLine extends React.Component {
         const ffff = () => this.setState({ isPopoverOpen: false, isTrainingModuleFlowOpen: false });
         const attachIcon = (
             <View style={{ height: 40, width: 40 }} ref={this.attachIconParentRef}>
-                <AttachIcon onClickFn={this.onAttachBtnClickFn} size={30} color={'rgba(0, 0, 0, 0.5)'} />
+                <View style={{ marginTop: 5 }}>
+                    <AttachIcon onClickFn={this.onAttachBtnClickFn} size={30} opacity={0.5} />
+                </View>
                 <Popover id='popover' open={isPopoverOpen}
-                         anchorEl={isPopoverOpen ? this.attachIconParentRef.current : null}
+                         anchorEl={isPopoverOpen ? this.attachIconParentRef.current.divElement() : null}
                          onClose={() => this.setState({ isPopoverOpen: false })}
                          anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
                          transformOrigin={{ vertical: 'bottom', horizontal: 'right' }}
@@ -465,18 +472,18 @@ class InputLine extends React.Component {
         );
         const inputBox = (
             <View style={customStyle.inputBox}>
-                <textarea style={inputStyle} placeholder="  Type here ..." type="text" {...inputClassAttr}
-                          onKeyDown={this.handleKeyDown} ref={this.textInputRef}
-                          disabled={keyboardInputDisabled}
-                          value={typed} onChange={(v) => this.setState({ typed: v.target.value })} />
+                <TextareaElem style={inputStyle} placeholder="  Type here ..." type="text" {...inputClassAttr}
+                              onKeyDown={this.handleKeyDown} ref={this.textInputRef}
+                              disabled={keyboardInputDisabled}
+                              value={typed} onChange={(v) => this.setState({ typed: v.target.value })} />
             </View>
         );
 
         const numDotsStr = xrange(0, numDots % 5).toArray().map(x => '.').join(' ');
         const recordingTime = (
             <View style={customStyle.inputBox}>
-                <input style={inputStyle} placeholder={'  Recording ' + numDotsStr} type="text" {...inputClassAttr}
-                       disabled={true} value={typed} />
+                <InputElem style={inputStyle} placeholder={'  Recording ' + numDotsStr} type="text" {...inputClassAttr}
+                           disabled={true} value={typed} />
             </View>
         );
 
@@ -493,8 +500,8 @@ class InputLine extends React.Component {
                 {!showExpanded ? inputBox : recordingTime}
                 <View style={{ position: 'absolute', right: 0, top: 0,
                                display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                    {micListening ? micListeningDiv : ''}
-                    {!typed && !showExpanded ? attachIcon : ''}
+                    {micListening ? micListeningDiv : <View />}
+                    {!typed && !showExpanded ? attachIcon : <View />}
                     {typed ? sendBtn : micBtn}
                 </View>
             </View>
@@ -531,7 +538,7 @@ class AttachPopup extends React.PureComponent {
         this.INPUT_TYPES.forEach(x => {
             x.onClickFn = () => {
                 console.log('form hidden onlick: ', x.ref);
-                x.ref.current.click();
+                x.ref.current.refElem().click();
             };
         });
     }
@@ -570,8 +577,8 @@ class AttachPopup extends React.PureComponent {
         const inputTypeOthers = inputTypes.filter(x => x.isTraining !== true);
         return (
             <View key="hidden-forms" style={{ width: 200, height: 80, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
-                {this.INPUT_TYPES.map(x => <input type="file" accept={x.accept} ref={x.ref} key={x.text}
-                                                  style={{ display: 'none' }} onChange={() => this.onSelectFile(x.ref.current.files, x.isTraining)} />)}
+                {this.INPUT_TYPES.map(x => <InputElem type="file" accept={x.accept} ref={x.ref} style={{ display: 'none' }} key={x.text}
+                                                      onChange={() => this.onSelectFile(x.ref.current.refElem().files, x.isTraining)} />)}
 
                 {inputTypeOthers.map(x => this.imageTextFn(x))}
                 {this.imageTextFn(inputTypeTraining)}
@@ -610,7 +617,7 @@ class TrainingModuleThumbnailName extends React.PureComponent {
             return;
         }
 
-        const duration = this.videoRef.current.duration;
+        const duration = this.videoRef.current.refElem().duration;
         this.props.onSubmitFn({ moduleName, imageUrl, videoUrl, duration });
     };
 
@@ -624,18 +631,16 @@ class TrainingModuleThumbnailName extends React.PureComponent {
         return (
             <View style={{ width: 250, height: 400, fontFamily: CHAT_FONT_FAMILY,
                            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-evenly' }}>
-                <video width="150" height="150" controls={true} ref={this.videoRef}>
-                    <source src={videoUrl} type="video/mp4" />
-                    Your browser does not support the video tag.
-                </video>
-
-                <input placeholder='  Module name' type="text" style={{fontSize: 14, width: '80%', height: 40, letterSpacing: 1, textAlign: 'center'}}
+                <VideoElem src={videoUrl} width="150" height="150" ref={this.videoRef} />
+                <InputElem placeholder='  Module name' type="text" style={{fontSize: 14, width: '80%', height: 40, letterSpacing: 1, textAlign: 'center'}}
                        value={moduleName} onChange={(elem) => this.setState({ moduleName: elem.target.value })} />
                 {spacer(10)}
 
-                <input type="file" accept={accept} ref={this.imageRef} style={{ display: 'none' }}
-                       onChange={() => this.onSelectFile(this.imageRef.current.files)} />
-                <TouchableAnim style={{ }} onPress={() => this.imageRef.current.click()}>Choose thumbnail</TouchableAnim>
+                <InputElem type="file" accept={accept} ref={this.imageRef} style={{ display: 'none' }}
+                           onChange={() => this.onSelectFile(this.imageRef.current.refElem().files)} />
+                <TouchableAnim style={{ }} onPress={() => this.imageRef.current.refElem().click()}>
+                    <Text>Choose thumbnail</Text>
+                </TouchableAnim>
                 {spacer(10)}
 
                 {img}
@@ -660,7 +665,7 @@ class MessageShell extends React.PureComponent {
         const { type, timestamp, sender, loc } = message;
         const senderName = (idToDetails && sender in idToDetails) ? idToDetails[sender].person.name : sender;
         let senderNameDebug = '';
-        const isDebug = false;
+        const isDebug = isDebugMode();
         let distKms = 1000;
         if (ipLocation && loc) {
             distKms = haversineDistanceKms(ipLocation, loc);
@@ -791,15 +796,14 @@ class TextMessage extends React.PureComponent {
             return '';
         }
         text = addPhoneTracking(text, me.sender, message.sender);
-
-        // if (text.includes('<div') || text.includes('<b') || text.includes('<a')) {
-        //     text = <Text dangerouslySetInnerHTML={{__html: text}} />
-        // }
+        if (text.includes('<div') || text.includes('<b') || text.includes('<a')) {
+            text = renderHtmlText(text);
+        }
         const styleObj = (language === LANG_HINDI || language === LANG_THAI) ? customStyle.textMessageDivLarger : customStyle.textMessageDivNormal;
         return (
-            <View key={idx} {...this.props} message={{...message, type: OUTPUT_TEXT}}>
+            <MessageShell key={idx} {...this.props} message={{...message, type: OUTPUT_TEXT}}>
                 <Text style={styleObj}>{text}</Text>
-            </View>
+            </MessageShell>
         );
     }
 }
@@ -925,7 +929,7 @@ class AudioMessage extends React.PureComponent {
         }
         return (
             <MessageShell key={idx} {...this.props}>
-                <Text>audio message</Text>
+                <AudioElem onTimeUpdate={this.onTimeUpdate} src={u} />
             </MessageShell>
         );
     }
@@ -953,13 +957,10 @@ class VideoMessage extends React.PureComponent {
             return renderAttachIcon({ message, idx, type: OUTPUT_VIDEO, enabled, disableFn, onNewMsgFn, me, otherGuy });
         }
 
-        const msg = videoUrl.includes('youtube.com') || videoUrl.includes('helloeko.com') ?
-            <Text>video iframe</Text> :
-            <Text>video</Text>;
         return (
             <MessageShell key={'' + idx} {...this.props}>
                 <View style={{ borderRadius: 16, padding: 5 }}>
-                    {msg}
+                    <VideoElem src={videoUrl} onTimeUpdate={this.onTimeUpdate} />
                 </View>
                 <LikesWidget id={idx} />
             </MessageShell>
@@ -1149,10 +1150,10 @@ class PlacesAutocompleteMessage extends React.PureComponent {
                                       onSelectFn={this.onSelectFn} key={widgetKey} />
         );
         return (
-            <View key={'places-autocomplete-' + widgetKey}>
+            <Fragment key={'places-autocomplete-' + widgetKey}>
                 {textDisplay}
                 {enabled ? placesWidget : ''}
-            </View>
+            </Fragment>
         );
     }
 }
@@ -1209,7 +1210,7 @@ class OptionsMessage extends React.PureComponent {
         const textDisplay = <TextMessage idx={idx} key={idx} text={text}
                                          message={{...message, type: OUTPUT_TEXT, askInput: false}} me={me} otherGuy={otherGuy} />;
         return (
-            <View key={'options-key-' + idx}>
+            <Fragment key={'options-key-' + idx}>
                 {textDisplay}
                 <OptionPickerWidget optionList={options} displayFn={displayFn} toggleFn={toggleFn}
                                     initialSelected={initialSelected} singleSelection={singleSelection}
@@ -1218,7 +1219,7 @@ class OptionsMessage extends React.PureComponent {
                 <View style={{ justifyContent: 'center', alignItems: 'center', display: 'flex' }}>
                     {enabled && !singleSelection ? doneBtn : <View />}
                 </View>
-            </View>
+            </Fragment>
         );
     }
 }
@@ -1262,15 +1263,19 @@ class JobMessage extends React.PureComponent {
 
         const textDisplay = <TextMessage idx={idx} key={idx} text={text}
                                          message={{...message, type: OUTPUT_TEXT, askInput: false}} me={me} otherGuy={otherGuy} />;
+
+        // TODO: Fix this
+        // const jobWidget = <JobDetailsWidget jobDetails={job} supplyId={-1} highlightJob={false}
+        //                                     actionPanel={actionPanel} language={language}
+        //                                     key={key} styleOverrides={styleOverrides} />;
+        const jobWidget = <Text>JobDetailsWidget</Text>;
         return (
-            <View>
+            <Fragment>
                 {textDisplay}
                 <View style={blurStyle}>
-                    <JobDetailsWidget jobDetails={job} supplyId={-1} highlightJob={false}
-                                      actionPanel={actionPanel} language={language}
-                                      key={key} styleOverrides={styleOverrides} />
+                    {jobWidget}
                 </View>
-            </View>
+            </Fragment>
         );
     }
 }
@@ -1482,7 +1487,7 @@ const renderAttachIcon = ({message, idx, type, enabled, disableFn, onNewMsgFn, m
 
     const onSelectFile = async (elem) => {
         console.log('elem: ', elem);
-        const blobUrl = await uploadBlob(fileInputRef.current.files[0]);
+        const blobUrl = await uploadBlob(fileInputRef.current.refElem().files[0]);
         disableFn();
         await onNewMsgFn({ answer: blobUrl, type });
     };
@@ -1495,9 +1500,9 @@ const renderAttachIcon = ({message, idx, type, enabled, disableFn, onNewMsgFn, m
     const accept = type === OUTPUT_IMAGE ? 'image/*' : (type === OUTPUT_VIDEO ? 'video/*' : 'audio/*');
     const attachIcon = (
         <View style={{ height: 70, width: '100%', position: 'relative' }}>
-            <input type="file" accept={accept} ref={fileInputRef} style={{ display: 'none' }} onChange={onSelectFile} />
+            <InputElem type="file" accept={accept} ref={fileInputRef} style={{ display: 'none' }} onChange={onSelectFile} />
             <View style={{...customStyle.attachButton }}>
-                <BlinkingAttachIcon onClickFn={() => fileInputRef.current.click()} size={50} />
+                <BlinkingAttachIcon onClickFn={() => fileInputRef.current.refElem().click()} size={50} />
             </View>
         </View>
     );
@@ -1512,10 +1517,10 @@ const renderAttachIcon = ({message, idx, type, enabled, disableFn, onNewMsgFn, m
     const textDisplay = <TextMessage idx={idx} key={idx} text={message.text}
                                      message={{...message, type: OUTPUT_TEXT, askInput: false}} me={me} otherGuy={otherGuy} />;
     return (
-        <View key={'attach-' + idx}>
+        <Fragment key={'attach-' + idx}>
             {textDisplay}
-            {enabled ? (type === OUTPUT_AUDIO ? audioAttachIcon : attachIcon) : ''}
-        </View>
+            {enabled ? (type === OUTPUT_AUDIO ? audioAttachIcon : attachIcon) : <View />}
+        </Fragment>
     );
 };
 
@@ -1547,7 +1552,7 @@ const customStyle = {
         width: SCR_WIDTH,
         height: '100%',
         fontFamily: CHAT_FONT_FAMILY,
-        overflow: 'none',
+        overflow: 'hidden',
     },
     topBar: {
         width: SCR_WIDTH,
@@ -1707,7 +1712,7 @@ const customStyle = {
         maxWidth: STATIC_MAPS_IMG_WIDTH,
 
         fontFamily: CHAT_FONT_FAMILY,
-        fontWeight: '500',
+        fontWeight: 500,
         WebkitFontSmoothing: "antialiased",
         MozOsxFontSmoothing: "grayscale",
     },

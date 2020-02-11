@@ -1,6 +1,5 @@
 import React, {Fragment} from 'react';
 import {differenceFn, hashCode, spacer, View} from '../util/Util';
-import window from 'global';
 import TouchableAnim from "../platform/TouchableAnim";
 import Slider from "react-slick/lib";
 import {Helmet, Modal, WINDOW_INNER_HEIGHT, WINDOW_INNER_WIDTH} from '../platform/Util';

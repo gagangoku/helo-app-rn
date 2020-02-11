@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Fragment} from 'react';
 import {
     LANG_HINGLISH,
     OUTPUT_AUDIO,
@@ -73,12 +73,14 @@ export default class ChatDemo extends React.Component {
         };
         const chatContext = getChatContext(COOK_ONBOARDING_FLOW);
         return (
-            <MessagingUI location={this.props.location} history={this.props.history}
-                         topBar={null} me={me} otherGuy={heloBot}
-                         chatContext={chatContext}
-                         collection={'test'} groupId={'demo'}
-                         groupInfo={groupInfo} messages={this.state.messages} onUserMsg={this.onUserMsg}
-                         onTriggerUpload={null} callFn={null} />
+            <Fragment>
+                <MessagingUI location={this.props.location} history={this.props.history}
+                             topBar={null} me={me} otherGuy={heloBot}
+                             chatContext={chatContext}
+                             collection={'test'} groupId={'demo'}
+                             groupInfo={groupInfo} messages={this.state.messages} onUserMsg={this.onUserMsg}
+                             onTriggerUpload={null} callFn={null} />
+            </Fragment>
         );
     }
 }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Fragment} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {initPushy} from './util/pushy';
 
@@ -18,9 +18,9 @@ export default class HomeScreen extends React.Component {
     render() {
         const { navigation } = this.props;
         return (
-            <View>
+            <Fragment>
                 <Text>Hi</Text>
-            </View>
+            </Fragment>
         );
     }
 }

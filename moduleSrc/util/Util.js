@@ -5,6 +5,7 @@ import {
     getGpsLocation,
     Image,
     initWebPush,
+    isDebugMode,
     playBeepSound,
     recordAudio,
     showToast,
@@ -136,7 +137,13 @@ export const amPm = (hr) => {
     return hr <= 12 ? hr + ' am' : (hr - 12) + ' pm';
 };
 
-
+export const flattenStyleArray = (s) => {
+    let obj = {};
+    for (let i = 0; i < s.length; i++) {
+        obj = {...obj, ...s[i]};
+    }
+    return obj;
+};
 
 export const redirectIfNotFlow = (ctx, flowName, redirectUrl) => {
     // Redirect if not part of the flow
@@ -795,10 +802,6 @@ export const computeLeaderBoardPoints = ({ key, roleId, watched, duration, lastU
     return Math.ceil(points);
 };
 
-export const isDebugMode = () => {
-    return getUrlParam('debug') === 'true' || getUrlParam('debug') === 'yes';
-};
-
 export const getCircularImage = ({ src, dim, cbFn, border }) => {
     if (border === undefined) {
         border = `1px solid ${PERSON_BORDER_COLOR}`;
@@ -818,4 +821,5 @@ export {
     initFirebase,
     StyleSheet, View, Text, Image,
     showToast,
+    isDebugMode,
 };

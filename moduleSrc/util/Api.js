@@ -196,7 +196,7 @@ const _fetchUrl = function(url, body, consumeJson, responseCb, errorCb, method, 
         body: method === 'GET' ? null : JSON.stringify(body),
         headers,
     }).then((response) => {
-        console.log('response: ', response.status);
+        console.log('response: ', response.status, response);
         if (response.status >= 400) {
             console.log('Bad response: ', response);
             errorCb(response);
@@ -335,7 +335,7 @@ export const getKeyFromKVStore = async (key) => {
 };
 
 export const setKeyValueFromKVStore = async (key, value, ttlSec='') => {
-    const url = format(API_URL + KV_STORE_SET_API + '?key={}&value={}&ttlSec={}', key, value, ttlSec);
+    const url = format(API_URL + KV_STORE_SET_API + '?key={}&value={}&ttlSec={}', key, encodeURIComponent(value), ttlSec);
     const h = {[X_AUTH_HEADER]: X_AUTH_TOKEN};
     return await new Promise((responseCb, errorCb) => _fetchUrl(url, null, false, responseCb, errorCb, 'PUT', h));
 };

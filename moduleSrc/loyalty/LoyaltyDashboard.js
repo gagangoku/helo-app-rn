@@ -1,5 +1,4 @@
 import React from "react";
-import window from "global";
 import {View} from "../util/Util";
 import {Helmet, WINDOW_INNER_HEIGHT, WINDOW_INNER_WIDTH} from "../platform/Util";
 

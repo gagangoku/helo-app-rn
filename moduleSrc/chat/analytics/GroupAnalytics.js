@@ -15,7 +15,6 @@ import {
 import {CHAT_FONT_FAMILY, MONTHS, VIDEO_ANALYTICS_INTERVAL_SECONDS} from "../../constants/Constants";
 import {ConfigurableTopBar} from "../messaging/TopBar";
 import {ReactMinimalPieChart, WINDOW_INNER_HEIGHT} from '../../platform/Util';
-import window from 'global/window';
 import {firebase} from '../../platform/firebase';
 import {getPersonNamesByRoleId, hgetAllFromKVStore} from "../../util/Api";
 import format from "string-format";
