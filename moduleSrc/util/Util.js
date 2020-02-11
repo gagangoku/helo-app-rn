@@ -3,6 +3,7 @@ import {commonStyle} from "../styles/common";
 import {
     AsyncStorage,
     getGpsLocation,
+    getUrlParam,
     Image,
     initWebPush,
     isDebugMode,
@@ -15,7 +16,6 @@ import {
     View,
 } from '../platform/Util';
 import {
-    API_URL,
     AUDIOS_URL,
     DESCRIPTOR_VISITOR,
     FILES_URL,
@@ -39,7 +39,6 @@ import {
     WEBSOCKET_URL
 } from "../constants/Constants";
 import window from "global/window";
-import document from 'global/document';
 import format from "string-format";
 import {
     LANG_ENGLISH,
@@ -301,11 +300,6 @@ export async function awaitPromises(staticContext, keys, setFn, errorFn) {
         }
     });
 }
-
-export const getUrlParam = (param, loc) => {
-    loc = loc || document.location || API_URL;
-    return (new URL(loc)).searchParams.get(param);
-};
 
 
 export const navigateToLatLon = (platform, lat, lon) => {
@@ -822,4 +816,5 @@ export {
     StyleSheet, View, Text, Image,
     showToast,
     isDebugMode,
+    getUrlParam,
 };

@@ -6,6 +6,7 @@ import {
     getImageUrl,
     getPersonDetails,
     getUrlParam,
+    getUrlSearchParams,
     isDebugMode,
     navigateTo,
     setupDeviceId,
@@ -361,7 +362,7 @@ export class StepCookChatBot extends React.Component {
     render() {
         console.log('rendering SupplyOnboardingChatBot');
         const params = {};
-        (new URL(document.location || API_URL)).searchParams.forEach((v, k) => params[k] = v);
+        getUrlSearchParams(document.location || API_URL).forEach((v, k) => params[k] = v);
         params[QUESTION_WORK_CATEGORIES] = CATEGORY_COOK;     // For cooks
         return (<ChatBotClient location={this.props.location} history={this.props.history} params={params} />);
     }

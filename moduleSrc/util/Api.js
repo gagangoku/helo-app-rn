@@ -196,7 +196,7 @@ const _fetchUrl = function(url, body, consumeJson, responseCb, errorCb, method, 
         body: method === 'GET' ? null : JSON.stringify(body),
         headers,
     }).then((response) => {
-        console.log('response: ', response.status, response);
+        console.log('response: ', response.status);
         if (response.status >= 400) {
             console.log('Bad response: ', response);
             errorCb(response);

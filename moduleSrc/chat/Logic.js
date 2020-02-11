@@ -48,7 +48,7 @@ import {
     SENDER_HELO,
     SENDER_VISITOR
 } from "./Questions";
-import {ageFn, getImageUrl, removeNullUndefined, sumFn} from "../util/Util";
+import {ageFn, getImageUrl, getUrlPath, removeNullUndefined, sumFn} from "../util/Util";
 import assert from 'assert';
 
 
@@ -121,7 +121,7 @@ export const getSupplyCreationObj = (chatContext) => {
     const restaurantSkills = details[QUESTION_RESTAURANT_SKILLS] || [];
 
     if (details[QUESTION_PROFILE_PHOTO]) {
-        let image = new URL(getImageUrl(details[QUESTION_PROFILE_PHOTO])).pathname;
+        let image = getUrlPath(getImageUrl(details[QUESTION_PROFILE_PHOTO]));
         while (image.startsWith('/')) {
             image = image.substr(1);
         }
@@ -129,7 +129,7 @@ export const getSupplyCreationObj = (chatContext) => {
     }
 
     if (details[QUESTION_AADHAR_PHOTO]) {
-        let aadharPhoto = new URL(getImageUrl(details[QUESTION_AADHAR_PHOTO])).pathname;
+        let aadharPhoto = getUrlPath(getImageUrl(details[QUESTION_AADHAR_PHOTO]));
         while (aadharPhoto.startsWith('/')) {
             aadharPhoto = aadharPhoto.substr(1);
         }

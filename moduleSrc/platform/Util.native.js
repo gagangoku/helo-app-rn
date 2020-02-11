@@ -1,16 +1,15 @@
 import {
     AsyncStorage,
     Dimensions,
+    Image as ImageOrig,
     Modal,
     StyleSheet,
     Text as TextOrig,
     ToastAndroid as Toast,
+    View as ViewOrig,
 } from 'react-native';
-import {Image as ImageOrig} from 'react-native';
-import {View as ViewOrig} from 'react-native';
 import React from "react";
 import {flattenStyleArray} from "../util/Util";
-import WebView from 'react-native-webview';
 
 
 // TODO: Implement
@@ -121,6 +120,16 @@ export const getLatLng = () => {};
 
 export const mobileDetect = () => {
     return { isAndroid: true, isIphone: false };
+};
+
+export const getUrlParam = (param, loc) => {
+    return '';
+};
+export const getUrlPath = (url) => {
+    return '';
+};
+export const getUrlSearchParams = (url) => {
+    return {};
 };
 export const isDebugMode = () => {
     return false;

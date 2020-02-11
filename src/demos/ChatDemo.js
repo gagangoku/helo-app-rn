@@ -91,6 +91,12 @@ const INITIAL_MESSAGES = [{
     text: 'Hello',
     timestamp: new Date().getTime(),
     sender: SENDER_VISITOR,
+}];
+const INITIAL_MESSAGES2 = [{
+    type: OUTPUT_TEXT,
+    text: 'Hello',
+    timestamp: new Date().getTime(),
+    sender: SENDER_VISITOR,
 }, {
     type: OUTPUT_TEXT,
     text: 'Hello <b>bold</b>',

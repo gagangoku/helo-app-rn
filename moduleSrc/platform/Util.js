@@ -8,7 +8,6 @@ import {
     getCityFromResults,
     getStateFromResults,
     getSublocalityFromResults,
-    getUrlParam,
     setupDeviceId,
     urlBase64ToUint8Array
 } from "../util/Util";
@@ -364,6 +363,16 @@ const renderF = (obj, styleOverrides={}) => {
 
 export const renderHtmlText = (text) => <div dangerouslySetInnerHTML={{__html: text}} />;
 
+export const getUrlParam = (param, loc) => {
+    loc = loc || document.location || API_URL;
+    return (new URL(loc)).searchParams.get(param);
+};
+export const getUrlPath = (url) => {
+    return new URL(url).pathname;
+};
+export const getUrlSearchParams = (url) => {
+    return (new URL(url)).searchParams;
+};
 
 export const isDebugMode = () => {
     return getUrlParam('debug') === 'true' || getUrlParam('debug') === 'yes';
