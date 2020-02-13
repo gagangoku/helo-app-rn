@@ -14,6 +14,7 @@ import io.invertase.firebase.firestore.RNFirebaseFirestorePackage;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import me.pushy.sdk.react.PushyPackage;
+import com.heloprotocol.helo.module.CustomThumbnailPackage;
 
 
 public class MainApplication extends Application implements ReactApplication {
@@ -35,6 +36,7 @@ public class MainApplication extends Application implements ReactApplication {
                     packages.add(new RNFirebaseNotificationsPackage());
                     packages.add(new RNFirebaseFirestorePackage());
                     packages.add(new PushyPackage());
+                    packages.add(new CustomThumbnailPackage());
                     return packages;
                 }
 
