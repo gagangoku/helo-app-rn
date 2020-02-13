@@ -1,5 +1,5 @@
 import React, {Fragment} from "react";
-import {historyBack, Popover} from '../../platform/Util';
+import {historyBack, Popover, WINDOW_INNER_WIDTH} from '../../platform/Util';
 import {getCircularImage, getImageUrl, Image, Text, View} from "../../util/Util";
 import {
     CHAT_FONT_FAMILY,
@@ -314,22 +314,31 @@ class DotDotDot extends React.Component {
             return <View />;
         }
 
+        const popoverY = ConfigurableTopBar.HEIGHT / 2;
+        const popoverX = WINDOW_INNER_WIDTH - 10;
         return (
             <View style={{}}>
                 <View ref={this.dotDotDotIconRef}>
                     <TouchableAnim onPress={() => this.setState({ isPopoverOpen: true })} style={{ height: 25, width: 25, marginTop: 0, marginLeft: 0, marginRight: 0, lineHeight: 'normal' }}>
                         <Image src={MORE_VERT_ICON} style={{ height: 25, width: 25 }} />
                     </TouchableAnim>
-                    <Popover id='popover' open={this.state.isPopoverOpen}
+
+                    <Popover visible={this.state.isPopoverOpen}
+                             contentStyle={{ padding: 0 }} arrowStyle={{ padding: 0 }} backgroundStyle={{ padding: 0 }}
+                             fromRect={{ x: popoverX, y: popoverY, width: 0, height: 0 }} placement="auto"
+                             onRequestClose={() => this.setState({ isPopoverOpen: false })}
+                             style={{ }}
+
+                             open={this.state.isPopoverOpen}
                              anchorEl={this.dotDotDotIconRef && this.dotDotDotIconRef.current ? this.dotDotDotIconRef.current.refElem() : null}
                              onClose={() => this.setState({ isPopoverOpen: false })}
                              anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
                              transformOrigin={{ vertical: 'top', horizontal: 'right' }}
                     >
-                        <View style={{ display: 'flex', flexDirection: 'column', fontFamily: CHAT_FONT_FAMILY, padding: 5 }}>
+                        <View style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', fontFamily: CHAT_FONT_FAMILY, padding: 5 }}>
                             {dotDotDotOptions.map(({ title, onClickFn }) => (
                                 <TouchableAnim onPress={() => this.cbAndCloseFn(onClickFn)} style={{ padding: 10, marginBottom: 5 }} key={title}>
-                                    <Text>{title}</Text>
+                                    <Text style={{ fontFamily: CHAT_FONT_FAMILY, fontSize: 17 }}>{title}</Text>
                                 </TouchableAnim>
                             ))}
                         </View>

@@ -111,8 +111,6 @@ export default class MessagingUI extends React.PureComponent {
         this.contextObj = getCtx(this);
 
         this.state = {
-            keyboardOpen: false,
-            selectedOptions: {},
             micListening: false,
             keyboardHeight: 0,
         };
@@ -128,6 +126,7 @@ export default class MessagingUI extends React.PureComponent {
         if (msgToScrollTo) {
             // TODO: Scroll to the message
         } else {
+            // TODO: Scroll to the last read message
             scrollToBottomFn(this.chatRootRef.current);
         }
         stopBodyOverflow();
@@ -266,6 +265,7 @@ export default class MessagingUI extends React.PureComponent {
 
     render() {
         const { me, messages, mode, groupInfo } = this.props;
+        const { keyboardHeight } = this.state;
         const { isAdminPosting, admins } = groupInfo;
         const botMode = mode === MODE_BOT;
         const keyboardInputDisabled = botMode && (messages.length > 0 && messages[messages.length - 1][ASK_INPUT] && messages[messages.length - 1].type !== OUTPUT_TEXT);
@@ -286,7 +286,7 @@ export default class MessagingUI extends React.PureComponent {
 
         console.log('display messages: ', messages, displayMsgs, keyboardInputDisabled);
 
-        const INNER_HEIGHT = WINDOW_INNER_HEIGHT - ConfigurableTopBar.HEIGHT - InputLine.HEIGHT - HEIGHT_BUFFER - this.state.keyboardHeight;
+        const INNER_HEIGHT = WINDOW_INNER_HEIGHT - ConfigurableTopBar.HEIGHT - InputLine.HEIGHT - HEIGHT_BUFFER - keyboardHeight;
         const amIAdmin = admins.includes(me.sender) || GROUPS_SUPER_ADMINS.includes(me.sender);
         return (
             <View style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}>
@@ -403,18 +403,22 @@ class MessageAPersonModal extends React.PureComponent {
         };
 
         return (
-            <Modal isOpen={modalOpen} onRequestClose={this.props.closeFn}
-                   style={modalStyle} onAfterOpen={() => {}} contentLabel="Example Modal">
-                <View style={{ display: 'flex', flexDirection: 'column' }}>
-                    <TouchableAnim onPress={onPressMessage} style={{ fontFamily: CHAT_FONT_FAMILY, fontSize: 17 }}>
-                        <View>Message {senderName}</View>
-                    </TouchableAnim>
+            <Modal isOpen={modalOpen} visible={modalOpen} isVisible={modalOpen}
+                   backdropOpacity={0.5} style={modalStyle}
+                   onRequestClose={this.props.closeFn} onBackdropPress={this.props.closeFn}
+                   onAfterOpen={() => {}} contentLabel="Example Modal">
+                <View style={{ height: '100%', width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                    <View style={{ borderRadius: 10, backgroundColor: '#ffffff', padding: 20,
+                                   display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start' }}>
+                        <TouchableAnim onPress={onPressMessage} style={{ }}>
+                            <Text style={{ fontFamily: CHAT_FONT_FAMILY, fontSize: 17 }}>Message {senderName}</Text>
+                        </TouchableAnim>
 
-                    {spacer(25)}
-
-                    <TouchableAnim onPress={onPressView} style={{ fontFamily: CHAT_FONT_FAMILY, fontSize: 17 }}>
-                        <View>View {senderName}</View>
-                    </TouchableAnim>
+                        {spacer(25)}
+                        <TouchableAnim onPress={onPressView} style={{ }}>
+                            <Text style={{ fontFamily: CHAT_FONT_FAMILY, fontSize: 17 }}>View {senderName}</Text>
+                        </TouchableAnim>
+                    </View>
                 </View>
             </Modal>
         );
@@ -457,11 +461,13 @@ class TextMessage extends React.PureComponent {
         text = addPhoneTracking(text, me.sender, message.sender);
         if (text.includes('<div') || text.includes('<b') || text.includes('<a')) {
             text = renderHtmlText(text);
+        } else {
+            text = <Text>{text}</Text>;
         }
         const styleObj = (language === LANG_HINDI || language === LANG_THAI) ? customStyle.textMessageDivLarger : customStyle.textMessageDivNormal;
         return (
             <MessageShell key={idx} {...this.props} message={{...message, type: OUTPUT_TEXT}}>
-                <Text style={styleObj}>{text}</Text>
+                <View style={styleObj}>{text}</View>
             </MessageShell>
         );
     }
@@ -572,9 +578,9 @@ class AudioMessage extends React.PureComponent {
         };
     }
 
-    onTimeUpdate = (elem) => {
+    onTimeUpdate = ({ currentTime, duration, ...extra }) => {
         const { collection, groupId, idx, me } = this.props;
-        console.log('[analytics] onTimeUpdate audio: ', collection, groupId, idx, me.sender, elem.target, elem.target.currentTime, elem.target.duration);
+        console.log('[analytics] onTimeUpdate audio: ', collection, groupId, idx, me.sender, currentTime, duration, extra);
     };
     render () {
         const { message, idx, me, otherGuy, onNewMsgFn, mode } = this.props;
@@ -602,9 +608,9 @@ class VideoMessage extends React.PureComponent {
         };
     }
 
-    onTimeUpdate = (elem) => {
+    onTimeUpdate = ({ currentTime, duration, ...extra }) => {
         const { collection, groupId, idx, me } = this.props;
-        console.log('[analytics] onTimeUpdate video: ', collection, groupId, idx, me.sender, elem.target, elem.target.currentTime, elem.target.duration);
+        console.log('[analytics] onTimeUpdate video: ', collection, groupId, idx, me.sender, currentTime, duration, extra);
     };
     render () {
         const { message, idx, me, otherGuy, onNewMsgFn, mode } = this.props;

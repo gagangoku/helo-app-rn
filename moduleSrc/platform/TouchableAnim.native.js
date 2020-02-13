@@ -1,5 +1,6 @@
 import React from "react";
-import {TouchableOpacity} from 'react-native';
+import {TouchableOpacity, View} from 'react-native';
+import {flattenStyleArray} from "../util/Util";
 
 
 export default class TouchableAnim extends React.PureComponent {
@@ -8,10 +9,13 @@ export default class TouchableAnim extends React.PureComponent {
     }
 
     render() {
+        const style = Array.isArray(this.props.style) ? flattenStyleArray(this.props.style) : ({...this.props.style} || {});
         return (
-            <TouchableOpacity onPress={this.props.onPress}>
-                {this.props.children}
-            </TouchableOpacity>
+            <View style={style}>
+                <TouchableOpacity onPress={this.props.onPress} style={style}>
+                    {this.props.children}
+                </TouchableOpacity>
+            </View>
         );
     }
 }

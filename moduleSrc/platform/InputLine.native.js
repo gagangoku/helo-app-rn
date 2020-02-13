@@ -1,5 +1,6 @@
 import React from "react";
 import {
+    HEIGHT_BUFFER,
     Image,
     InputElem,
     mobileDetect,
@@ -9,7 +10,9 @@ import {
     scrollToBottomFn,
     TextareaElem,
     uploadBlob,
-    View
+    View,
+    WINDOW_INNER_HEIGHT,
+    WINDOW_INNER_WIDTH
 } from "./Util";
 import {MODE_BOT} from "../chat/Constants";
 import {OUTPUT_AUDIO, OUTPUT_PROGRESSIVE_MODULE} from "../chat/Questions";
@@ -192,23 +195,30 @@ export class InputLine extends React.Component {
         );
 
         const ffff = () => this.setState({ isPopoverOpen: false, isTrainingModuleFlowOpen: false });
+
+        const popoverY = WINDOW_INNER_HEIGHT - InputLine.HEIGHT - HEIGHT_BUFFER;
+        const popoverX = WINDOW_INNER_WIDTH / 2;
+
         const attachIcon = (
             <View style={{ height: 40, width: 40 }} ref={this.attachIconParentRef}>
                 <View style={{ marginTop: 5 }}>
                     <AttachIcon onClickFn={this.onAttachBtnClickFn} size={30} opacity={0.5} />
                 </View>
-                <Popover id='popover' open={isPopoverOpen}
-                         anchorEl={isPopoverOpen ? this.attachIconParentRef.current.refElem() : null}
+                <Popover open={isPopoverOpen} visible={isPopoverOpen}
+                         contentStyle={{ padding: 0 }} arrowStyle={{ padding: 0 }} backgroundStyle={{ padding: 0 }}
+                         style={{ }}
+                         fromRect={{ x: popoverX, y: popoverY, width: 0, height: 0 }} placement="top"
                          onClose={() => this.setState({ isPopoverOpen: false })}
-                         anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-                         transformOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                 >
                     <View style={{ display: 'flex', flexDirection: 'column', fontFamily: CHAT_FONT_FAMILY, padding: 10 }}>
                         <AttachPopup onChooseTrainingVideo={this.onChooseTrainingVideo} onCompleteFn={this.onAttachCompleteFn} />
                     </View>
                 </Popover>
-                <Modal isOpen={isTrainingModuleFlowOpen} visible={isTrainingModuleFlowOpen} onRequestClose={ffff}
-                       style={modalStyle} onAfterOpen={() => {}} contentLabel="Example Modal">
+
+                <Modal isOpen={isTrainingModuleFlowOpen} visible={isTrainingModuleFlowOpen} isVisible={isTrainingModuleFlowOpen}
+                       backdropOpacity={0.5} style={modalStyle}
+                       onRequestClose={ffff} onBackdropPress={ffff}
+                       onAfterOpen={() => {}} contentLabel="Example Modal">
                     <TrainingModuleThumbnailName videoUrl={this.state.videoUrl} onSubmitFn={this.submitTrainingModuleFn} />
                 </Modal>
             </View>

@@ -296,9 +296,12 @@ export class AudioElem extends React.Component {
         this.ref = React.createRef();
     }
     refElem = () => this.ref.current;
+    onProgress = (elem) => {
+        this.props.onTimeUpdate({ currentTime: elem.target.currentTime, duration: elem.target.duration, target: elem.target });
+    };
     render() {
         return (
-            <audio controls={true} onTimeUpdate={this.props.onTimeUpdate} ref={this.ref}>
+            <audio controls={true} onTimeUpdate={this.onProgress} ref={this.ref}>
                 <source src={this.props.src}/>
             </audio>
         );
@@ -310,11 +313,14 @@ export class VideoElem extends React.Component {
         this.ref = React.createRef();
     }
     refElem = () => this.ref.current;
+    onProgress = (elem) => {
+        this.props.onTimeUpdate({ currentTime: elem.target.currentTime, duration: elem.target.duration, target: elem.target });
+    };
     render() {
-        const { src, width=250, height=250, controls=true, type='video/mp4', onTimeUpdate } = this.props;
+        const { src, width=250, height=250, controls=true, type='video/mp4' } = this.props;
         return src.includes('youtube.com') || src.includes('helloeko.com') ?
             <iframe width="300px" height="300px" allowFullScreen={true} webkitallowfullscreen="true" mozallowfullscreen="true" allow="autoplay; fullscreen" src={src} /> :
-            <video width={width} height={height} controls={controls} onTimeUpdate={onTimeUpdate} ref={this.ref}>
+            <video width={width} height={height} controls={controls} onTimeUpdate={this.onProgress} ref={this.ref}>
                 <source src={src} type={type} />
                 Your browser does not support the video tag.
             </video>;

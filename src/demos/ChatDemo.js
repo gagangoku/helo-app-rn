@@ -9,14 +9,13 @@ import {
     OUTPUT_LOCATION,
     OUTPUT_MISSED_CALL,
     OUTPUT_MULTIPLE_CHOICE,
-    OUTPUT_PLACES_AUTOCOMPLETE,
     OUTPUT_SINGLE_CHOICE,
     OUTPUT_TEXT,
     OUTPUT_VIDEO,
     SENDER_VISITOR,
 } from '../../moduleSrc/chat/Questions';
 import {COOK_ONBOARDING_FLOW, getChatContext} from '../../moduleSrc/chat/bot/ChatUtil';
-import {HELO_LOGO} from '../../moduleSrc/chat/Constants';
+import {HELO_LOGO, MODE_GROUP_CHAT} from '../../moduleSrc/chat/Constants';
 import MessagingUI from '../../moduleSrc/chat/messaging/MessagingUI';
 
 
@@ -31,7 +30,9 @@ export default class ChatDemo extends React.Component {
         super(props);
         this.state = {
             messages: INITIAL_MESSAGES2,
+            isModalOpen: true,
         };
+        this.idToDetails = {};
     }
 
     async componentDidMount() {
@@ -66,6 +67,9 @@ export default class ChatDemo extends React.Component {
             name: 'HELO',
         };
 
+        this.idToDetails[SENDER_VISITOR] = { person: { name: 'vis vis', } };
+        this.idToDetails[SENDER_ME] = { person: { name: 'me', } };
+
         const groupInfo = {
             isAdminPosting: false,
             admins: [],
@@ -76,8 +80,8 @@ export default class ChatDemo extends React.Component {
             <Fragment>
                 <MessagingUI location={this.props.location} history={this.props.history}
                              me={me} otherGuy={heloBot}
-                             chatContext={chatContext}
-                             collection={'test'} groupId={'demo'}
+                             chatContext={chatContext} idToDetails={this.idToDetails}
+                             collection={'test'} groupId={'demo'} mode={MODE_GROUP_CHAT}
                              groupInfo={groupInfo} messages={this.state.messages} onUserMsg={this.onUserMsg}
                              onTriggerUpload={null} callFn={null} />
             </Fragment>
