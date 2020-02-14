@@ -55,8 +55,11 @@ public class ThumbnailModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void createVideoThumbnail(String filePath, int maxWidth, int maxHeight, int quality, Promise promise) {
         Bitmap bitmap;
+        String time;
         try {
-            bitmap = retriveVideoFrameFromVideo(filePath);
+            Map<String, Object> map = retriveVideoFrameFromVideo(filePath);
+            bitmap = (Bitmap) map.get("bitmap");
+            time = (String) map.get("time");
         } catch (Exception e) {
             promise.reject("Failed", e);
             return;
@@ -78,23 +81,30 @@ public class ThumbnailModule extends ReactContextBaseJavaModule {
         map.putString("encoded", encoded);
         map.putInt("width", bitmap.getWidth());
         map.putInt("height", bitmap.getHeight());
+        map.putString("time", time);
         promise.resolve(map);
     }
 
-    public static Bitmap retriveVideoFrameFromVideo(String videoPath) {
-        MediaMetadataRetriever mediaMetadataRetriever = null;
+    public static Map<String, Object> retriveVideoFrameFromVideo(String videoPath) {
+        MediaMetadataRetriever retriever = null;
         try {
-            mediaMetadataRetriever = new MediaMetadataRetriever();
+            retriever = new MediaMetadataRetriever();
             if (Build.VERSION.SDK_INT >= 14) {
-                mediaMetadataRetriever.setDataSource(videoPath, new HashMap<String, String>());
+                retriever.setDataSource(videoPath, new HashMap<String, String>());
             } else {
-                mediaMetadataRetriever.setDataSource(videoPath);
+                retriever.setDataSource(videoPath);
             }
-            Bitmap bitmap = mediaMetadataRetriever.getFrameAtTime();
-            return bitmap;
+
+            Bitmap bitmap = retriever.getFrameAtTime();
+            String time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+
+            Map<String, Object> map = new HashMap<>();
+            map.put("bitmap", bitmap);
+            map.put("time", time);
+            return map;
         } finally {
-            if (mediaMetadataRetriever != null) {
-                mediaMetadataRetriever.release();
+            if (retriever != null) {
+                retriever.release();
             }
         }
     }

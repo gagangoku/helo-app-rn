@@ -461,6 +461,7 @@ export const scrollToElemFn = (ref) => {
         console.log('Exception in scrollToElemFn: ', e);
     }
 };
+export const TouchableOpacityRNGH = {};
 
 
 export const WINDOW_INNER_WIDTH = window.innerWidth;

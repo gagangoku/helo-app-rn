@@ -314,23 +314,62 @@ export const navigateToLatLon = (platform, lat, lon) => {
 };
 
 
+const checkFileTypeFromExtension = (fileName, fileType) => {
+    const mimeTypes = [
+        {ext: '.bmp', type: OUTPUT_IMAGE, fileType: 'image/bmp'},
+        {ext: '.jpg', type: OUTPUT_IMAGE, fileType: 'image/jpeg'},
+        {ext: '.jpeg', type: OUTPUT_IMAGE, fileType: 'image/jpeg'},
+        {ext: '.png', type: OUTPUT_IMAGE, fileType: 'image/png'},
+        {ext: '.gif', type: OUTPUT_IMAGE, fileType: 'image/gif'},
+        {ext: '.mpeg', type: OUTPUT_VIDEO, fileType: 'video/mpeg'},
+        {ext: '.mp4', type: OUTPUT_VIDEO, fileType: 'video/mp4'},
+        {ext: '.m4v', type: OUTPUT_VIDEO, fileType: 'video/webm'},
+        {ext: '.mov', type: OUTPUT_VIDEO, fileType: 'video/mp4'},
+        {ext: '.avi', type: OUTPUT_VIDEO, fileType: 'video/x-msvideo'},
+        {ext: '.mp3', type: OUTPUT_AUDIO, fileType: 'audio/mpeg3'},
+        {ext: '.wav', type: OUTPUT_AUDIO, fileType: 'audio/wav'},
+        {ext: '.ogg', type: OUTPUT_AUDIO, fileType: 'audio/ogg'},
+        {ext: '.aac', type: OUTPUT_AUDIO, fileType: 'audio/aac'},
+        {ext: '.pdf', type: OUTPUT_PDF, fileType: 'application/pdf'},
+        {ext: '.doc', type: OUTPUT_FILE, fileType: 'application/msword'},
+        {ext: '.docx', type: OUTPUT_FILE, fileType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'},
+        {ext: '.bz', type: OUTPUT_FILE, fileType: 'application/x-bzip'},
+        {ext: '.bz2', type: OUTPUT_FILE, fileType: 'application/x-bzip2'},
+        {ext: '.gz', type: OUTPUT_FILE, fileType: 'application/gzip'},
+    ];
+
+    fileName = fileName.toLowerCase();
+    if (fileName.endsWith(".webm")) {
+        if (fileType && fileType.startsWith('aud')) {
+            return {ext: '.webm', type: OUTPUT_AUDIO, fileType: 'audio/webm'};
+        }
+        // Else treat it as video
+        return {ext: '.webm', type: OUTPUT_VIDEO, fileType: 'video/webm'};
+    }
+
+    const match = mimeTypes.filter(x => fileName.endsWith(x.ext));
+    return match.length === 1 ? match[0] : null;
+};
 
 export const checkFileType = (fileName, fileType) => {
-    fileName = fileName.toLowerCase();
-    if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg") || fileName.endsWith(".png") || fileName.endsWith(".gif")) {
-        return { maxFileSize: MAX_IMAGE_SIZE_BYTES, serverUrl: IMAGES_URL, type: OUTPUT_IMAGE };
-    } else if (fileName.endsWith(".mp4") || fileName.endsWith(".m4v") || fileName.endsWith(".mov") || (fileName.endsWith(".webm") && fileType.startsWith('vid'))) {
-        return { maxFileSize: MAX_VIDEO_SIZE_BYTES, serverUrl: VIDEOS_URL, type: OUTPUT_VIDEO };
-    } else if (fileName.endsWith(".mp3") || fileName.endsWith('.wav') || fileName.endsWith('.ogg') || fileName.endsWith('.aac') || (fileName.endsWith(".webm") && fileType.startsWith('audio'))) {
-        return { maxFileSize: MAX_AUDIO_SIZE_BYTES, serverUrl: AUDIOS_URL, type: OUTPUT_AUDIO };
-    } else if (fileName.endsWith(".pdf")) {
-        return { maxFileSize: MAX_FILE_SIZE_BYTES, serverUrl: FILES_URL, type: OUTPUT_PDF };
-    } else if (fileName.endsWith(".doc")) {
-        return { maxFileSize: MAX_FILE_SIZE_BYTES, serverUrl: FILES_URL, type: OUTPUT_FILE };
-    } else {
-        return null;
+    const ret = checkFileTypeFromExtension(fileName, fileType);
+    if (ret) {
+        switch (ret.type) {
+            case OUTPUT_IMAGE:
+                return {...ret, maxFileSize: MAX_IMAGE_SIZE_BYTES, serverUrl: IMAGES_URL};
+            case OUTPUT_VIDEO:
+                return {...ret, maxFileSize: MAX_VIDEO_SIZE_BYTES, serverUrl: VIDEOS_URL};
+            case OUTPUT_AUDIO:
+                return {...ret, maxFileSize: MAX_AUDIO_SIZE_BYTES, serverUrl: AUDIOS_URL};
+            case OUTPUT_PDF:
+            case OUTPUT_FILE:
+                return {...ret, maxFileSize: MAX_FILE_SIZE_BYTES, serverUrl: FILES_URL};
+            default:
+                return null;
+        }
     }
 };
+
 
 // Remove null / undefined elements
 export const removeNullUndefined = (obj) => {

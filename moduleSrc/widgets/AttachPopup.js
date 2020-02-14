@@ -33,7 +33,6 @@ export class AttachPopup extends React.PureComponent {
         }];
         this.INPUT_TYPES.forEach(x => {
             x.onClickFn = () => {
-                console.log('form hidden onlick: ', x.ref);
                 x.ref.current.refElem().click();
             };
         });

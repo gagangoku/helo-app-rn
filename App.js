@@ -8,18 +8,12 @@
 import React from 'react';
 import {createAppContainer} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
-import HomeScreen from './src/HomeScreen';
-import {initializeFirebaseNotifications} from './src/util/firebase';
+import HomeScreen from './src/demos/HomeScreen';
 import {setPushyNotificationListeners} from './src/util/pushy';
-import {initFirestore} from './src/util/firestore';
 import ChatDemo from './src/demos/ChatDemo';
 
 
-initializeFirebaseNotifications();
 setPushyNotificationListeners();
-// initFirestore('supply', 352, (x) => {
-//     console.log('cbFn: ', x);
-// });
 
 const homeScreens = [HomeScreen, ChatDemo];
 const allScreens = {};

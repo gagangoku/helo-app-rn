@@ -4,6 +4,7 @@ import {
     Image as ImageOrig,
     ImageBackground,
     NativeModules,
+    PermissionsAndroid,
     ScrollView,
     StatusBar,
     StyleSheet,
@@ -38,7 +39,8 @@ import HTML from 'react-native-render-html';
 import {Player, Recorder} from '@react-native-community/audio-toolkit';
 import rnfs from 'react-native-fs';
 import window from "global";
-import {PermissionsAndroid} from 'react-native';
+import ImagePicker from 'react-native-image-picker';
+import {TouchableOpacity as TouchableOpacityRNGH} from 'react-native-gesture-handler';
 
 
 export const HEIGHT_BUFFER = 30;
@@ -138,7 +140,7 @@ export class Image extends React.Component {
             delete style.border;
         }
         if (!style.width && !style.height) {
-            const M = 200;
+            const M = 100;
             style.width = Math.min(this.state.width || M, style.maxWidth || M);
             style.aspectRatio = this.state.width ? this.state.width / this.state.height : 1;
 
@@ -257,12 +259,14 @@ export class VideoElem extends React.Component {
     async componentDidMount() {
         const { src, width=250, height=250 } = this.props;
         try {
-            const {encoded} = await NativeModules.ThumbnailModule.createVideoThumbnail(src, width, height, 50);
-            this.setState({base64: encoded});
+            const obj = await NativeModules.ThumbnailModule.createVideoThumbnail(src, width, height, 50);
+            const {encoded, time} = obj;
+            this.setState({ base64: encoded, duration: parseInt(time) / 1000 });
         } catch (e) {
             console.log('Exception in getting thumbnail: ', src, e);
         }
     }
+    refElem = () => ({ duration: this.state.duration });
 
     startPlaying = () => {
         StatusBar.setHidden(true);
@@ -335,7 +339,8 @@ class VideoWithControls extends React.Component {
 
     onProgress = ({ currentTime, seekableDuration, ...extra }) => {
         this.setState({ currentTime });
-        this.props.onTimeUpdate({ currentTime, duration: seekableDuration, ...extra });
+        const onTimeUpdateFn = this.props.onTimeUpdate || (() => {});
+        onTimeUpdateFn({ currentTime, duration: seekableDuration, ...extra });
     };
     onBuffer = (elem) => console.log('VideoElem onBuffer: ', elem);
     onError = (err) => console.log('VideoElem onError: ', err);
@@ -477,19 +482,126 @@ class ProgressBar extends React.PureComponent {
     }
 }
 
-export class InputElem extends React.Component {
+class InputTypeFile extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            files: [],
+        };
+    }
+    refElem = () => {
+        const { files } = this.state;
+        const { type, accept, onChange } = this.props;
+        if (type === 'file') {
+            const acceptImg = accept.includes('image/');
+            const acceptVideo = accept.includes('video/');
+            const acceptAudio = accept.includes('audio/');
+            const acceptFiles = accept.includes('application/');
+            let mediaType;
+            if (acceptImg && !acceptVideo && !acceptAudio && !acceptFiles) {
+                mediaType = 'photo';
+            } else if (!acceptImg && acceptVideo && !acceptAudio && !acceptFiles) {
+                mediaType = 'video';
+            } else {
+                mediaType = 'mixed';
+            }
+
+            return {
+                files,
+                click: () => ImagePicker.showImagePicker({ mediaType }, async (response) => {
+                    const file = {...response};
+
+                    // Weird file, nothing to go on
+                    if (!file.uri && !file.path) {
+                        console.log('ERROR: File doesnt have uri or path, skipping: ', response);
+                        return;
+                    }
+
+                    // Get file name
+                    if (!file.name) {
+                        if (file.fileName) {
+                            file.name = file.fileName;
+                        } else if (file.path) {
+                            const splits = file.path.split('/');
+                            file.name = splits[splits.length - 1];
+                        } else if (file.uri) {
+                            const splits = file.uri.split('/');
+                            file.name = splits[splits.length - 1];
+                        } else {
+                            console.log('ERROR: Could not get filename, skipping: ', response);
+                            return;
+                        }
+                    }
+
+                    if (!file.uri) {
+                        file.uri = file.path.startsWith('file:') ? file.path : 'file://' + file.path;
+                    }
+
+                    if (!file.size) {
+                        const stat = await rnfs.stat(file.path);
+                        file.size = stat.size;
+                    }
+
+                    if (!file.type) {
+                        file.type = checkFileType(file.name, '').fileType;
+                    }
+                    delete file.data;
+                    console.log('image picker response: ', file);
+
+                    if (file.uri) {
+                        await new Promise(resolve => this.setState({ files: [file] }, resolve));
+                        onChange(this);
+                    }
+                })
+            };
+        }
+        return { click: () => {}, files };
+    };
+    render() {
+        return <ViewOrig style={{ height: 0, width: 0 }} />;
+    }
+}
+
+class InputTypeText extends React.Component {
+    constructor(props) {
+        super(props);
+        this.ref = React.createRef();
+    }
+    refElem = () => this.ref.current;
+
     render() {
         const style = Array.isArray(this.props.style) ? flattenStyleArray(this.props.style) : ({...this.props.style} || {});
-        if (style.display === 'none') {
-            return <View style={{ height: 0, width: 0 }} />;
+        style.height = style.height || 50;
+        const props = {...this.props, style};
+        return (
+            <TextInput {...props} />
+        );
+    }
+}
+
+export class InputElem extends React.Component {
+    constructor(props) {
+        super(props);
+        this.ref = React.createRef();
+    }
+    refElem = () => this.ref.current.refElem();
+    render() {
+        const props = {...this.props};
+        const { type } = props;
+        if (type === 'file') {
+            return <InputTypeFile {...props} ref={this.ref} />;
         }
-        return <Text>input elem</Text>;
+        if (type === 'text') {
+            delete props.onChange;
+            return <InputTypeText {...props} ref={this.ref} />;
+        }
+        return <TextOrig>Unknown input tag</TextOrig>;
     }
 }
 export class TextareaElem extends React.Component {
     render() {
         const style = Array.isArray(this.props.style) ? flattenStyleArray(this.props.style) : ({...this.props.style} || {});
-        style.height = 50;
+        style.height = style.height || 50;
         const props = {...this.props, style, multiline: true};
         return (
             <TextInput {...props} />
@@ -557,7 +669,7 @@ export const recordAudio = async (timeslice, dataAvailableCbFn) => {
         await new Promise(resolve => recorder.destroy(resolve));
 
         const audioBlob = {
-            uri: 'file://' + path,
+            uri: path.startsWith('file:') ? path : 'file://' + path,         // NOTE: file:// prefix is required in Android
             type: 'audio/aac',
             name,
             size: stat.size,
@@ -590,7 +702,7 @@ export const uploadBlob = async (file) => {
 
     const data = new FormData();
     data.append('file', file);
-    console.log(data);
+    console.log('FormData: ', data);
 
     try {
         const url = format(API_URL + '/v1/blob/uploadBlob?fileType={}&fileName={}', encodeURIComponent(file.type), encodeURIComponent(file.name));
@@ -722,4 +834,5 @@ export {
     AsyncStorage, StyleSheet, Toast, ScrollView, ImageBackground,
     ViewOrig,
     Popover,
+    TouchableOpacityRNGH,
 }

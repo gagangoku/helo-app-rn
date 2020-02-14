@@ -355,7 +355,7 @@ class MessageShell extends React.PureComponent {
                                                                               modalOpen={true} closeFn={() => this.setState({ modalOpen: false })} />;
         return (
             <View key={idx} style={{ ...mStyle.message, alignItems: isOwn ? 'flex-end' : 'flex-start', ...style }}>
-                <View style={{...parentDivStyle, position: 'relative', maxWidth: INNER_WIDTH_MAX - 100, minWidth: 60, fontSize: 15,
+                <View style={{...parentDivStyle, position: 'relative', maxWidth: MESSAGE_SHELL_MAX_WIDTH, minWidth: 60, fontSize: 15,
                     paddingTop, paddingLeft, paddingRight, paddingBottom: 20 }}>
                     {showSenderLine ? senderNameDiv : <View />}
                     {this.props.children}
@@ -492,8 +492,9 @@ class ProgressiveModule extends React.PureComponent {
 
     render () {
         const { message, idx, me, groupId, collection } = this.props;
-        const { imageUrl, videoUrl, text, sender, duration } = message;
-        const watched = message.watched;
+        const { imageUrl, videoUrl, text, sender } = message;
+        const duration = message.duration || 100;
+        const watched = message.watched || 0;
         const leaderboardFn = this.props.leaderboardFn || (() => {});
 
         const texts = [
@@ -504,38 +505,49 @@ class ProgressiveModule extends React.PureComponent {
 
         const index = ((hashCode(imageUrl) % texts.length) + texts.length) % texts.length;
         const whoAllCompletedText = texts[index];
-        const completePercent = Math.min(1, watched / duration);
-        const leftOrRight = sender === me.sender? 'left' : 'right';
-        const trophyHeight = 30;
+        const completePercent = Math.min(1, watched / (duration + 1));
+
+        const lFn = () => leaderboardFn({ idx, message, me, groupId, collection, moduleName: text });
+        const trophyDim = 30;
+        const leaderBoardIcon = (
+            <View style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                <TouchableAnim onPress={lFn}>
+                    <Image src={TROPHY_IMG} style={{ height: trophyDim, width: trophyDim }} />
+                </TouchableAnim>
+            </View>
+        );
+        const right = sender !== me.sender ? leaderBoardIcon : <View />;
+        const left = sender === me.sender ? leaderBoardIcon : <View />;
+
         console.log('loggggg: ', { message, idx, me, groupId, collection, sender, duration, watched, completePercent });
         return (
-            <MessageShell key={idx} {...this.props}>
-                <View style={{ position: 'relative' }}>
-                    <Image src={imageUrl} style={customStyle.imageMessage} onClick={this.openProgressiveModule} />
+            <View style={{ display: 'flex', flexDirection: 'row' }}>
+                {left}
+                <MessageShell key={idx} {...this.props}>
+                    <View style={{ width: 210, marginTop: 5 }}>
+                        <TouchableAnim onPress={this.openProgressiveModule}>
+                            <Image src={imageUrl} style={customStyle.imageMessage} />
+                        </TouchableAnim>
 
-                    <View style={{ }}>
-                        <View style={{ marginTop: 2, marginBottom: 0, fontSize: 14, textAlign: 'center' }}>{text}</View>
-                        <View style={{ height: 15, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-                            <View style={{ width: 25, marginRight: 5 }}>
-                                <TouchableAnim onPress={this.openProgressiveModule} style={{}}>
-                                    <Image src={PLAY_ARROW_ICON} style={{ height: 25, width: 25 }} />
-                                </TouchableAnim>
-                            </View>
-                            <View style={{ width: 'calc(100% - 30px)', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-                                <View style={{ height: 5, width: 100*completePercent + '%', backgroundColor: '#000000' }} />
-                                <View style={{ height: 5, width: 100*(1-completePercent) + '%', backgroundColor: '#ababab' }} />
+                        <View style={{ }}>
+                            <Text style={{ marginTop: 2, marginBottom: 0, fontSize: 14, textAlign: 'center' }}>{text}</Text>
+                            <View style={{ height: 15, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                                <View style={{ width: 25, marginRight: 5 }}>
+                                    <TouchableAnim onPress={this.openProgressiveModule} style={{}}>
+                                        <Image src={PLAY_ARROW_ICON} style={{ height: 25, width: 25 }} />
+                                    </TouchableAnim>
+                                </View>
+                                <View style={{ width: '80%', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                                    <View style={{ height: 5, width: 100*completePercent + '%', backgroundColor: '#000000' }} />
+                                    <View style={{ height: 5, width: 100*(1-completePercent) + '%', backgroundColor: '#c0c0c0' }} />
+                                </View>
                             </View>
                         </View>
+                        <Text style={{ marginTop: 10, fontSize: 12, textAlign: 'center', color: '#505050' }}>{whoAllCompletedText}</Text>
                     </View>
-                    <View style={{ marginTop: 10, fontSize: 12, textAlign: 'center', color: '#505050' }}>{whoAllCompletedText}</View>
-
-                    <View style={{ position: 'absolute', top: '50%', [leftOrRight]: -trophyHeight -10 }}>
-                        <TouchableAnim onPress={() => leaderboardFn({ idx, message, me, groupId, collection, moduleName: text })}>
-                            <Image src={TROPHY_IMG} style={{ height: trophyHeight, width: trophyHeight }} />
-                        </TouchableAnim>
-                    </View>
-                </View>
-            </MessageShell>
+                </MessageShell>
+                {right}
+            </View>
         );
     }
 }
@@ -1151,8 +1163,9 @@ const renderAttachIcon = ({message, idx, type, enabled, disableFn, onNewMsgFn, m
     const fileInputRef = React.createRef();
 
     const onSelectFile = async (elem) => {
-        console.log('elem: ', elem);
-        const blobUrl = await uploadBlob(fileInputRef.current.refElem().files[0]);
+        const files = fileInputRef.current.refElem().files;
+        console.log('files: ', files);
+        const blobUrl = await uploadBlob(files[0]);
         disableFn();
         await onNewMsgFn({ answer: blobUrl, type });
     };
@@ -1204,6 +1217,7 @@ const SHOW_NEW_JOINEE_DISTANCE_THRESHOLD_KM = 10;
 const MIN_SPEECH_RECOGNITION_MS = 3 * 1000;
 const MAX_SPEECH_RECOGNITION_MS = 8 * 1000;
 const INNER_WIDTH_MAX = Math.min(WINDOW_INNER_WIDTH, 450);
+const MESSAGE_SHELL_MAX_WIDTH = INNER_WIDTH_MAX - 100;
 const SCR_WIDTH = Math.min(WINDOW_INNER_WIDTH - 2, INNER_WIDTH_MAX);
 const SEND_ICON = 'https://images-lb.heloprotocol.in/sendButton.png-6412-355572-1556567055483.png';
 const MIC_ICON = 'https://images-lb.heloprotocol.in/micTransparent.png-14784-992191-1562241230129.png';

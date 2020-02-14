@@ -154,13 +154,9 @@ export class InputLine extends React.Component {
     };
     onAttachCompleteFn = (obj) => {
         console.log('onAttachCompleteFn: ', obj);
-        if (obj) {
-            this.props.onNewMsgFn(obj);
-        }
         this.setState({ isPopoverOpen: false, isTrainingModuleFlowOpen: false });
     };
-    submitTrainingModuleFn = ({ imageUrl, moduleName, duration }) => {
-        const { videoUrl } = this.state;
+    submitTrainingModuleFn = ({ moduleName, imageUrl, videoUrl, duration }) => {
         this.onAttachCompleteFn({ imageUrl, moduleName, videoUrl });
         this.props.onNewMsgFn({ answer: moduleName, type: OUTPUT_PROGRESSIVE_MODULE, imageUrl, videoUrl, duration });
     };
@@ -282,7 +278,7 @@ const customStyle = {
     },
     inputMessage: {
         width: '97%',
-        height: 30,
+        height: 50,
         paddingTop: 10,
         border: '1.5px solid #a9a9a9',
         borderRadius: 40,
@@ -312,4 +308,6 @@ const customStyle = {
         marginRight: 2
     },
 };
-const modalStyle = {};
+const modalStyle = {
+    backgroundColor: '#ffffff',
+};

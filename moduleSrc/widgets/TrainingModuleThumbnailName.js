@@ -49,11 +49,13 @@ export class TrainingModuleThumbnailName extends React.PureComponent {
         const btnStyle = moduleName.length <= 3 ? { backgroundColor: '#b9b9b9' } : { backgroundColor: USER_BACKGROUND_COLOR_DARK };
         const img = !imageUrl ? <View /> : <Image src={imageUrl} style={{ maxHeight: 100, maxWidth: 100 }} />;
         return (
-            <View style={{ width: 250, height: 400, fontFamily: CHAT_FONT_FAMILY,
-                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-evenly' }}>
-                <VideoElem src={videoUrl} width="150" height="150" ref={this.videoRef} />
+            <View style={{ width: 250, height: 400, fontFamily: CHAT_FONT_FAMILY, backgroundColor: '#ffffff',
+                           display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-evenly' }}>
+                <VideoElem src={videoUrl} width={150} height={150} ref={this.videoRef} />
                 <InputElem placeholder='  Module name' type="text" style={{fontSize: 14, width: '80%', height: 40, letterSpacing: 1, textAlign: 'center'}}
-                           value={moduleName} onChange={(elem) => this.setState({ moduleName: elem.target.value })} />
+                           value={moduleName}
+                           onChange={(elem) => this.setState({ moduleName: elem.target.value })}
+                           onChangeText={(moduleName) => this.setState({ moduleName })} />
                 {spacer(10)}
 
                 <InputElem type="file" accept={accept} ref={this.imageRef} style={{ display: 'none' }}

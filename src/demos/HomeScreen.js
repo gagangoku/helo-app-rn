@@ -1,6 +1,6 @@
 import React, {Fragment} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
-import {initPushy} from './util/pushy';
+import {StyleSheet, Text} from 'react-native';
+import {initPushy} from '../util/pushy';
 
 
 export default class HomeScreen extends React.Component {
@@ -12,7 +12,6 @@ export default class HomeScreen extends React.Component {
 
     async componentDidMount() {
         initPushy();
-        // initializeFirestore();
     }
 
     render() {

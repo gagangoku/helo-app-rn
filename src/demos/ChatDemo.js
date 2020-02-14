@@ -9,6 +9,7 @@ import {
     OUTPUT_LOCATION,
     OUTPUT_MISSED_CALL,
     OUTPUT_MULTIPLE_CHOICE,
+    OUTPUT_PROGRESSIVE_MODULE,
     OUTPUT_SINGLE_CHOICE,
     OUTPUT_TEXT,
     OUTPUT_VIDEO,
@@ -17,6 +18,7 @@ import {
 import {COOK_ONBOARDING_FLOW, getChatContext} from '../../moduleSrc/chat/bot/ChatUtil';
 import {HELO_LOGO, MODE_GROUP_CHAT} from '../../moduleSrc/chat/Constants';
 import MessagingUI from '../../moduleSrc/chat/messaging/MessagingUI';
+import {TrainingModuleThumbnailName} from '../../moduleSrc/widgets/TrainingModuleThumbnailName';
 
 
 export default class ChatDemo extends React.Component {
@@ -51,6 +53,9 @@ export default class ChatDemo extends React.Component {
         this.setState({ messages });
     };
 
+    submitTrainingModuleFn = ({ imageUrl, moduleName, duration }) => {
+        console.log('imageUrl, moduleName, duration: ', imageUrl, moduleName, duration);
+    };
     render() {
         const me = {
             role: 'cust',
@@ -76,14 +81,22 @@ export default class ChatDemo extends React.Component {
             showMemberAddNotifications: false,
         };
         const chatContext = getChatContext(COOK_ONBOARDING_FLOW);
+
+        const messagingUI = (
+            <MessagingUI location={this.props.location} history={this.props.history}
+                         me={me} otherGuy={heloBot}
+                         chatContext={chatContext} idToDetails={this.idToDetails}
+                         collection={'test'} groupId={'demo'} mode={MODE_GROUP_CHAT}
+                         groupInfo={groupInfo} messages={this.state.messages} onUserMsg={this.onUserMsg}
+                         onTriggerUpload={null} callFn={null} />
+        );
+        const trainingModuleThumbnailName = (
+            <TrainingModuleThumbnailName videoUrl={'https://videos-lb.heloprotocol.in/359-sita.mp4-33195818-945553-1558617313026.mp4'}
+                                         onSubmitFn={this.submitTrainingModuleFn} />
+        );
         return (
             <Fragment>
-                <MessagingUI location={this.props.location} history={this.props.history}
-                             me={me} otherGuy={heloBot}
-                             chatContext={chatContext} idToDetails={this.idToDetails}
-                             collection={'test'} groupId={'demo'} mode={MODE_GROUP_CHAT}
-                             groupInfo={groupInfo} messages={this.state.messages} onUserMsg={this.onUserMsg}
-                             onTriggerUpload={null} callFn={null} />
+                {messagingUI}
             </Fragment>
         );
     }
@@ -101,6 +114,14 @@ const INITIAL_MESSAGES2 = [{
     text: 'Hello',
     timestamp: new Date().getTime(),
     sender: SENDER_VISITOR,
+}, {
+    type: OUTPUT_PROGRESSIVE_MODULE,
+    duration: 497,
+    imageUrl: 'https://images-lb.heloprotocol.in/liq.png-434036-969878-1580287698109.png',
+    videoUrl: 'https://videos-lb.heloprotocol.in/5-bartender-v1.m4v-137295685-954600-1580286556619.mp4',
+    sender: SENDER_VISITOR,
+    text: 'Bar training',
+    timestamp: new Date().getTime(),
 }, {
     type: OUTPUT_TEXT,
     text: 'Hello <b>bold</b>',
