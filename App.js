@@ -12,11 +12,12 @@ import HomeScreen from './src/demos/HomeScreen';
 import {setPushyNotificationListeners} from './src/util/pushy';
 import ChatDemo from './src/demos/ChatDemo';
 import TouchableBug from './src/demos/TouchableBug';
+import DocumentPickerDemo from './src/demos/DocumentPickerDemo';
 
 
 setPushyNotificationListeners();
 
-const homeScreens = [HomeScreen, ChatDemo, TouchableBug];
+const homeScreens = [HomeScreen, ChatDemo, TouchableBug, DocumentPickerDemo];
 const allScreens = {};
 [homeScreens].forEach(y => {
     y.forEach(x => {
@@ -26,7 +27,7 @@ const allScreens = {};
 
 const MainNavigator = createStackNavigator(allScreens, {
     initialRouteName: ChatDemo.URL,
-    // initialRouteName: TouchableBug.URL,
+    // initialRouteName: DocumentPickerDemo.URL,
 });
 
 const App = createAppContainer(MainNavigator);
