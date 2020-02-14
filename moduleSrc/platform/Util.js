@@ -130,6 +130,10 @@ export const getGpsLocation = async () => {
     });
 };
 
+export const fileFromBlob = (blob, filePrefix) => {
+    return new File([blob], filePrefix + '.' + blob.type.split('/')[1], {lastModified: new Date().getTime(), type: blob.type});
+};
+
 export const uploadBlob = async (file) => {
     console.log('file: ', file);
     if (!file) {
@@ -301,7 +305,7 @@ export class AudioElem extends React.Component {
     };
     render() {
         return (
-            <audio controls={true} onTimeUpdate={this.onProgress} ref={this.ref}>
+            <audio controls={true} onTimeUpdate={this.onProgress} ref={this.ref} style={{ outline: 'none' }}>
                 <source src={this.props.src}/>
             </audio>
         );
@@ -320,7 +324,7 @@ export class VideoElem extends React.Component {
         const { src, width=250, height=250, controls=true, type='video/mp4' } = this.props;
         return src.includes('youtube.com') || src.includes('helloeko.com') ?
             <iframe width="300px" height="300px" allowFullScreen={true} webkitallowfullscreen="true" mozallowfullscreen="true" allow="autoplay; fullscreen" src={src} /> :
-            <video width={width} height={height} controls={controls} onTimeUpdate={this.onProgress} ref={this.ref}>
+            <video width={width} height={height} controls={controls} onTimeUpdate={this.onProgress} ref={this.ref} style={{ outline: 'none' }}>
                 <source src={src} type={type} />
                 Your browser does not support the video tag.
             </video>;
@@ -412,7 +416,7 @@ const renderF = (obj, styleOverrides={}) => {
     return (<div {...refObj} {...props}>{obj.props.children}</div>);
 };
 
-export const renderHtmlText = (text) => <div dangerouslySetInnerHTML={{__html: text}} />;
+export const renderHtmlText = (text, styleObj) => <div style={styleObj} dangerouslySetInnerHTML={{__html: text}} />;
 
 export const getUrlParam = (param, loc) => {
     loc = loc || document.location || API_URL;

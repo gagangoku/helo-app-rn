@@ -36,6 +36,8 @@ target 'helo_app_rn' do
 
   pod 'RNFirebase', :path => '../node_modules/react-native-firebase'
 
+  pod 'react-native-video', :path => '../node_modules/react-native-video'
+
   target 'helo_app_rnTests' do
     inherit! :search_paths
     # Pods for testing

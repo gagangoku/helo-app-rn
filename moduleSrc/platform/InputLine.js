@@ -1,5 +1,6 @@
 import React from "react";
 import {
+    fileFromBlob,
     Image,
     InputElem,
     mobileDetect,
@@ -88,8 +89,7 @@ export class InputLine extends React.Component {
     };
     stopRecording = async () => {
         const obj = await this.recorder.stop();
-        const blob = obj.audioBlob;
-        const file = new File([blob], "recording." + blob.type.split('/')[1], {lastModified: new Date().getTime(), type: blob.type});
+        const file = fileFromBlob(obj.audioBlob, 'recording');
         console.log('Audio file: ', file);
 
         const audioUrl = await uploadBlob(file);

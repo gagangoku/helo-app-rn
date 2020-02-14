@@ -42,6 +42,7 @@ export const commonStyle = {
         msUserSelect: 'none',
     },
     actionButton: {
+        color: 'white',
         fontSize: 16,
         fontWeight: '400',
     },

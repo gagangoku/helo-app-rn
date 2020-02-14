@@ -31,7 +31,7 @@ export default class TouchableAnim extends React.PureComponent {
             addedParams.key = this.props.id;
         }
         return (
-            <div style={{...propStyle, ...style}} {...addedParams} onMouseUp={this.handleMouseUp} onMouseDown={this.toggleTouched}>
+            <div {...this.props} style={{...propStyle, ...style}} {...addedParams} onMouseUp={this.handleMouseUp} onMouseDown={this.toggleTouched}>
                 {this.props.children}
             </div>
         );

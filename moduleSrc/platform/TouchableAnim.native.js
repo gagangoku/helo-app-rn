@@ -12,7 +12,7 @@ export default class TouchableAnim extends React.PureComponent {
         const style = Array.isArray(this.props.style) ? flattenStyleArray(this.props.style) : ({...this.props.style} || {});
         return (
             <View style={style}>
-                <TouchableOpacity onPress={this.props.onPress} style={style}>
+                <TouchableOpacity {...this.props} onPress={this.props.onPress} style={style}>
                     {this.props.children}
                 </TouchableOpacity>
             </View>

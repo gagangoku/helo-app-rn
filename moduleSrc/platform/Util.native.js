@@ -17,14 +17,28 @@ import {
 } from 'react-native';
 import ModalOrig from 'react-native-modal';
 import React from "react";
-import {flattenStyleArray} from "../util/Util";
+import {checkFileType, flattenStyleArray} from "../util/Util";
 import {Popover} from 'react-native-modal-popover';
-import {MWEB_URL, PLAY_VIDEO_OVERLAY_ICON} from "../constants/Constants";
+import {
+    API_URL,
+    MWEB_URL,
+    PLAY_ARROW_ICON,
+    PLAY_VIDEO_OVERLAY_ICON,
+    VIDEO_BACK_15_SECS,
+    VIDEO_FORWARD_15_SECS,
+    VIDEO_PAUSE,
+    VIDEO_PLAY
+} from "../constants/Constants";
 import Video from 'react-native-video';
 import Slider from '@react-native-community/slider';
 import WebView from 'react-native-webview';
 import format from 'string-format';
 import {HOME_PAGE_URLS} from "../controller/Urls";
+import HTML from 'react-native-render-html';
+import {Player, Recorder} from '@react-native-community/audio-toolkit';
+import rnfs from 'react-native-fs';
+import window from "global";
+import {PermissionsAndroid} from 'react-native';
 
 
 export const HEIGHT_BUFFER = 30;
@@ -59,6 +73,9 @@ export class View extends React.Component {
             style.fontWeight = '' + fontWeight;
         }
 
+        if (style.display === 'flex') {
+            delete style.display;
+        }
         const props = {...this.props, style};
         return (
             <ViewOrig {...props}>
@@ -84,14 +101,31 @@ export class Text extends React.Component {
     }
 }
 export class Image extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {};
+    }
+    async componentDidMount() {
+        const { src, style } = this.props;
+        if (!style.height && !style.width) {
+            ImageOrig.getSize(src, (width, height) => {
+                console.log('Got image width, height: ', width, height, src);
+                this.setState({ width, height });
+            }, () => {
+                console.log('Failed to load image width, height: ', src);
+            });
+        }
+    }
+
     render() {
         let props = {...this.props};
-        const { src,  } = props;
+        const { src } = props;
         if (src) {
             delete props.src;
         }
 
         // TODO: Fix these properties properly
+        const extra = {};
         const style = props.style ? {...props.style} : {};
         props.style && delete props.style;
         if (style.cursor) {
@@ -103,7 +137,15 @@ export class Image extends React.Component {
         if (style.border) {
             delete style.border;
         }
-        return <ImageOrig source={{ uri: src }} style={style} {...props} />;
+        if (!style.width && !style.height) {
+            const M = 200;
+            style.width = Math.min(this.state.width || M, style.maxWidth || M);
+            style.aspectRatio = this.state.width ? this.state.width / this.state.height : 1;
+
+            style.maxWidth = style.width;
+            style.maxHeight = style.width / style.aspectRatio;
+        }
+        return <ImageOrig source={{ uri: src }} {...props} style={style} {...extra} />;
     }
 }
 
@@ -113,8 +155,95 @@ export class Dummy extends React.Component {
     }
 }
 export class AudioElem extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            ready: false,
+            currentTime: 0,
+            playing: false,
+
+            seeking: false,
+        };
+    }
+    async componentDidMount() {
+        this.player = new Player(this.props.src, { autoDestroy: false, continuesToPlayInBackground: true });
+        await new Promise(resolve => this.player.prepare(resolve));
+        const duration = this.player.duration;
+        console.log('player ready: ', duration);
+        this.setState({ ready: true, duration });
+
+        this.player.on('ended', async (data) => {
+            console.log('player Ended');
+            this.setState({ playing: false, seeking: true });
+            await new Promise(resolve => this.player.seek(0, resolve));
+            this.setState({ seeking: false });
+
+            this.intervalID !== null && clearInterval(this.intervalID);
+        });
+    }
+    componentWillUnmount() {
+        this.intervalID !== null && clearInterval(this.intervalID);
+        this.player && this.player.destroy();
+    }
+
+    intervalFn = () => {
+        const { seeking } = this.state;
+        if (!seeking) {
+            const currentTime = this.player.currentTime;
+            this.setState({ currentTime });
+            console.log('Player currentTime: ', currentTime);
+        }
+    };
+
+    handlePlayPause = async () => {
+        const { playing, seeking } = this.state;
+        console.log('handlePlayPause playing, seeking: ', playing, seeking);
+        if (seeking) {
+            return;
+        }
+
+        if (playing) {
+            this.intervalID !== null && clearInterval(this.intervalID);
+            this.intervalID = null;
+            await new Promise(resolve => this.player.pause(resolve));
+        } else {
+            this.intervalID = setInterval(this.intervalFn, 200);
+            await new Promise(resolve => this.player.play(resolve));
+        }
+        this.setState({ playing: !playing });
+        console.log('Player new state: ', playing);
+    };
+    onSeek = async (data) => {
+        console.log('onSeek: ', data);
+        const { seekTime } = data;
+        this.setState({ currentTime: seekTime, seeking: true });
+        await new Promise(resolve => this.player.seek(seekTime, resolve));
+        this.setState({ seeking: false });
+    };
+
     render() {
-        return <Text>audio element</Text>;
+        const { currentTime, ready, playing, duration, seeking } = this.state;
+        if (!ready) {
+            return <ViewOrig />;
+        }
+
+        const pauseImg = <ImageOrig source={{ uri: VIDEO_PAUSE }} style={{ height: 40, width: 40, opacity: 0.5 }} />;
+        const playImg = <ImageOrig source={{ uri: PLAY_ARROW_ICON }} style={{ height: 30, width: 30, marginLeft: 10 }} />;
+        const minimumTrackTintColor='#F44336', maximumTrackTintColor='#747474', thumbTintColor='#F44336';
+        return (
+            <ViewOrig style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', width: 250 }}>
+                <TouchableWithoutFeedback onPress={this.handlePlayPause}>
+                    {playing ? pauseImg : playImg}
+                </TouchableWithoutFeedback>
+                <ViewOrig style={{ marginLeft: -5, marginTop: 10, width: '100%', maxWidth: 220 }}>
+                    <ProgressBar currentTime={currentTime} duration={duration} toSecScaleFactor={1000}
+                                 onSlideStart={() => {}} onSlideComplete={() => {}} onSlideValueChange={this.onSeek}
+                                 textStyle={{ color: '#727272', fontSize: 13 }}
+                                 {...{ minimumTrackTintColor, maximumTrackTintColor, thumbTintColor }}
+                    />
+                </ViewOrig>
+            </ViewOrig>
+        );
     }
 }
 export class VideoElem extends React.Component {
@@ -127,8 +256,12 @@ export class VideoElem extends React.Component {
     }
     async componentDidMount() {
         const { src, width=250, height=250 } = this.props;
-        const { encoded } = await NativeModules.ThumbnailModule.createVideoThumbnail(src, width, height, 20);
-        this.setState({ base64: encoded });
+        try {
+            const {encoded} = await NativeModules.ThumbnailModule.createVideoThumbnail(src, width, height, 50);
+            this.setState({base64: encoded});
+        } catch (e) {
+            console.log('Exception in getting thumbnail: ', src, e);
+        }
     }
 
     startPlaying = () => {
@@ -141,7 +274,7 @@ export class VideoElem extends React.Component {
     };
 
     render() {
-        const { src, width=250, height=250 } = this.props;
+        const { src, width=200, height=200, controlsAutohideInMs=3000, useWebviewInstead } = this.props;
         const { base64, playing } = this.state;
         if (!base64) {
             return <ViewOrig style={{ height, width }} />;
@@ -157,14 +290,14 @@ export class VideoElem extends React.Component {
                         </ViewOrig>
                         <ViewOrig style={{ position: 'absolute', top: 0, left: 0, height, width,
                             display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                            <ImageOrig source={{ uri: PLAY_VIDEO_OVERLAY_ICON }} style={{ height: 50, width: 50 }} />
+                            <ImageOrig source={{ uri: PLAY_VIDEO_OVERLAY_ICON }} style={{ height: 80, width: 80 }} />
                         </ViewOrig>
                     </ViewOrig>
                 </TouchableHighlight>
             );
         }
 
-        if (USE_WEBVIEW_FOR_VIDEO) {
+        if (useWebviewInstead) {
             const [collection, groupId, idx, user] = ['tmp', 'tmp', 0, 'tmp'];      // TODO: Get from props
             const analyticsUrl = format('{}{}?collection={}&groupId={}&idx={}&user={}&videoUrl={}',
                 MWEB_URL, HOME_PAGE_URLS.videoAnalytics, collection, groupId, idx, user, encodeURIComponent(src));
@@ -183,7 +316,7 @@ export class VideoElem extends React.Component {
                        backdropOpacity={0.5} style={{ margin: 0, padding: 0 }}
                        onRequestClose={this.stopPlaying} onBackdropPress={this.stopPlaying}
                        contentLabel="Example Modal">
-                <VideoWithControls src={src} onTimeUpdate={this.props.onTimeUpdate} />
+                <VideoWithControls src={src} onTimeUpdate={this.props.onTimeUpdate} controlsAutohideInMs={controlsAutohideInMs} />
             </ModalOrig>
         );
     }
@@ -209,17 +342,17 @@ class VideoWithControls extends React.Component {
 
     showControls = () => {
         this.setState({ showControls: true });
-        setTimeout(() => this.setState({ showControls: false }), 2000);
+        setTimeout(() => this.setState({ showControls: false }), this.props.controlsAutohideInMs);
     };
     handlePlayPause = () => {
         const { play } = this.state;
         this.setState({ play: !play, showControls: true });
-        setTimeout(() => this.setState({ showControls: false }), 2000);
+        setTimeout(() => this.setState({ showControls: false }), this.props.controlsAutohideInMs);
     };
     onSeek = (data) => {
         const { seekTime } = data;
-        this.videoRef.current.seek(seekTime);
         this.setState({ currentTime: seekTime });
+        this.videoRef.current.seek(seekTime);
     };
     skipBackward = () => {
         this.videoRef.current.seek(this.state.currentTime - 15);
@@ -252,12 +385,8 @@ class VideoWithControls extends React.Component {
                     skipBackwards={this.skipBackward}
                     skipForwards={this.skipForward}
                 />
-                <ProgressBar
-                    currentTime={currentTime}
-                    duration={duration > 0 ? duration : 0}
-                    onSlideStart={this.handlePlayPause}
-                    onSlideComplete={this.handlePlayPause}
-                    onSlideCapture={this.onSeek}
+                <ProgressBar currentTime={currentTime} duration={duration > 0 ? duration : 0}
+                             onSlideStart={() => {}} onSlideComplete={() => {}} onSlideValueChange={this.onSeek}
                 />
             </ViewOrig>
         );
@@ -282,11 +411,6 @@ class VideoWithControls extends React.Component {
 
 class PlayerControls extends React.PureComponent {
     render() {
-        const VIDEO_BACK_15_SECS = 'https://images-lb.heloprotocol.in/video-backward.png-3372-382572-1581592203963.png';
-        const VIDEO_FORWARD_15_SECS = 'https://images-lb.heloprotocol.in/video-forward.png-3523-471032-1581592233062.png';
-        const VIDEO_PAUSE = 'https://images-lb.heloprotocol.in/video-pause.png-2801-749113-1581592263724.png';
-        const VIDEO_PLAY = 'https://images-lb.heloprotocol.in/video-play.png-2648-388659-1581592273087.png';
-
         const { skipBackwards, skipForwards, onPause, onPlay, playing } = this.props;
         const videoPause = <ImageOrig source={{ uri: VIDEO_PAUSE }} style={{ height: 80, width: 80 }} />;
         const videoPlay = <ImageOrig source={{ uri: VIDEO_PLAY }} style={{ height: 80, width: 80 }} />;
@@ -312,18 +436,21 @@ class PlayerControls extends React.PureComponent {
 
 class ProgressBar extends React.PureComponent {
     getMinutesFromSeconds = (time) => {
+        const { toSecScaleFactor = 1} = this.props;
+        time /= toSecScaleFactor;
         const minutes = time >= 60 ? Math.floor(time / 60) : 0;
         const seconds = Math.floor(time - minutes * 60);
-
         return `${minutes >= 10 ? minutes : '0' + minutes}:${seconds >= 10 ? seconds : '0' + seconds}`;
     };
 
     handleOnSlide = (time) => {
-        this.props.onSlideCapture({ seekTime: time });
+        const { duration } = this.props;
+        this.props.onSlideValueChange({ seekTime: time });
     };
 
     render() {
-        const { currentTime, duration, onSlideStart, onSlideComplete } = this.props;
+        const { currentTime, duration, onSlideStart, onSlideComplete, textStyle={} } = this.props;
+        const { minimumTrackTintColor='#F44336', maximumTrackTintColor='#FFFFFF', thumbTintColor='#F44336' } = this.props;
         const position = this.getMinutesFromSeconds(currentTime);
         const fullDuration = this.getMinutesFromSeconds(duration);
 
@@ -333,17 +460,17 @@ class ProgressBar extends React.PureComponent {
                     value={currentTime}
                     minimumValue={0}
                     maximumValue={duration}
-                    step={1}
+                    step={0.0001}
                     onValueChange={this.handleOnSlide}
                     onSlidingStart={onSlideStart}
                     onSlidingComplete={onSlideComplete}
-                    minimumTrackTintColor={'#F44336'}
-                    maximumTrackTintColor={'#FFFFFF'}
-                    thumbTintColor={'#F44336'}
+                    minimumTrackTintColor={minimumTrackTintColor}
+                    maximumTrackTintColor={maximumTrackTintColor}
+                    thumbTintColor={thumbTintColor}
                 />
                 <ViewOrig style={customStyle.progressBar.timeWrapper}>
-                    <Text style={customStyle.progressBar.timeLeft}>{position}</Text>
-                    <Text style={customStyle.progressBar.timeRight}>{fullDuration}</Text>
+                    <Text style={{...customStyle.progressBar.timeLeft, ...textStyle}}>{position}</Text>
+                    <Text style={{...customStyle.progressBar.timeRight, ...textStyle}}>{fullDuration}</Text>
                 </ViewOrig>
             </ViewOrig>
         );
@@ -402,14 +529,85 @@ export const getUrlSearchParams = (url) => {
 export const isDebugMode = () => {
     return false;
 };
-// export const renderHtmlText = (html) => <WebView source={{ html }} />;
-export const renderHtmlText = (html) => <Text>{html}</Text>;
+export const renderHtmlText = (html, styleObj) => {
+    return (
+        <HTML html={'<div>' + html + '</div>'} tagsStyles={{ div: styleObj }} imagesMaxWidth={Dimensions.get('window').width} />
+    );
+};
 
-export const recordAudio = (timeslice, dataAvailableCbFn) => new Promise(async resolve => {});
+export const recordAudio = async (timeslice, dataAvailableCbFn) => {
+    await requestMicPermission();
+    const name = 'recorder-' + (new Date().getTime()) + '.aac';
+    const recorder = new Recorder(name, { format: 'aac' });
+
+    const [res, path] = await new Promise(resolve => recorder.prepare((a, b) => {
+        resolve([a, b]);
+    }));
+    console.log('recordAudio prepare result: ', res, path);
+
+    const start = () => {
+        console.log('starting recorder.record');
+        recorder.record();
+    };
+    const stop = async () => {
+        await new Promise(resolve => recorder.stop(resolve));
+
+        const stat = await rnfs.stat(path);
+        console.log('file stat: ', stat, path);
+        await new Promise(resolve => recorder.destroy(resolve));
+
+        const audioBlob = {
+            uri: 'file://' + path,
+            type: 'audio/aac',
+            name,
+            size: stat.size,
+        };
+        const audioUrl = audioBlob;
+        const play = () => {};
+        return { audioBlob, audioUrl, play };
+    };
+    return {start, stop};
+};
 
 export const getGpsLocation = async () => {};
 
-export const uploadBlob = async (file) => {};
+export const fileFromBlob = (blob, filePrefix) => {
+    return blob;
+};
+
+export const uploadBlob = async (file) => {
+    console.log('uploadBlob file: ', file);
+    if (!file) {
+        return null;
+    }
+
+    const fileName = file.name.toLowerCase();
+    const { maxFileSize, serverUrl } = checkFileType(fileName, file.type);
+    if (file.size > maxFileSize) {
+        window.alert('Too big');
+        return null;
+    }
+
+    const data = new FormData();
+    data.append('file', file);
+    console.log(data);
+
+    try {
+        const url = format(API_URL + '/v1/blob/uploadBlob?fileType={}&fileName={}', encodeURIComponent(file.type), encodeURIComponent(file.name));
+        const response = await fetch(url, {
+            method: 'POST',
+            body: data,
+        });
+        console.log('Blob upload response: ', response);
+        const text = await response.text();
+        console.log('Blob upload output: ', text);
+        return serverUrl + '/' + text.split('id=')[1];
+    } catch (ex) {
+        console.log('Upload failed: ', ex);
+        window.alert('Failed: ' + ex + '. Make sure image size is within limits');
+        return null;
+    }
+};
 
 export const initWebPush = async (forceUpdate) => {};
 
@@ -423,6 +621,35 @@ export const scrollToBottomFn = () => {};
 export const scrollToElemFn = (ref) => {};
 export const resizeForKeyboard = ({ mode, msgToScrollTo, cbFn }) => {};
 
+
+export const requestMicPermission = async () => {
+    try {
+        const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+            {
+                title: 'Microphone permission',
+                message:
+                    'Cool Photo App needs access to your camera ' +
+                    'so you can take awesome pictures.',
+                buttonNeutral: 'Ask Me Later',
+                buttonNegative: 'Cancel',
+                buttonPositive: 'OK',
+            },
+        );
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+            console.log('requestMicPermission: You can use the mic');
+            return true;
+        } else {
+            console.log('requestMicPermission: Mic permission denied');
+            return false;
+        }
+    } catch (err) {
+        console.warn(err);
+        return false;
+    }
+};
+
+
+
 export const WINDOW_INNER_WIDTH = Dimensions.get('window').width;
 export const WINDOW_INNER_HEIGHT = Dimensions.get('window').height;
 
@@ -430,7 +657,6 @@ console.log('WINDOW_INNER_WIDTH: ', WINDOW_INNER_WIDTH);
 console.log('WINDOW_INNER_HEIGHT: ', WINDOW_INNER_HEIGHT);
 
 
-const USE_WEBVIEW_FOR_VIDEO = false;
 const customStyle = {
     container: {
         flex: 1,

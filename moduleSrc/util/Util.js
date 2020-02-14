@@ -101,11 +101,13 @@ export const actionButton = (text, cbFn, {width, height, style}={}) => {
     height = height || 50;
     const fontSize = (style && style.fontSize) || commonStyle.actionButton.fontSize;
     return (
-        <View style={{...commonStyle.actionButtonContainer, ...style, width, height}} onClick={cbFn} key={text}>
-            <Text style={{...commonStyle.actionButton, fontSize}}>
-                {text}
-            </Text>
-        </View>
+        <TouchableAnim onPress={cbFn} key={text}>
+            <View style={{...commonStyle.actionButtonContainer, ...style, width, height}}>
+                <Text style={{...commonStyle.actionButton, fontSize}}>
+                    {text}
+                </Text>
+            </View>
+        </TouchableAnim>
     );
 };
 
@@ -319,7 +321,7 @@ export const checkFileType = (fileName, fileType) => {
         return { maxFileSize: MAX_IMAGE_SIZE_BYTES, serverUrl: IMAGES_URL, type: OUTPUT_IMAGE };
     } else if (fileName.endsWith(".mp4") || fileName.endsWith(".m4v") || fileName.endsWith(".mov") || (fileName.endsWith(".webm") && fileType.startsWith('vid'))) {
         return { maxFileSize: MAX_VIDEO_SIZE_BYTES, serverUrl: VIDEOS_URL, type: OUTPUT_VIDEO };
-    } else if (fileName.endsWith(".mp3") || fileName.endsWith('.wav') || fileName.endsWith('.ogg') || (fileName.endsWith(".webm") && fileType.startsWith('audio'))) {
+    } else if (fileName.endsWith(".mp3") || fileName.endsWith('.wav') || fileName.endsWith('.ogg') || fileName.endsWith('.aac') || (fileName.endsWith(".webm") && fileType.startsWith('audio'))) {
         return { maxFileSize: MAX_AUDIO_SIZE_BYTES, serverUrl: AUDIOS_URL, type: OUTPUT_AUDIO };
     } else if (fileName.endsWith(".pdf")) {
         return { maxFileSize: MAX_FILE_SIZE_BYTES, serverUrl: FILES_URL, type: OUTPUT_PDF };

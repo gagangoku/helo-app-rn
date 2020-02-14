@@ -1,5 +1,6 @@
 import React from "react";
 import {
+    fileFromBlob,
     HEIGHT_BUFFER,
     Image,
     InputElem,
@@ -92,9 +93,12 @@ export class InputLine extends React.Component {
         this.recorder.start();
     };
     stopRecording = async () => {
+        if (!this.recorder) {
+            return;
+        }
         const obj = await this.recorder.stop();
-        const blob = obj.audioBlob;
-        const file = new File([blob], "recording." + blob.type.split('/')[1], {lastModified: new Date().getTime(), type: blob.type});
+
+        const file = fileFromBlob(obj.audioBlob, 'recording');
         console.log('Audio file: ', file);
 
         const audioUrl = await uploadBlob(file);
@@ -116,7 +120,7 @@ export class InputLine extends React.Component {
             console.log('mic micMouseDown');
             this.setState({showExpanded: true, recordingStartTimeMs: new Date().getTime(), numDots: 0});
             this.intervalId = setInterval(() => this.setState({numDots: this.state.numDots + 1}), 200);
-            this.timeoutId = setTimeout(this.startRecording, 500);
+            this.timeoutId = setTimeout(this.startRecording, 100);
         }
     };
     onTouchEnd = () => {
@@ -189,7 +193,7 @@ export class InputLine extends React.Component {
                               onMouseDown={this.micMouseDown} onTouchStart={this.onTouchStart}
                               onMouseUp={this.micMouseUp} onTouchEnd={this.onTouchEnd} />;
         const micBtn  = (
-            <TouchableAnim style={{ height: 40, width: 40 }}>
+            <TouchableAnim style={{ height: 40, width: 40 }} onPressIn={this.micMouseDown} onPressOut={this.micMouseUp}>
                 <Image src={micIcon} style={{ height: 40, width: 40 }} />
             </TouchableAnim>
         );

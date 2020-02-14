@@ -2,7 +2,7 @@ import React from 'react';
 import {recordAudio, spacer, View} from "../util/Util";
 import {MIC_BLACK_ICON, MIC_RED_ICON} from "../constants/Constants";
 import TouchableAnim from "../platform/TouchableAnim";
-import {Image, Text} from "../platform/Util";
+import {fileFromBlob, Image, Text} from "../platform/Util";
 
 
 export default class MicRecorderWidget extends React.Component {
@@ -46,7 +46,8 @@ export default class MicRecorderWidget extends React.Component {
             obj.play();
             this.setState({ recorder: null, recEndTimeMs: new Date().getTime(), isRecording: false, opacity: 1 });
 
-            const file = new File([obj.audioBlob], "audio.webm", { type: "audio/webm", lastModified: new Date().getTime() });
+            const file = fileFromBlob(obj.audioBlob, 'audio');
+            // const file = new File([obj.audioBlob], "audio.webm", { type: "audio/webm", lastModified: new Date().getTime() });
             console.log('Audio file: ', file);
             this.props.onDoneFn(file);
         }

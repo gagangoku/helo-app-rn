@@ -21,6 +21,7 @@ import com.facebook.react.bridge.Promise;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.lang.Exception;
 
 public class ThumbnailModule extends ReactContextBaseJavaModule {
     private static ReactApplicationContext reactContext;
@@ -53,7 +54,13 @@ public class ThumbnailModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void createVideoThumbnail(String filePath, int maxWidth, int maxHeight, int quality, Promise promise) {
-        Bitmap bitmap = retriveVideoFrameFromVideo(filePath);
+        Bitmap bitmap;
+        try {
+            bitmap = retriveVideoFrameFromVideo(filePath);
+        } catch (Exception e) {
+            promise.reject("Failed", e);
+            return;
+        }
 
         int h = bitmap.getHeight();
         int w = bitmap.getWidth();
@@ -85,9 +92,6 @@ public class ThumbnailModule extends ReactContextBaseJavaModule {
             }
             Bitmap bitmap = mediaMetadataRetriever.getFrameAtTime();
             return bitmap;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
         } finally {
             if (mediaMetadataRetriever != null) {
                 mediaMetadataRetriever.release();

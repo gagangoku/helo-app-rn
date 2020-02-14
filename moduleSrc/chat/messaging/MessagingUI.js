@@ -458,16 +458,17 @@ class TextMessage extends React.PureComponent {
         if (!text) {
             return '';
         }
+        const styleObj = (language === LANG_HINDI || language === LANG_THAI) ? customStyle.textMessageDivLarger : customStyle.textMessageDivNormal;
+
         text = addPhoneTracking(text, me.sender, message.sender);
         if (text.includes('<div') || text.includes('<b') || text.includes('<a')) {
-            text = renderHtmlText(text);
+            text = renderHtmlText(text, styleObj);
         } else {
-            text = <Text>{text}</Text>;
+            text = <Text style={styleObj}>{text}</Text>;
         }
-        const styleObj = (language === LANG_HINDI || language === LANG_THAI) ? customStyle.textMessageDivLarger : customStyle.textMessageDivNormal;
         return (
             <MessageShell key={idx} {...this.props} message={{...message, type: OUTPUT_TEXT}}>
-                <View style={styleObj}>{text}</View>
+                <View style={{}}>{text}</View>
             </MessageShell>
         );
     }
@@ -564,7 +565,9 @@ class ImageMessage extends React.PureComponent {
         }
         return (
             <MessageShell key={idx} {...this.props}>
-                <Image src={imageUrl} style={customStyle.imageMessage} onClick={this.openPic} />
+                <TouchableAnim onPress={this.openPic}>
+                    <Image src={imageUrl} style={customStyle.imageMessage} />
+                </TouchableAnim>
             </MessageShell>
         );
     }
@@ -625,7 +628,7 @@ class VideoMessage extends React.PureComponent {
         return (
             <MessageShell key={'' + idx} {...this.props}>
                 <View style={{ borderRadius: 16, padding: 5 }}>
-                    <VideoElem src={videoUrl} onTimeUpdate={this.onTimeUpdate} />
+                    <VideoElem src={videoUrl} onTimeUpdate={this.onTimeUpdate} useWebviewInstead={true} />
                 </View>
                 <LikesWidget id={idx} />
             </MessageShell>
@@ -742,7 +745,7 @@ class LocationMessage extends React.PureComponent {
                     <View style={customStyle.locationImgCtr}>
                         <TouchableAnim onPress={() => this.onOpenLocation(location)}>
                             <Image src={staticMapsImg(location.lat, location.lng, STATIC_MAPS_IMG_HEIGHT, STATIC_MAPS_IMG_WIDTH)}
-                                 style={customStyle.locationImg}/>
+                                 style={customStyle.locationImg} />
                         </TouchableAnim>
                     </View>
                     <Text style={customStyle.locationText}>{text}</Text>
@@ -768,10 +771,8 @@ class MissedCallMessage extends React.PureComponent {
         const whoToWho = isOwn ? 'Me -> ' + otherGuy.name : otherGuy.name + ' -> Me';
         return (
             <View style={customStyle.missedCallCtr} key={idx + ''}>
-                <View style={{...customStyle.missedCall, display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                    {icon}
-                    <Text style={{}}>&nbsp;{whoToWho}: call missed - {timeDisplay}&nbsp;</Text>
-                </View>
+                {icon}
+                <Text style={customStyle.missedCall}>&nbsp;{whoToWho}: call missed - {timeDisplay}&nbsp;</Text>
             </View>
         );
     }
@@ -866,11 +867,10 @@ class OptionsMessage extends React.PureComponent {
         console.log('initialSelected: ', initialSelected);
 
 
-
         const selections = getKeysWhereValueIs(this.state.selections, true);
         const doneBtn = selections.length > 0 ?
             actionButton('DONE', this.doneFn, {minWidth: 100, width: 100, height: 40}) :
-            actionButton('DONE', () => {}, {minWidth: 100, width: 100, height: 40, style: {backgroundColor: '#969696'}});
+            actionButton('DONE', () => {}, {minWidth: 100, width: 100, height: 40, style: {backgroundColor: '#c1c1c1', color: '#717171'}});
 
         const textDisplay = <TextMessage idx={idx} key={idx} text={text}
                                          message={{...message, type: OUTPUT_TEXT, askInput: false}} me={me} otherGuy={otherGuy} />;
@@ -1044,7 +1044,7 @@ class NewJoinee extends React.PureComponent {
 
         const distKms = ipLocation && loc ? haversineDistanceKms(ipLocation, loc) : 1000;
         // console.log('ipLocation, loc, dist: ', ipLocation, loc, distKms);
-        const text = distKms < SHOW_NEW_JOINEE_DISTANCE_THRESHOLD_KM ? <View>{senderName} joined - {distKms.toFixed(1)} km near you</View> : <View>{senderName} joined</View>;
+        const text = distKms < SHOW_NEW_JOINEE_DISTANCE_THRESHOLD_KM ? <Text>{senderName} joined - {distKms.toFixed(1)} km near you</Text> : <Text>{senderName} joined</Text>;
 
         if (!showMemberAddNotifications) {
             return (<View key={idx + ''} />);
@@ -1209,7 +1209,7 @@ const SEND_ICON = 'https://images-lb.heloprotocol.in/sendButton.png-6412-355572-
 const MIC_ICON = 'https://images-lb.heloprotocol.in/micTransparent.png-14784-992191-1562241230129.png';
 const MIC_ICON_DISABLED = 'https://images-lb.heloprotocol.in/micDisabled.png-10163-675042-1564599701870.png';
 const STATIC_MAPS_IMG_HEIGHT = 200;
-const STATIC_MAPS_IMG_WIDTH = 300;
+const STATIC_MAPS_IMG_WIDTH = 200;
 const ID_CARD_WIDTH = 390;
 const customStyle = {
     paper: {
@@ -1285,17 +1285,17 @@ const customStyle = {
 
     missedCallCtr: {
         display: 'flex',
+        flexDirection: 'row',
         justifyContent: 'center',
+        alignItems: 'center',
         margin: 5,
     },
     missedCall: {
         color: '#ff0000',
-        backgroundColor: '#efefef',
         fontSize: 13,
         padding: 5,
+        backgroundColor: '#efefef',
         borderRadius: 10,
-        // maxWidth: INNER_WIDTH_MAX - 100,
-        // width: 'fit-content',
     },
 
     attachButton: {
@@ -1318,7 +1318,7 @@ const customStyle = {
     },
 
     locationCtr: {
-        padding: 10,
+        padding: 5,
     },
     locationImgCtr: {
         borderRadius: 10,
