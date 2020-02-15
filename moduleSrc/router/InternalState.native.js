@@ -1,6 +1,6 @@
 import {getDetailsFromPhone, getGroupInfo, getImageUrl, getPersonDetails} from "../util/Util";
 import {getLocationFromIPAddress} from "../util/Api";
-import {firebase} from '../platform/firebase';
+import {firebase} from '../platform/firebase.native';
 import {
     CHAT_MESSAGES_DOC_NAME_PREFIX,
     FIREBASE_CHAT_MESSAGES_DB_NAME,
@@ -11,8 +11,15 @@ import {
 import lodash from "lodash";
 import {AsyncStorage} from "../platform/Util";
 import LRU from 'lru-cache';
-import {createStore} from "redux";
-import {reducerFn} from "./reducers";
+import {
+    OUTPUT_AUDIO,
+    OUTPUT_IMAGE, OUTPUT_JOB_ACTIONABLE, OUTPUT_JOB_REFERENCE,
+    OUTPUT_LOCATION,
+    OUTPUT_MISSED_CALL,
+    OUTPUT_NONE,
+    OUTPUT_TEXT,
+    OUTPUT_VIDEO
+} from "../chat/Questions";
 
 
 const GROUP_DOCS_1 = 'groupDocs1';
@@ -21,8 +28,6 @@ const CHAT_DOCS_1  = 'chatDocs1';
 const CHAT_DOCS_2  = 'chatDocs2';
 const PERSIST_KEY_ID_TO_DETAILS = 'persist-idToDetails';
 
-
-const store = createStore(reducerFn);
 
 const globalState = {
     observers: [],
@@ -39,8 +44,7 @@ const globalState = {
 };
 setInterval(() => persistOffline(globalState.idToDetails, PERSIST_KEY_ID_TO_DETAILS), 2 * 60 * 1000);
 
-const setupInternalState = async (watchFn) => {
-    watchFn = watchFn || (() => {});
+const setupInternalState = async (store) => {
     globalState.idToDetails = await readFromOffline(PERSIST_KEY_ID_TO_DETAILS);
 
     const ipLocationPromise = getLocationFromIPAddress();
@@ -54,17 +58,17 @@ const setupInternalState = async (watchFn) => {
     }
 
     globalState.ipLocation = await ipLocationPromise;
-    setupObservers({ role, id, watchFn });
+    setupObservers({ role, id, store });
 };
 
-const setupObservers = ({ role, id, watchFn }) => {
+const setupObservers = ({ role, id, store }) => {
     const nowMs = new Date().getTime();
     const roleId = role + ':' + id;
     const csrole = role === 'supply' ? 'supplyId' : 'customerId';
 
     const db = firebase.firestore();
-    const groupsCol = this.db.collection(FIREBASE_GROUPS_DB_NAME);
-    const chatCol = this.db.collection(FIREBASE_CHAT_MESSAGES_DB_NAME);
+    const groupsCol = db.collection(FIREBASE_GROUPS_DB_NAME);
+    const chatCol = db.collection(FIREBASE_CHAT_MESSAGES_DB_NAME);
 
     const queryRef1 = groupsCol.where('isPrivate', '==', false);        // Public groups
     const queryRef2 = GROUPS_SUPER_ADMINS.includes(roleId) ?            // Private groups
@@ -73,14 +77,14 @@ const setupObservers = ({ role, id, watchFn }) => {
     const queryRef3 = chatCol.where('members', 'array-contains', roleId);
     const queryRef4 = chatCol.where(csrole, '==', parseInt(id));
 
-    const observer1 = queryRef1.onSnapshot((snapshot) => funcGroups(roleId, snapshot, nowMs, GROUP_DOCS_1, watchFn));
-    const observer2 = queryRef2.onSnapshot((snapshot) => funcGroups(roleId, snapshot, nowMs, GROUP_DOCS_2, watchFn));
-    const observer3 = queryRef3.onSnapshot((snapshot) => funcChatMessages(roleId, snapshot, nowMs, CHAT_DOCS_1, watchFn));
-    const observer4 = queryRef4.onSnapshot((snapshot) => funcChatMessages(roleId, snapshot, nowMs, CHAT_DOCS_2, watchFn));
+    const observer1 = queryRef1.onSnapshot((snapshot) => funcGroups(roleId, snapshot, nowMs, GROUP_DOCS_1, store));
+    const observer2 = queryRef2.onSnapshot((snapshot) => funcGroups(roleId, snapshot, nowMs, GROUP_DOCS_2, store));
+    const observer3 = queryRef3.onSnapshot((snapshot) => funcChatMessages(roleId, snapshot, nowMs, CHAT_DOCS_1, store));
+    const observer4 = queryRef4.onSnapshot((snapshot) => funcChatMessages(roleId, snapshot, nowMs, CHAT_DOCS_2, store));
     globalState.observers.push(observer1, observer2, observer3, observer4);
 };
 
-const funcGroups = async (roleId, snapshot, nowMs, docsKey, watchFn) => {
+const funcGroups = async (roleId, snapshot, nowMs, docsKey, store) => {
     console.log('roleId, snapshot, nowMs, docsKey: ', roleId, snapshot, nowMs, docsKey);
     const { numUpdates, documentsCache } = globalState;
 
@@ -102,7 +106,7 @@ const funcGroups = async (roleId, snapshot, nowMs, docsKey, watchFn) => {
 
             const numUnreads = numUnreadsFn(data, roleId);
             const timestamp = messages.length > 0 ? messages[messages.length -1].timestamp : createdAt;
-            const subHeading = messages.length > 0 ? this.summary(messages[messages.length -1]) : '';
+            const subHeading = messages.length > 0 ? summary(messages[messages.length -1]) : '';
             docs.push({ collection: FIREBASE_GROUPS_DB_NAME, groupId, title: name, avatar: getImageUrl(photo),
                         numUnreads, timestamp, subHeading, messages, members });
         }
@@ -111,10 +115,10 @@ const funcGroups = async (roleId, snapshot, nowMs, docsKey, watchFn) => {
 
     numUpdates[docsKey]++;
     documentsCache[docsKey] = docs;
-    watchFn(globalState);
+    store.dispatch({ action: 'set', type: 'set', state: globalState });
 };
 
-const funcChatMessages = async (roleId, snapshot, nowMs, docsKey, watchFn) => {
+const funcChatMessages = async (roleId, snapshot, nowMs, docsKey, store) => {
     console.log('roleId, snapshot, nowMs, docsKey: ', roleId, snapshot, nowMs, docsKey);
     const { numUpdates, documentsCache, idToDetails } = globalState;
 
@@ -135,7 +139,7 @@ const funcChatMessages = async (roleId, snapshot, nowMs, docsKey, watchFn) => {
             const messages = data.messages || [];
             const members = data.members || groupId.split(',');
             const timestamp = messages.length > 0 ? messages[messages.length -1].timestamp : -1;
-            const subHeading = messages.length > 0 ? this.summary(messages[messages.length -1]) : '';
+            const subHeading = messages.length > 0 ? summary(messages[messages.length -1]) : '';
             docs.push({ collection: FIREBASE_CHAT_MESSAGES_DB_NAME, groupId, title, avatar, numUnreads, timestamp, subHeading, messages, members });
         }
     });
@@ -157,7 +161,7 @@ const funcChatMessages = async (roleId, snapshot, nowMs, docsKey, watchFn) => {
 
     numUpdates[docsKey]++;
     documentsCache[docsKey] = docs;
-    watchFn(globalState);
+    store.dispatch({ action: 'set', type: 'set', state: globalState });
 };
 
 const numUnreadsFn = (doc, roleId) => {
@@ -185,7 +189,32 @@ const lruCache = new LRU({
     },
 });
 
+const summary = (message) => {
+    switch (message.type) {
+        case OUTPUT_NONE:
+        case OUTPUT_TEXT:
+            const text = message.text.replace(/<br>/g, ' ').replace(/<br\/>/g, ' ');
+            return text.substr(0, Math.min(20, message.text.length)) + ' ...';
+        case OUTPUT_IMAGE:
+            return 'Image';
+        case OUTPUT_AUDIO:
+            return 'Audio';
+        case OUTPUT_VIDEO:
+            return 'Video';
+        case OUTPUT_LOCATION:
+            return 'Location';
+        case OUTPUT_MISSED_CALL:
+            return 'Missed call';
+        case OUTPUT_JOB_ACTIONABLE:
+        case OUTPUT_JOB_REFERENCE:
+            return 'Job';
+
+        default:
+            console.log('Unknown question type: ', message);
+            return '';
+    }
+};
+
 export {
     setupInternalState,
-    store,
 }

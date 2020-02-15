@@ -6,7 +6,6 @@
  */
 
 import React from 'react';
-import {createAppContainer} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
 import HomeScreen from './src/demos/HomeScreen';
 import {setPushyNotificationListeners} from './src/util/pushy';
@@ -16,16 +15,18 @@ import DocumentPickerDemo from './src/demos/DocumentPickerDemo';
 import AnalyticsDemo from './src/demos/AnalyticsDemo';
 import {initFirebase} from './moduleSrc/platform/firebase.native';
 import GroupPageDemo from './src/demos/GroupPageDemo';
-import {setupInternalState, store} from './moduleSrc/router/InternalState.native';
-import { Provider } from 'react-redux';
+import {setupInternalState} from './moduleSrc/router/InternalState.native';
+import {connect, Provider} from 'react-redux';
 import GroupListDemo from './src/demos/GroupListDemo';
-import {AsyncStorage} from './moduleSrc/platform/Util';
-import {PHONE_NUMBER_KEY} from './moduleSrc/constants/Constants';
+import {
+    createNavigationReducer,
+    createReactNavigationReduxMiddleware,
+    createReduxContainer,
+} from 'react-navigation-redux-helpers';
+import {applyMiddleware, combineReducers, createStore} from 'redux';
+import {reducerFn} from './moduleSrc/router/reducers';
 
 
-AsyncStorage.setItem(PHONE_NUMBER_KEY, '9008781096').then(() => {
-    setupInternalState();
-});
 setPushyNotificationListeners();
 initFirebase();
 
@@ -37,15 +38,44 @@ const allScreens = {};
     });
 });
 
-const MainNavigator = createStackNavigator(allScreens, {
+const AppNavigator = createStackNavigator(allScreens, {
     // initialRouteName: ChatDemo.URL,
     initialRouteName: GroupListDemo.URL,
 });
 
-const App = createAppContainer(MainNavigator);
-const AppReduxStore = (
-    <Provider store={store}>
-        <App />
-    </Provider>
+
+const navReducer = createNavigationReducer(AppNavigator);
+const appReducer = combineReducers({
+    nav: navReducer,
+    set: reducerFn,
+});
+const middleware = createReactNavigationReduxMiddleware(
+    state => state.nav,
 );
-export default AppReduxStore;
+
+const App = createReduxContainer(AppNavigator);
+const mapStateToProps = (state) => ({
+    state: state.nav,
+});
+const AppWithNavigationState = connect(mapStateToProps)(App);
+
+const store = createStore(
+    appReducer,
+    applyMiddleware(middleware),
+);
+setupInternalState(store);
+
+class Application extends React.Component {
+    render() {
+        return (
+            <Provider store={store}>
+                <AppWithNavigationState />
+            </Provider>
+        );
+    }
+}
+
+export {
+    Application,
+    store,
+}

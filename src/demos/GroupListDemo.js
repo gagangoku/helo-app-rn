@@ -1,9 +1,9 @@
 import React from 'react';
 import {FIREBASE_GROUPS_DB_NAME} from '../../moduleSrc/constants/Constants';
-import {store} from '../../moduleSrc/router/InternalState.native';
 import {GroupListUI} from '../../moduleSrc/chat/groups/GroupListController';
 import {View} from '../../moduleSrc/platform/Util';
 import {sumFn} from '../../moduleSrc/util/Util';
+import {store} from '../../App';
 
 
 export default class GroupListDemo extends React.Component {
@@ -20,9 +20,10 @@ export default class GroupListDemo extends React.Component {
     }
 
     async componentDidMount() {
-        console.log('GroupListDemo componentDidMount: ', this.props);
+        console.log('GroupListDemo componentDidMount: ', this.props, this.state);
         store.subscribe(() => {
             const state = store.getState();
+            console.log('store.subscribe: ', state);
             this.setState({ state });
         });
     }
