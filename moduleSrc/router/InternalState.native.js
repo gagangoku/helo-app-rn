@@ -13,7 +13,9 @@ import {AsyncStorage} from "../platform/Util";
 import LRU from 'lru-cache';
 import {
     OUTPUT_AUDIO,
-    OUTPUT_IMAGE, OUTPUT_JOB_ACTIONABLE, OUTPUT_JOB_REFERENCE,
+    OUTPUT_IMAGE,
+    OUTPUT_JOB_ACTIONABLE,
+    OUTPUT_JOB_REFERENCE,
     OUTPUT_LOCATION,
     OUTPUT_MISSED_CALL,
     OUTPUT_NONE,
@@ -45,6 +47,12 @@ const globalState = {
 setInterval(() => persistOffline(globalState.idToDetails, PERSIST_KEY_ID_TO_DETAILS), 2 * 60 * 1000);
 
 const setupInternalState = async (store) => {
+    store.dispatch({ type: 'set', state: { init: true } });
+    // For testing:
+    // setTimeout(() => {
+    //     store.dispatch({ action: 'set', type: 'set', state: {hello: 'world2'} });
+    // }, 5000);
+
     globalState.idToDetails = await readFromOffline(PERSIST_KEY_ID_TO_DETAILS);
 
     const ipLocationPromise = getLocationFromIPAddress();
@@ -115,7 +123,7 @@ const funcGroups = async (roleId, snapshot, nowMs, docsKey, store) => {
 
     numUpdates[docsKey]++;
     documentsCache[docsKey] = docs;
-    store.dispatch({ action: 'set', type: 'set', state: globalState });
+    store.dispatch({ type: 'set', state: globalState });
 };
 
 const funcChatMessages = async (roleId, snapshot, nowMs, docsKey, store) => {
@@ -161,7 +169,7 @@ const funcChatMessages = async (roleId, snapshot, nowMs, docsKey, store) => {
 
     numUpdates[docsKey]++;
     documentsCache[docsKey] = docs;
-    store.dispatch({ action: 'set', type: 'set', state: globalState });
+    store.dispatch({ type: 'set', state: globalState });
 };
 
 const numUnreadsFn = (doc, roleId) => {

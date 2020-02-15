@@ -289,8 +289,8 @@ export class ConfigurableTopBar extends React.Component {
         return (
             <View style={{ ...custom.root, height: ConfigurableTopBar.HEIGHT, width: '100%' }}>
                 <View style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>{left}</View>
-                    <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', paddingRight: 5 }}>{right}</View>
+                    <View style={{ flex: 2, display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>{left}</View>
+                    <View style={{ flex: 1, display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', paddingRight: 5 }}>{right}</View>
                 </View>
             </View>
         );

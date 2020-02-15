@@ -838,12 +838,16 @@ export const computeLeaderBoardPoints = ({ key, roleId, watched, duration, lastU
 };
 
 export const getCircularImage = ({ src, dim, cbFn, border }) => {
+    const borderStyle = {};
     if (border === undefined) {
         border = `1px solid ${PERSON_BORDER_COLOR}`;
+        borderStyle.borderWidth = 1;
+        borderStyle.borderStyle = 'solid';
+        borderStyle.borderColor = PERSON_BORDER_COLOR;
     }
     return (
-        <TouchableAnim onPress={cbFn} style={{ height: dim, width: dim, borderRadius: dim/2, border }}>
-            <Image src={src} style={{ height: dim, width: dim, borderRadius: dim/2, objectFit: 'cover' }} />
+        <TouchableAnim onPress={cbFn} style={{ height: dim, width: dim, borderRadius: dim/2, borderWidth: 0 }}>
+            <Image src={src} style={{ height: dim, width: dim, borderRadius: dim/2, objectFit: 'cover', border, ...borderStyle }} />
         </TouchableAnim>
     );
 };

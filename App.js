@@ -16,15 +16,10 @@ import AnalyticsDemo from './src/demos/AnalyticsDemo';
 import {initFirebase} from './moduleSrc/platform/firebase.native';
 import GroupPageDemo from './src/demos/GroupPageDemo';
 import {setupInternalState} from './moduleSrc/router/InternalState.native';
-import {connect, Provider} from 'react-redux';
 import GroupListDemo from './src/demos/GroupListDemo';
-import {
-    createNavigationReducer,
-    createReactNavigationReduxMiddleware,
-    createReduxContainer,
-} from 'react-navigation-redux-helpers';
-import {applyMiddleware, combineReducers, createStore} from 'redux';
+import {createStore} from 'redux';
 import {reducerFn} from './moduleSrc/router/reducers';
+import {createAppContainer} from 'react-navigation';
 
 
 setPushyNotificationListeners();
@@ -42,38 +37,10 @@ const AppNavigator = createStackNavigator(allScreens, {
     // initialRouteName: ChatDemo.URL,
     initialRouteName: GroupListDemo.URL,
 });
+const Application = createAppContainer(AppNavigator);
 
-
-const navReducer = createNavigationReducer(AppNavigator);
-const appReducer = combineReducers({
-    nav: navReducer,
-    set: reducerFn,
-});
-const middleware = createReactNavigationReduxMiddleware(
-    state => state.nav,
-);
-
-const App = createReduxContainer(AppNavigator);
-const mapStateToProps = (state) => ({
-    state: state.nav,
-});
-const AppWithNavigationState = connect(mapStateToProps)(App);
-
-const store = createStore(
-    appReducer,
-    applyMiddleware(middleware),
-);
+const store = createStore(reducerFn);
 setupInternalState(store);
-
-class Application extends React.Component {
-    render() {
-        return (
-            <Provider store={store}>
-                <AppWithNavigationState />
-            </Provider>
-        );
-    }
-}
 
 export {
     Application,

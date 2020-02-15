@@ -1,8 +1,8 @@
 import React from 'react';
-import {FIREBASE_GROUPS_DB_NAME} from '../../moduleSrc/constants/Constants';
+import {FIREBASE_GROUPS_DB_NAME, VIDEO_PAUSE} from '../../moduleSrc/constants/Constants';
 import {GroupListUI} from '../../moduleSrc/chat/groups/GroupListController';
 import {View} from '../../moduleSrc/platform/Util';
-import {sumFn} from '../../moduleSrc/util/Util';
+import {getImageUrl, sumFn} from '../../moduleSrc/util/Util';
 import {store} from '../../App';
 
 
@@ -50,6 +50,22 @@ export default class GroupListDemo extends React.Component {
         console.log('Documents matching after sorting: ', docs);
 
         const numUnreadChats = docs.map(x => x.numUnreads && x.numUnreads > 0 ? 1 : 0).reduce(sumFn, 0);
+        return (<GroupListUI location={this.props.location} history={this.props.history}
+                             me={me} docs={docs} numUnreadChats={numUnreadChats}
+                             goToChatFn={this.goToChatFn}
+        />);
+    }
+
+    render2() {
+        const me = { role: 'supply', id: 352, name: 'Gagan' };
+        const docs = [
+            { collection: FIREBASE_GROUPS_DB_NAME, groupId: 'helo-kitchen', title: 'Helo group', avatar: VIDEO_PAUSE,
+              numUnreads: 1, timestamp: new Date().getTime(), subHeading: 'blah', messages: [], members: [] },
+            { collection: FIREBASE_GROUPS_DB_NAME, groupId: 'helo-kk', title: 'Helo xxx', avatar: VIDEO_PAUSE,
+                numUnreads: 0, timestamp: new Date().getTime(), subHeading: 'bluuh', messages: [], members: [] },
+        ];
+        const numUnreadChats = 2;
+
         return (<GroupListUI location={this.props.location} history={this.props.history}
                              me={me} docs={docs} numUnreadChats={numUnreadChats}
                              goToChatFn={this.goToChatFn}

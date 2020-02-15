@@ -1,5 +1,5 @@
 import React from 'react';
-import {getCircularImage, getCtx, getGroupInfo, getImageUrl, showToast, sumFn, View} from "../../util/Util";
+import {getCircularImage, getCtx, getGroupInfo, getImageUrl, showToast, spacer, sumFn, View} from "../../util/Util";
 import {firebase} from '../../platform/firebase';
 import {
     CHAT_FONT_FAMILY,
@@ -25,7 +25,7 @@ import window from "global";
 import {getPersonNamesByRoleId} from "../../util/Api";
 import lodash from 'lodash';
 import {ConfigurableTopBar} from "../messaging/TopBar";
-import {WINDOW_INNER_WIDTH} from "../../platform/Util";
+import {ScrollView, Text, WINDOW_INNER_WIDTH} from "../../platform/Util";
 import {GROUP_URLS} from "../../controller/Urls";
 
 
@@ -173,7 +173,7 @@ export default class GroupListController extends React.PureComponent {
 
     render() {
         if (!this.state.groupDocs || !this.state.chatDocs1 || !this.state.chatDocs2) {
-            return <div/>;
+            return <View />;
         }
 
         const { groupDocs, chatDocs1, chatDocs2 } = this.state;
@@ -213,13 +213,18 @@ export class GroupListUI extends React.PureComponent {
         ];
 
         return (
-            <View style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}>
+            <View style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', width: '100%', height: '100%', backgroundColor: '#ffffff' }}>
                 <View style={custom.paper}>
                     <ConfigurableTopBar collection={null} sections={sections}
                                         location={this.props.location} history={this.props.history} />
-                    <View style={custom.chatRoot} id="chatRoot">
-                        {list}
-                    </View>
+
+                    <ScrollView style={{  }}>
+                        <View style={custom.chatRoot} id="chatRoot">
+                            {list}
+                        </View>
+
+                        {spacer(120)}
+                    </ScrollView>
                 </View>
             </View>
         );
@@ -237,9 +242,9 @@ class ListItem extends React.PureComponent {
     };
     unreadsDisplay = (num) => {
         return (
-            <div style={custom.unreadCtr}>
-                <div style={custom.unreadText}>{num}</div>
-            </div>
+            <View style={custom.unreadCtr}>
+                <Text style={custom.unreadText}>{num}</Text>
+            </View>
         );
     };
 
@@ -252,15 +257,16 @@ class ListItem extends React.PureComponent {
                 <View style={{ width: '15%', height: 2*imgH, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                     {getCircularImage({ src: avatar, dim: imgH })}
                 </View>
-                <View style={{ width: '85%', height: 2*imgH, display: 'flex', flexDirection: 'row', alignItems: 'center', borderBottom: '1px solid', borderBottomColor: LIGHTER_COLOR }}>
-                    <div style={{ width: '80%', borderBottomWidth: 1, paddingLeft: 10 }}>
-                        <div style={custom.title}>{title}</div>
-                        <div style={custom.subheading}>{subHeading}</div>
-                    </div>
-                    <div style={{ width: '20%', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', paddingRight: 5 }}>
-                        <div style={{ fontSize: 13, color: LIGHT_COLOR, marginBottom: 5 }}>{this.dateDisplay(timestamp)}</div>
-                        {numUnreads > 0 ? this.unreadsDisplay(numUnreads) : ''}
-                    </div>
+                <View style={{ width: '85%', height: 2*imgH, display: 'flex', flexDirection: 'row', alignItems: 'center',
+                    borderBottom: '1px solid', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: LIGHTER_COLOR }}>
+                    <View style={{ width: '80%', paddingLeft: 10 }}>
+                        <Text style={custom.title}>{title}</Text>
+                        <Text style={custom.subheading}>{subHeading}</Text>
+                    </View>
+                    <View style={{ width: '20%', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', paddingRight: 5 }}>
+                        <Text style={{ fontSize: 12, color: LIGHT_COLOR, marginBottom: 5 }}>{this.dateDisplay(timestamp)}</Text>
+                        {numUnreads > 0 ? this.unreadsDisplay(numUnreads) : <View />}
+                    </View>
                 </View>
             </TouchableAnim>
         );
@@ -270,15 +276,17 @@ class ListItem extends React.PureComponent {
 const HEADING_COLOR = '#393939';
 const LIGHT_COLOR = '#a1a1a1';
 const LIGHTER_COLOR = '#cfcfcf';
-const SCR_WIDTH = Math.min(WINDOW_INNER_WIDTH - 10, 450);
+const SCR_WIDTH = Math.min(WINDOW_INNER_WIDTH, 450);
 const custom = {
     paper: {
         fontFamily: CHAT_FONT_FAMILY,
         width: SCR_WIDTH,
     },
     chatRoot: {
-        width: SCR_WIDTH,
+        width: '100%',
         textAlign: 'left',
+        paddingLeft: 4,
+        paddingRight: 4,
     },
 
     unreadCtr: {
@@ -286,7 +294,6 @@ const custom = {
         height: 20,
         width: 20,
         borderRadius: 10,
-        color: '#ffffff',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
@@ -295,16 +302,17 @@ const custom = {
         fontFamily: CHAT_FONT_FAMILY,
         fontSize: 10,
         fontWeight: 400,
+        color: '#ffffff',
     },
 
     title: {
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: 500,
         letterSpacing: 0.5,
         color: HEADING_COLOR,
     },
     subheading: {
-        fontSize: 16,
+        fontSize: 15,
         color: '#8d8d8d',
         letterSpacing: 0.5,
         marginTop: 5,
