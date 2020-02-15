@@ -189,7 +189,7 @@ export default class GroupListController extends React.PureComponent {
     }
 }
 
-class GroupListUI extends React.PureComponent {
+export class GroupListUI extends React.PureComponent {
     constructor(props) {
         super(props);
         this.contextObj = getCtx(this);
