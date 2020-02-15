@@ -194,7 +194,7 @@ export class GroupListUI extends React.PureComponent {
         super(props);
         this.contextObj = getCtx(this);
 
-        console.log('GroupListUI props: ', props);
+        // console.log('GroupListUI props: ', props);
     }
 
     render() {

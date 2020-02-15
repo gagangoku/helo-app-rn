@@ -140,7 +140,7 @@ export class Image extends React.Component {
         const style = props.style ? {...props.style} : {};
 
         props.style && delete props.style;
-        const stylesToDelete = ['cursor', 'objectFit', 'border', 'userSelect', 'MozUserSelect', 'WebkitUserSelect', 'msUserSelect', 'pointerEvents'];
+        const stylesToDelete = ['cursor', 'objectFit', 'border', 'borderStyle', 'userSelect', 'MozUserSelect', 'WebkitUserSelect', 'msUserSelect', 'pointerEvents'];
         stylesToDelete.forEach(p => delete style[p]);
 
         if (!style.width && !style.height) {

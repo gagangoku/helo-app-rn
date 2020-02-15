@@ -1,13 +1,16 @@
 import {ACTION_SET} from "./actions";
 
-export const reducerFn = (state, action) => {
-    console.log('reducerFn: ', state, action);
-    if (typeof state === 'undefined') {
+export const reducerFn = (prevState, action) => {
+    const { type, ts, state } = action || {};
+    console.log('[', new Date().getTime(), '] reducerFn: ', type, ts);
+    // console.log('DEBUG reducerFn: ', prevState, action);
+
+    if (typeof prevState === 'undefined') {
         return {};
     }
-    switch (action.type) {
+    switch (type) {
         case ACTION_SET:
-            return action.state;
+            return state;
     }
-    return state;
+    return prevState;
 };

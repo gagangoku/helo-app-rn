@@ -19,9 +19,11 @@ import {
     OUTPUT_LOCATION,
     OUTPUT_MISSED_CALL,
     OUTPUT_NONE,
+    OUTPUT_PROGRESSIVE_MODULE,
     OUTPUT_TEXT,
     OUTPUT_VIDEO
 } from "../chat/Questions";
+import cnsole from 'loglevel';
 
 
 const GROUP_DOCS_1 = 'groupDocs1';
@@ -47,11 +49,7 @@ const globalState = {
 setInterval(() => persistOffline(globalState.idToDetails, PERSIST_KEY_ID_TO_DETAILS), 2 * 60 * 1000);
 
 const setupInternalState = async (store) => {
-    store.dispatch({ type: 'set', state: { init: true } });
-    // For testing:
-    // setTimeout(() => {
-    //     store.dispatch({ action: 'set', type: 'set', state: {hello: 'world2'} });
-    // }, 5000);
+    store.dispatch({ type: 'set', ts: new Date().getTime(), state: { init: true } });
 
     globalState.idToDetails = await readFromOffline(PERSIST_KEY_ID_TO_DETAILS);
 
@@ -93,17 +91,17 @@ const setupObservers = ({ role, id, store }) => {
 };
 
 const funcGroups = async (roleId, snapshot, nowMs, docsKey, store) => {
-    console.log('roleId, snapshot, nowMs, docsKey: ', roleId, snapshot, nowMs, docsKey);
+    cnsole.log('roleId, snapshot, nowMs, docsKey: ', roleId, snapshot, nowMs, docsKey);
     const { numUpdates, documentsCache } = globalState;
 
     if (numUpdates[docsKey] <= 1) {
-        console.log('Time taken in firebase snapshot: ', new Date().getTime() - nowMs);
+        cnsole.info('Time taken in firebase snapshot: ', new Date().getTime() - nowMs);
     }
 
     const docs = [];
     snapshot.forEach(d => {
         const groupId = d.id;
-        console.log('Processing group doc: ', d, groupId);
+        cnsole.log('Processing group doc: ', d, groupId);
         if (groupId.startsWith(GROUPS_DOC_NAME_PREFIX)) {
             const data = d.data();
 
@@ -119,25 +117,25 @@ const funcGroups = async (roleId, snapshot, nowMs, docsKey, store) => {
                         numUnreads, timestamp, subHeading, messages, members });
         }
     });
-    console.log('Group Documents matching :', docsKey, ' - ', docs);
+    cnsole.log('Group Documents matching :', docsKey, ' - ', docs);
 
     numUpdates[docsKey]++;
     documentsCache[docsKey] = docs;
-    store.dispatch({ type: 'set', state: globalState });
+    store.dispatch({ type: 'set', ts: new Date().getTime(), state: globalState });
 };
 
 const funcChatMessages = async (roleId, snapshot, nowMs, docsKey, store) => {
-    console.log('roleId, snapshot, nowMs, docsKey: ', roleId, snapshot, nowMs, docsKey);
+    cnsole.log('roleId, snapshot, nowMs, docsKey: ', roleId, snapshot, nowMs, docsKey);
     const { numUpdates, documentsCache, idToDetails } = globalState;
 
     if (numUpdates[docsKey] <= 1) {
-        console.log('Time taken in firebase snapshot: ', new Date().getTime() - nowMs);
+        cnsole.info('Time taken in firebase snapshot: ', new Date().getTime() - nowMs);
     }
 
     const docs = [];
     snapshot.forEach(d => {
         const groupId = d.id;
-        console.log('Processing chat doc: ', d, groupId);
+        cnsole.log('Processing chat doc: ', d, groupId);
         if (groupId.startsWith(CHAT_MESSAGES_DOC_NAME_PREFIX)) {
             const data = d.data();
 
@@ -151,7 +149,7 @@ const funcChatMessages = async (roleId, snapshot, nowMs, docsKey, store) => {
             docs.push({ collection: FIREBASE_CHAT_MESSAGES_DB_NAME, groupId, title, avatar, numUnreads, timestamp, subHeading, messages, members });
         }
     });
-    console.log('Chat Documents matching: ', docs);
+    cnsole.log('Chat Documents matching: ', docs);
 
     // Lookup the people that haven't already been looked up
     const needLookup = lodash.uniq(docs.flatMap(x => x.members)).filter(x => x !== roleId);
@@ -160,7 +158,7 @@ const funcChatMessages = async (roleId, snapshot, nowMs, docsKey, store) => {
     docs.forEach(d => {
         const otherGuy = d.members[0] === roleId ? d.members[1] : d.members[0];
         if (!idToDetails[otherGuy]) {
-            console.log('roleIdToName[otherGuy] bad: ', otherGuy, Object.keys(idToDetails));
+            cnsole.error('roleIdToName[otherGuy] bad: ', otherGuy, Object.keys(idToDetails));
             return;
         }
         d.title = idToDetails[otherGuy].person.name;
@@ -169,7 +167,7 @@ const funcChatMessages = async (roleId, snapshot, nowMs, docsKey, store) => {
 
     numUpdates[docsKey]++;
     documentsCache[docsKey] = docs;
-    store.dispatch({ type: 'set', state: globalState });
+    store.dispatch({ type: 'set', ts: new Date().getTime(), state: globalState });
 };
 
 const numUnreadsFn = (doc, roleId) => {
@@ -198,11 +196,12 @@ const lruCache = new LRU({
 });
 
 const summary = (message) => {
-    switch (message.type) {
+    const { type, text, imageUrl } = message;
+    switch (type) {
         case OUTPUT_NONE:
         case OUTPUT_TEXT:
-            const text = message.text.replace(/<br>/g, ' ').replace(/<br\/>/g, ' ');
-            return text.substr(0, Math.min(20, message.text.length)) + ' ...';
+            const t = message.text.replace(/<br>/g, ' ').replace(/<br\/>/g, ' ');
+            return t.substr(0, Math.min(20, message.text.length)) + ' ...';
         case OUTPUT_IMAGE:
             return 'Image';
         case OUTPUT_AUDIO:
@@ -216,9 +215,11 @@ const summary = (message) => {
         case OUTPUT_JOB_ACTIONABLE:
         case OUTPUT_JOB_REFERENCE:
             return 'Job';
+        case OUTPUT_PROGRESSIVE_MODULE:
+            return 'Training module: ' + text;
 
         default:
-            console.log('Unknown question type: ', message);
+            cnsole.error('Unknown question type: ', message);
             return '';
     }
 };

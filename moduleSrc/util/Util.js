@@ -621,7 +621,7 @@ export const getPersonDetails = async (idToDetails, members, messages) => {
             idToDetails[k] = roleIdToName[k];
         });
     }
-    console.log('idToDetails: ', idToDetails);
+    // console.log('idToDetails: ', idToDetails);
     console.log('getPersonDetails took: ', new Date().getTime() - startTimeMs);
 };
 
@@ -644,7 +644,7 @@ export const getPersonalMessageDocInfo = (docData, doc) => {
 };
 
 export const getGroupInfo = (docData, doc) => {
-    console.log('Getting group info: ', docData, doc);
+    // console.log('Getting group info: ', docData, doc);
     const { photo, name, desc } = docData;
     const admins = lodash.uniq(docData.admins || []);
     const createdAt = docData.createdAt || 1575158400000;

@@ -19,6 +19,7 @@
     "firebase": "^7.8.2",
     "global": "^4.4.0",
     "lodash": "^4.17.15",
+    "loglevel": "^1.6.7",
     "lru-cache": "^5.1.1",
     "pushy-react-native": "^1.0.13",
     "qrcode": "^1.4.4",

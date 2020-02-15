@@ -22,6 +22,8 @@ import {reducerFn} from './moduleSrc/router/reducers';
 import {createAppContainer} from 'react-navigation';
 
 
+console.log('****** App starting ********', new Date().getTime());
+
 setPushyNotificationListeners();
 initFirebase();
 
