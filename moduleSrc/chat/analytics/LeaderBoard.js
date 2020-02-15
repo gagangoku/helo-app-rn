@@ -20,6 +20,7 @@ import {ConfigurableTopBar} from "../messaging/TopBar";
 import format from "string-format";
 import {getPersonNamesByRoleId, hgetAllFromKVStore} from "../../util/Api";
 import lodash from "lodash";
+import {ExpandingImage, ScrollView} from "../../platform/Util";
 
 
 export default class LeaderBoard extends React.Component {
@@ -39,15 +40,8 @@ export default class LeaderBoard extends React.Component {
         this.uuid = uuidv1();
         console.log('LeaderBoard componentDidMount: ', this.deviceID, this.uuid);
 
-        const collection = getUrlParam('collection');
-        const groupId = getUrlParam('groupId');
-        const user = getUrlParam('me');
-        const idx = getUrlParam('idx');
-        const groupName = getUrlParam('groupName');
-        const groupPhoto = getUrlParam('groupPhoto');
-        const moduleName = getUrlParam('moduleName');
-        const members = getUrlParam('members');
-        this.detailsObj = { collection, groupId, user, idx, groupName, groupPhoto, moduleName, members };
+        this.detailsObj = {};
+        'collection,groupId,user,idx,groupName,groupPhoto,moduleName,members'.split(',').forEach(x => this.detailsObj[x] = this.props[x] || getUrlParam(x));
 
         const leaderBoard = await this.computeLeaderboard();
         this.setState({ leaderBoard });
@@ -128,8 +122,8 @@ export default class LeaderBoard extends React.Component {
             <TouchableAnim onPress={() => {}} style={{ display: 'flex', flex: 1, flexDirection: 'column', alignItems: 'center', marginTop, visibility }}>
                 {getCircularImage({ src: getImageUrl(photo), dim: s, border: 0 })}
 
-                <View style={{ marginTop: 5, textAlign: 'center' }}>
-                    <Text style={{ fontSize: 14, fontWeight: 'bold', letterSpacing: 0.5 }}>{name}</Text>
+                <View style={{ marginTop: 5 }}>
+                    <Text style={{ fontSize: 14, fontWeight: 'bold', letterSpacing: 0.5, textAlign: 'center' }}>{name}</Text>
                 </View>
                 <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 2 }}>
                     <Image style={{ height: 10, width: 10 }} src={POINTS_IMG} />
@@ -161,30 +155,32 @@ export default class LeaderBoard extends React.Component {
         ];
 
         return (
-            <View style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}>
-                <View style={custom.root}>
-                    <ConfigurableTopBar collection={null} sections={sections}
-                                        location={this.props.location} history={this.props.history} />
-                    {spacer(20)}
-
-                    <View style={{ width: '90%', marginLeft: '5%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                        <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#5e5e5e' }}>{moduleText.toUpperCase()}</Text>
+            <ScrollView style={{ width: '100%', height: '100%' }}>
+                <View style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}>
+                    <View style={custom.root}>
+                        <ConfigurableTopBar collection={null} sections={sections}
+                                            location={this.props.location} history={this.props.history} />
                         {spacer(20)}
-                        <View style={{ display: 'flex', flexDirection: 'row', width: '90%', justifyContent: 'space-between', marginBottom: -30 }}>
-                            {this.leader(2, sample[1])}
-                            {this.leader(1, sample[0])}
-                            {this.leader(3, sample[2])}
-                        </View>
-                        <Image src={PODIUM} style={{ width: '100%', }} />
-                    </View>
-                    {spacer(10)}
 
-                    <View style={{ width: '100%', borderRadius: 10, backgroundColor: '#3c50c8', color: '#ffffff',
-                                   display: 'flex', flexDirection: 'column' }}>
-                        {items}
+                        <View style={{ width: '90%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                            <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#5e5e5e' }}>{moduleText.toUpperCase()}</Text>
+                            {spacer(20)}
+                            <View style={{ display: 'flex', flexDirection: 'row', width: '90%', justifyContent: 'space-between', marginBottom: -30 }}>
+                                {this.leader(2, sample[1])}
+                                {this.leader(1, sample[0])}
+                                {this.leader(3, sample[2])}
+                            </View>
+                            <ExpandingImage src={PODIUM} style={{ width: '100%' }} />
+                        </View>
+                        {spacer(10)}
+
+                        <View style={{ width: '98%', borderRadius: 10, backgroundColor: '#3c50c8', color: '#ffffff',
+                                       display: 'flex', flexDirection: 'column' }}>
+                            {items}
+                        </View>
                     </View>
                 </View>
-            </View>
+            </ScrollView>
         );
     }
 }
@@ -194,25 +190,30 @@ class ListItem extends React.PureComponent {
         const { idx, title, avatar, subHeading, points } = this.props;
         const imgH = 65;
 
+        const textStyle = { color: '#ffffff' };
         return (
             <View style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
                 <View style={{ width: '90%' }}>
-                    <TouchableAnim key={idx} onPress={() => {}}
-                                   style={{ display: 'flex', flexDirection: 'row', alignItems: 'center',
-                                            borderBottom: '1px solid', borderBottomColor: LIGHTER_COLOR, height: 1.5*imgH }}>
-                        <View style={{ width: '10%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: 18 }}>
-                            {idx+1}
-                        </View>
-                        <View style={{ width: '20%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                            {getCircularImage({ src: getImageUrl(avatar), dim: imgH, border: 0 })}
-                        </View>
-                        <View style={{ width: '70%', height: '100%', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                            <View style={{ width: '70%', borderBottomWidth: 1, paddingLeft: 10 }}>
-                                <div style={{ fontSize: 18, letterSpacing: 0.5 }}>{title}</div>
+                    <TouchableAnim key={idx} onPress={() => {}}>
+                        <View style={{ width: '100%', display: 'flex', flexDirection: 'row', alignItems: 'center',
+                                       borderBottomWidth: 1, borderBottom: '1px solid', borderBottomColor: LIGHTER_COLOR, height: 1.5*imgH }}>
+                            <View style={{ width: '10%', height: '100%',
+                                           display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                <Text style={{ fontSize: 18, ...textStyle }}>{idx+1}</Text>
                             </View>
-                            <View style={{ width: '30%', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', paddingRight: 5 }}>
-                                <Image src={POINTS_IMG} style={{ height: 14, width: 15, marginRight: 5, marginTop: 2 }} />
-                                <View style={{ fontSize: 17, fontWeight: 'bold', letterSpacing: 0.5 }}>{points}</View>
+                            <View style={{ width: '20%', height: '100%',
+                                           display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                {getCircularImage({ src: getImageUrl(avatar), dim: imgH, border: 0 })}
+                            </View>
+                            <View style={{ width: '70%', height: '100%',
+                                           display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                                <View style={{ width: '70%', paddingLeft: 10 }}>
+                                    <Text style={{ fontSize: 18, letterSpacing: 0.5, ...textStyle }}>{title}</Text>
+                                </View>
+                                <View style={{ width: '30%', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', paddingRight: 5 }}>
+                                    <Image src={POINTS_IMG} style={{ height: 14, width: 15, marginRight: 5, marginTop: 2 }} />
+                                    <Text style={{ fontSize: 17, fontWeight: 'bold', letterSpacing: 0.5, ...textStyle }}>{points}</Text>
+                                </View>
                             </View>
                         </View>
                     </TouchableAnim>
@@ -228,54 +229,18 @@ const PODIUM_W = 597;
 const PODIUM_H = 206;
 const POINTS_IMG = 'https://images-lb.heloprotocol.in/coins.png-16640-358390-1579973346245.png';
 
-const SAMPLE = [{
-    deviceID: '1',
-    userId: '1',
-    name: 'Jill',
-    subtitle: 'abra',
-    points: 100,
-    photo: 'https://images-lb.heloprotocol.in/1.jpg-384570-314653-1577546473920.jpeg',
-}, {
-    deviceID: '2',
-    userId: '2',
-    name: 'Ravi',
-    subtitle: 'cadabra',
-    points: 150,
-    photo: 'https://images-lb.heloprotocol.in/2.jpg-49499-108516-1577546487170.jpeg',
-}, {
-    deviceID: '3',
-    userId: '3',
-    name: 'Jen',
-    subtitle: 'hippo',
-    points: 400,
-    photo: 'https://images-lb.heloprotocol.in/3.jpg-68142-714334-1577546505386.jpeg',
-}, {
-    deviceID: '4',
-    userId: '4',
-    name: 'Akshita',
-    subtitle: 'potamus',
-    points: 200,
-    photo: 'https://images-lb.heloprotocol.in/IMG20191201152537.jpg-2612414-16474-1575217252704.jpeg',
-}, {
-    deviceID: '5',
-    userId: '5',
-    name: 'Kumar',
-    subtitle: 'potamus',
-    points: 2000,
-    photo: 'https://images-lb.heloprotocol.in/kumarDP.png-148565-169542-1579976574305.png',
-},];
-
 const MAX_WIDTH = 450;
 const custom = {
     root: {
         height: '100%',
-        overflow: 'none',
         width: '100%',
         maxWidth: MAX_WIDTH,
 
         fontFamily: CHAT_FONT_FAMILY,
         WebkitFontSmoothing: "antialiased",
         MozOsxFontSmoothing: "grayscale",
+
+        display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
     },
 
     title: {

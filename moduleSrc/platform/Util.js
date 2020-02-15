@@ -296,6 +296,7 @@ export class Image extends React.Component {
         return (<img src={this.props.source} {...props} />);
     }
 }
+export const ExpandingImage = Image;
 
 export class AudioElem extends React.Component {
     constructor(props) {

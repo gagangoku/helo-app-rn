@@ -153,7 +153,7 @@ export class ConfigurableTopBar extends React.Component {
                 <View style={{ maxWidth, textAlign: 'left', paddingLeft: 15, paddingRight: 15, fontWeight: 500,
                                flexDirection: 'column', display: 'flex' }}
                       onClick={cbFn}>
-                    <Text style={{ fontSize: 18, ...nameProps }}>{name}</Text>
+                    <Text style={{ ...custom.text, fontSize: 18, ...nameProps }}>{name}</Text>
                 </View>
             );
         } else {
@@ -161,8 +161,8 @@ export class ConfigurableTopBar extends React.Component {
                 <View style={{ maxWidth, lineHeight: 'normal', textAlign: 'left', paddingLeft: 15, paddingRight: 15, fontWeight: 500,
                                flexDirection: 'column', display: 'flex' }}
                       onClick={cbFn}>
-                    <Text style={{ marginTop: 0, fontSize: 18, ...nameProps }}>{name}</Text>
-                    <Text style={{ marginTop: 2, fontSize: 12, opacity: 0.7, ...subheadingProps }}>{subheading}</Text>
+                    <Text style={{ ...custom.text, marginTop: 0, fontSize: 18, ...nameProps }}>{name}</Text>
+                    <Text style={{ ...custom.text, marginTop: 2, fontSize: 12, opacity: 0.7, ...subheadingProps }}>{subheading}</Text>
                 </View>
             );
         }
@@ -174,7 +174,9 @@ export class ConfigurableTopBar extends React.Component {
                 <Image src={NOTIFICATIONS_ICON} style={{ height: 25, width: 25 }} />
                 <View style={{ position: 'absolute', left: 15, top: 13, backgroundColor: '#ff0000',
                                height: 15, width: 15, borderRadius: 8, color: '#ffffff', fontSize: 10,
-                               display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>{numNotif}</View>
+                               display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                    <Text style={{ fontSize: 10, color: '#ffffff' }}>{numNotif}</Text>
+                </View>
             </TouchableAnim>
         );
     };
@@ -365,5 +367,9 @@ const custom = {
         MozOsxFontSmoothing: "grayscale",
 
         userSelect: 'none', MozUserSelect: 'none', WebkitUserSelect: 'none', msUserSelect: 'none',
+    },
+    text: {
+        color: '#ffffff',
+        fontSize: 18,
     },
 };

@@ -13,11 +13,15 @@ import {setPushyNotificationListeners} from './src/util/pushy';
 import ChatDemo from './src/demos/ChatDemo';
 import TouchableBug from './src/demos/TouchableBug';
 import DocumentPickerDemo from './src/demos/DocumentPickerDemo';
+import AnalyticsDemo from './src/demos/AnalyticsDemo';
+import {initFirebase} from './moduleSrc/platform/firebase.native';
+import GroupPageDemo from './src/demos/GroupPageDemo';
 
 
 setPushyNotificationListeners();
+initFirebase();
 
-const homeScreens = [HomeScreen, ChatDemo, TouchableBug, DocumentPickerDemo];
+const homeScreens = [HomeScreen, ChatDemo, TouchableBug, DocumentPickerDemo, AnalyticsDemo, GroupPageDemo];
 const allScreens = {};
 [homeScreens].forEach(y => {
     y.forEach(x => {
@@ -26,8 +30,8 @@ const allScreens = {};
 });
 
 const MainNavigator = createStackNavigator(allScreens, {
-    initialRouteName: ChatDemo.URL,
-    // initialRouteName: DocumentPickerDemo.URL,
+    // initialRouteName: ChatDemo.URL,
+    initialRouteName: GroupPageDemo.URL,
 });
 
 const App = createAppContainer(MainNavigator);

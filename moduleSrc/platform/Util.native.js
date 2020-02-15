@@ -18,7 +18,7 @@ import {
 } from 'react-native';
 import ModalOrig from 'react-native-modal';
 import React from "react";
-import {checkFileType, flattenStyleArray} from "../util/Util";
+import {checkFileType, flattenStyleArray, sumFn} from "../util/Util";
 import {Popover} from 'react-native-modal-popover';
 import {
     API_URL,
@@ -43,6 +43,8 @@ import ImagePicker from 'react-native-image-picker';
 import DocumentPicker from 'react-native-document-picker';
 import Pdf from 'react-native-pdf';
 import TouchableAnim from "./TouchableAnim";
+import {PieChart} from 'react-native-svg-charts';
+import * as Svg from 'react-native-svg';
 
 
 export const HEIGHT_BUFFER = 30;
@@ -150,6 +152,55 @@ export class Image extends React.Component {
             style.maxHeight = style.width / style.aspectRatio;
         }
         return <ImageOrig source={{ uri: src }} {...props} style={style} {...extra} />;
+    }
+}
+
+export class ExpandingImage extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+        };
+    }
+    async componentDidMount() {
+        const { src, style } = this.props;
+        ImageOrig.getSize(src, (imgWidth, imgHeight) => {
+            console.log('ExpandingImage: Got image width, height: ', imgWidth, imgHeight, src);
+            this.setState({ imgWidth, imgHeight });
+        }, () => {
+            console.log('Failed to load image width, height: ', src);
+        });
+    }
+
+    onLayout = (event) => {
+        const { src } = this.props;
+        const { x, y, width, height } = event.nativeEvent.layout;
+        console.log('ExpandingImage: onLayout: ', x, y, width, height, src);
+        this.setState({ layout: { x, y, width, height, src } });
+    };
+
+    render() {
+        const { src } = this.props;
+        const props = {...this.props};
+        const style = props.style ? {...props.style} : {};
+
+        const { imgWidth, imgHeight, layout } = this.state;
+        if (!layout || !imgWidth || !imgHeight) {
+            return <ViewOrig onLayout={this.onLayout} style={style} />;
+        }
+
+        src && delete props.src;
+        props.style && delete props.style;
+        const stylesToDelete = ['cursor', 'objectFit', 'border', 'userSelect', 'MozUserSelect', 'WebkitUserSelect', 'msUserSelect', 'pointerEvents'];
+        stylesToDelete.forEach(p => delete style[p]);
+
+        const a = layout.height / imgHeight;
+        const b = layout.width / imgWidth;
+        const scale = layout.height === 0 || layout.width === 0 ? a + b : Math.min(a, b);
+        return (
+            <ViewOrig style={style}>
+                <ImageOrig source={{ uri: src }} {...props} style={{ height: imgHeight * scale, width: imgWidth * scale }} />
+            </ViewOrig>
+        );
     }
 }
 
@@ -705,7 +756,7 @@ export class ImagePreviewWidget extends React.PureComponent {
                        onRequestClose={this.closeFn} onBackdropPress={this.closeFn}>
                 <ViewOrig style={{ height: '100%', width: '100%',
                                    display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                    <Image src={imageUrl} style={{ height: height * scale, width: width * scale }} />
+                    <ImageOrig source={{ uri: imageUrl }} style={{ height: height * scale, width: width * scale }} />
                 </ViewOrig>
             </ModalOrig>
         );
@@ -739,7 +790,41 @@ export const Switch = Dummy;
 export const PlacesAutocomplete = Dummy;
 export const Route = Dummy;
 export const Helmet = Dummy;
-export const ReactMinimalPieChart = Dummy;
+
+export class ReactMinimalPieChart extends React.PureComponent {
+    render() {
+        const { height, data } = this.props;
+        const labelFn = this.props.label;
+        const fontsize = Math.round(13 + (height - 100)*3/100);
+        const textOffset = 0;//Math.round(2 + (height - 100)*4 / 100);
+
+        const total = data.map(x => x.value).reduce(sumFn, 0);
+        const dataArray = data.map((x, index) => ({ index, cv: { value: x.value, percentage: 100*x.value / total }, key: index, amount: x.value, svg: { fill: x.color } }));
+        console.log('ReactMinimalPieChart total, data, dataArray: ', total, data, dataArray);
+        const Labels = ({ slices, height, width }) => {
+            return slices.map((slice, index) => {
+                const { labelCentroid, pieCentroid, data } = slice;
+                const text = labelFn({ data, dataIndex: 'cv' });
+                // const text = data.amount === 0 ? '' : (height > 120 ? `${data.amount}%` : `${data.amount}`);
+                return (
+                    <Svg.Text key={index} x={pieCentroid[0] - textOffset} y={pieCentroid[1]}
+                              fill={'white'} textAnchor={'middle'} alignmentBaseline={'middle'}
+                              fontFamily='sans-serif' fontSize={fontsize} fontWeight={'bold'} letterSpacing={0.2} stroke={'black'} strokeWidth={0.2}>
+                        {text}
+                    </Svg.Text>
+                )
+            })
+        };
+        return (
+            <PieChart style={{ height }}
+                      valueAccessor={({ item }) => item.amount}
+                      data={dataArray} spacing={0} outerRadius={'95%'} innerRadius={0} padAngle={0}>
+                <Labels />
+            </PieChart>
+        );
+    }
+}
+
 export const GoogleMapReact = Dummy;
 
 export const withStyles = (styles) => {
