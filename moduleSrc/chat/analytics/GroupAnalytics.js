@@ -43,9 +43,6 @@ export default class GroupAnalytics extends React.Component {
         'collection,groupId,user'.split(',').forEach(x => this.detailsObj[x] = this.props[x] || getUrlParam(x));
         const { collection, groupId, user } = this.detailsObj;
 
-        console.log('firebase: ', firebase);
-        console.log('firebase.firestore: ', firebase.firestore);
-
         this.db = firebase.firestore();
         this.doc = this.db.collection(collection).doc(groupId);
 

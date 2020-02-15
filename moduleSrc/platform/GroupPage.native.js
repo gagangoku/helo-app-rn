@@ -16,8 +16,8 @@ export class GroupPage extends React.PureComponent {
     }
 
     joinFn = async () => {
-        const { groupInfo, userDetails, ipLocationResponse } = this.props;
-        const { members, docRef } = groupInfo;
+        const { groupInfo, docRef, userDetails, ipLocationResponse } = this.props;
+        const { members } = groupInfo;
         const { id, role } = userDetails;
 
         const roleId = role + ':' + id;
@@ -40,7 +40,7 @@ export class GroupPage extends React.PureComponent {
     };
 
     render() {
-        const { groupInfo, userDetails, ipLocationResponse, idToDetails } = this.props;
+        const { groupInfo, userDetails, ipLocationResponse, idToDetails, docRef } = this.props;
         if (!groupInfo || !userDetails) {
             return <View />;
         }
@@ -54,7 +54,7 @@ export class GroupPage extends React.PureComponent {
             name,
         };
 
-        const { members, groupId, docRef } = groupInfo;
+        const { members, groupId } = groupInfo;
         const isLoginModalOpen = !members || !members.includes(me.sender);
         const modal = (
             <ModalOrig isVisible={isLoginModalOpen}

@@ -778,8 +778,6 @@ const processTrainingModules = async (collection, groupId, messages) => {
 
 export const getAllInfoRelatedToGroup = async ({ collection, groupId, cbFn, isDebug, ipLocationPromise, dontProcessMessages, createDocIfDoesntExist }) => {
     const startTimeMs = new Date().getTime();
-    console.log('firebase: ', firebase);
-    console.log('firebase.firestore: ', firebase.firestore);
     const db = firebase.firestore();
     const docRef = db.collection(collection).doc(groupId);
 

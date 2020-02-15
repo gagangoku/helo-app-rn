@@ -24,7 +24,7 @@ export default class GroupPageDemo extends React.Component {
         AsyncStorage.setItem(PHONE_NUMBER_KEY, '9008781096');
 
         const collection = FIREBASE_GROUPS_DB_NAME;
-        const groupId = 'helo-kitchen-indiranagar';
+        const groupId = 'Helo-Trial';
         const isDebug = false;
         const dontProcessMessages = true;
         const createDocIfDoesntExist = false;
@@ -40,14 +40,15 @@ export default class GroupPageDemo extends React.Component {
 
         this.docRef = docRef;
         this.observer = observer;
-        this.setState({ groupInfo, userDetails, ipLocation });
+        this.setState({ groupInfo, userDetails, ipLocation, docRef });
     }
 
     render() {
-        const { groupInfo, userDetails, idToDetails, ipLocation } = this.state;
+        const { groupInfo, userDetails, idToDetails, ipLocation, docRef } = this.state;
         if (!groupInfo) {
             return <View />;
         }
-        return <GroupPage groupInfo={groupInfo} userDetails={userDetails} ipLocationResponse={ipLocation} idToDetails={idToDetails} />;
+        return <GroupPage groupInfo={groupInfo} userDetails={userDetails} ipLocationResponse={ipLocation}
+                          idToDetails={idToDetails} docRef={docRef} />;
     }
 }

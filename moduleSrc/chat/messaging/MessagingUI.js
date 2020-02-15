@@ -1039,13 +1039,14 @@ class NewJoinee extends React.PureComponent {
     }
 
     render () {
+        const { modalOpen } = this.state;
         const { idx, me, message, idToDetails, ipLocation, groupInfo } = this.props;
         const { showMemberAddNotifications } = groupInfo;
         const { sender, loc } = message;
         const senderName = (idToDetails && sender in idToDetails) ? idToDetails[sender].person.name : sender;
 
-        const modal = !this.state.modalOpen ? '' : <MessageAPersonModal key={'modal-' + idx} sender={sender} {...this.props}
-                                                                        modalOpen={true} closeFn={() => this.setState({ modalOpen: false })} />;
+        const modal = <MessageAPersonModal key={'modal-' + idx} sender={sender} {...this.props}
+                                           modalOpen={modalOpen} closeFn={() => this.setState({ modalOpen: false })} />;
 
         const distKms = ipLocation && loc ? haversineDistanceKms(ipLocation, loc) : 1000;
         // console.log('ipLocation, loc, dist: ', ipLocation, loc, distKms);
@@ -1054,15 +1055,13 @@ class NewJoinee extends React.PureComponent {
         if (!showMemberAddNotifications) {
             return (<View key={idx + ''} />);
         }
+
         return (
-            <View style={{ marginTop: 5, marginBotton: 5}} key={idx + ''}>
-                <View style={customStyle.missedCallCtr}>
-                    <TouchableAnim onPress={() => this.setState({ modalOpen: true })}
-                                   style={{...customStyle.missedCall, padding: 10, color: 'rgba(0, 0, 0, 0.7)', backgroundColor: 'rgba(0, 0, 255, 0.12)'}}>
-                        {text}
-                    </TouchableAnim>
-                </View>
-                {modal}
+            <View style={customStyle.missedCallCtr} key={idx + ''}>
+                <TouchableAnim onPress={() => this.setState({ modalOpen: true })}>
+                    <Text style={customStyle.newJoinee}>{text}</Text>
+                </TouchableAnim>
+                {modalOpen && modal}
             </View>
         );
     }
@@ -1081,13 +1080,10 @@ class SystemMessage extends React.PureComponent {
         const { text, sender, loc } = message;
 
         return (
-            <View style={{ marginTop: 5, marginBotton: 5}} key={idx + ''}>
-                <View style={customStyle.missedCallCtr}>
-                    <TouchableAnim onPress={() => {}}
-                                   style={{...customStyle.missedCall, padding: 10, color: 'rgba(0, 0, 0, 0.7)', backgroundColor: 'rgba(0, 0, 255, 0.12)'}}>
-                        {text}
-                    </TouchableAnim>
-                </View>
+            <View style={customStyle.missedCallCtr} key={idx + ''}>
+                <TouchableAnim onPress={() => {}}>
+                    <Text style={customStyle.newJoinee}>{text}</Text>
+                </TouchableAnim>
             </View>
         );
     }
@@ -1305,6 +1301,14 @@ const customStyle = {
         fontSize: 13,
         padding: 5,
         backgroundColor: '#efefef',
+        borderRadius: 10,
+    },
+
+    newJoinee: {
+        color: 'rgba(0, 0, 0, 0.7)',
+        fontSize: 13,
+        padding: 10,
+        backgroundColor: 'rgba(0, 0, 255, 0.12)',
         borderRadius: 10,
     },
 
