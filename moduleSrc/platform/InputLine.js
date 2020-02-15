@@ -1,6 +1,7 @@
 import React from "react";
 import window from "global";
 import {InputTextBarWithAttachIcons} from "../widgets/InputTextBarWithAttachIcons";
+import cnsole from 'loglevel';
 
 
 export class InputLine extends React.PureComponent {
@@ -20,10 +21,10 @@ export class InputLine extends React.PureComponent {
 
     resizeEventListener = () => {
         if (window.innerHeight !== this.origHeight) {
-            console.log('keyboard open');
+            cnsole.log('keyboard open');
             this.props.setKeyboardHeightFn(this.origHeight - window.innerHeight);
         } else {
-            console.log('keyboard closed');
+            cnsole.log('keyboard closed');
             this.props.setKeyboardHeightFn(0);
         }
     };

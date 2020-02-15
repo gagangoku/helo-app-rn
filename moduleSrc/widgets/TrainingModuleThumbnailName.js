@@ -5,6 +5,7 @@ import {USER_BACKGROUND_COLOR_DARK} from "../chat/Constants";
 import {CHAT_FONT_FAMILY} from "../constants/Constants";
 import {actionButton, spacer} from "../util/Util";
 import TouchableAnim from "../platform/TouchableAnim";
+import cnsole from 'loglevel';
 
 
 export class TrainingModuleThumbnailName extends React.PureComponent {
@@ -19,7 +20,7 @@ export class TrainingModuleThumbnailName extends React.PureComponent {
     }
 
     onSelectFile = async (files) => {
-        console.log('Files: ', files);
+        cnsole.log('Files: ', files);
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
             const blobUrl = await uploadBlob(file);

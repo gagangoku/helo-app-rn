@@ -7,6 +7,7 @@ import window from 'global/window';
 import OptionPickerWidget from "../../widgets/OptionPickerWidget";
 import {getJobAttributes} from "../../util/Api";
 import {IS_MOBILE_SCREEN, PARTNER_CARE_HELPLINE, VEG_NON_VEG, VEG_ONLY} from "../../constants/Constants";
+import cnsole from 'loglevel';
 
 
 class AttributesScreen extends React.Component {
@@ -27,7 +28,7 @@ class AttributesScreen extends React.Component {
     async componentDidMount() {
         try {
             const response = await getJobAttributes();
-            console.log('getJobAttributes response: ', response);
+            cnsole.log('getJobAttributes response: ', response);
 
             const allAttribs = {};
             response.attributes.forEach(x => {
@@ -47,7 +48,7 @@ class AttributesScreen extends React.Component {
 
             this.setState({ allAttribs, displayFns });
         } catch (e) {
-            console.log('Exception in getting job attributes: ', e);
+            cnsole.log('Exception in getting job attributes: ', e);
             window.alert('Something went wrong. Please try again after some time or call our customer care: ' + PARTNER_CARE_HELPLINE);
         }
     }

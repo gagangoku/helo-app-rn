@@ -6,6 +6,7 @@ import thunkMiddleware from 'redux-thunk';
 import {reducerFn} from "./reducers";
 import {BrowserRouter} from "react-router-dom";
 import {routes} from './app';
+import cnsole from 'loglevel';
 
 
 function configureStore(preloadedState) {
@@ -18,7 +19,7 @@ function configureStore(preloadedState) {
     )
 }
 
-console.log('hello from bundle.js');
+cnsole.log('hello from bundle.js');
 
 // Create a fresh store
 const store = configureStore();

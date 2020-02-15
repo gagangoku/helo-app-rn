@@ -13,6 +13,7 @@ import {
     IOS_APPSTORE_CUSTOMER_APP
 } from "../../constants/Constants";
 import window from 'global/window';
+import cnsole from 'loglevel';
 
 
 class ThankYouOrderScreen extends React.Component {
@@ -22,7 +23,7 @@ class ThankYouOrderScreen extends React.Component {
     }
 
     componentDidMount() {
-        const gtag_report_conversion = window.gtag_report_conversion || (() => { console.log('adwords conv tracking function not found'); });
+        const gtag_report_conversion = window.gtag_report_conversion || (() => { cnsole.log('adwords conv tracking function not found'); });
         gtag_report_conversion();
     }
     render() {
@@ -34,7 +35,7 @@ class ThankYouOrderScreen extends React.Component {
         const isAndroid = os.toLowerCase().includes('android');
         const isIphone = md.is('iPhone');
         const takeToApp = isAndroid;
-        console.log('md: ', md, mdMobile, os, takeToApp);
+        cnsole.log('md: ', md, mdMobile, os, takeToApp);
 
         if (takeToApp) {
             // const link = isAndroid ? GOOGLE_PLAYSTORE_CUSTOMER_APP : IOS_APPSTORE_CUSTOMER_APP;

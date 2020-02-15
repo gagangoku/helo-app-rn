@@ -3,6 +3,7 @@ import {commonStyle} from "../styles/common";
 import React from "react";
 import {BANGALORE_LAT, BANGALORE_LNG} from "../constants/Constants";
 import {getCityFromResults, getStateFromResults, getSublocalityFromResults} from "../util/Util";
+import cnsole from 'loglevel';
 
 
 export default class PlacesAutocompleteWidget extends React.Component {
@@ -25,13 +26,13 @@ export default class PlacesAutocompleteWidget extends React.Component {
         this.setState({ addressEntered });
     };
     handleSelect = async (address) => {
-        console.log('Address selected:', address);
+        cnsole.log('Address selected:', address);
         try {
             const results = await geocodeByAddress(address);
-            console.log('geocode results: ', results);
+            cnsole.log('geocode results: ', results);
 
             const latLng = await getLatLng(results[0]);
-            console.log('Success: ', latLng);
+            cnsole.log('Success: ', latLng);
 
             const area = getSublocalityFromResults(results);
             const city = getCityFromResults(results);
@@ -50,7 +51,7 @@ export default class PlacesAutocompleteWidget extends React.Component {
             };
             this.props.onSelectFn(obj);
         } catch (e) {
-            console.log('Error in geocoding: ', e);
+            cnsole.log('Error in geocoding: ', e);
         }
         if (this.inputRef.current) {
             this.inputRef.current.blur();

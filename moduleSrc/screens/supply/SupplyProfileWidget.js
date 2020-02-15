@@ -36,6 +36,7 @@ import MobileDetect from "mobile-detect";
 import Footer from "../../widgets/Footer";
 import {HOME_PAGE_URLS} from "../../controller/Urls";
 import TouchableAnim from "../../platform/TouchableAnim";
+import cnsole from 'loglevel';
 
 
 export default class SupplyProfileWidget extends React.Component {
@@ -193,7 +194,7 @@ export default class SupplyProfileWidget extends React.Component {
             return '';
         }
         hours = lodash.uniq(hours).sort(differenceFn);
-        console.log('hours: ', hours);
+        cnsole.log('hours: ', hours);
 
         const array = [];
         let prev = -1;
@@ -217,7 +218,7 @@ export default class SupplyProfileWidget extends React.Component {
 
     callSupply = (supply) => {
         if (this.props.inAppCallBtn === 'true') {
-            console.log('postMessage CALL');
+            cnsole.log('postMessage CALL');
             window.postMessage("CALL");
             return;
         }
@@ -228,7 +229,7 @@ export default class SupplyProfileWidget extends React.Component {
         const isAndroid = os.toLowerCase().includes('android');
         const isIphone = md.is('iPhone');
         const takeToApp = isAndroid || isIphone;
-        console.log('md: ', md, mdMobile, os, takeToApp);
+        cnsole.log('md: ', md, mdMobile, os, takeToApp);
 
         if (takeToApp) {
             window.location.href = 'https://heloprotocol.app.link/KdSBTEWBTU?supplyId=' + supply.person.id;   // Goto playstore / appstore / open app
@@ -354,9 +355,9 @@ export default class SupplyProfileWidget extends React.Component {
         };
 
         const thumbImageUrl = getImageUrl(this.supplyProfile['person']['thumbImage']);
-        console.log('thumbImageUrl:', thumbImageUrl);
+        cnsole.log('thumbImageUrl:', thumbImageUrl);
         const imageId = this.supplyProfile['person']['image'];
-        console.log('fullImageUrl:', imageId);
+        cnsole.log('fullImageUrl:', imageId);
 
 
         const personName = this.supplyProfile['person']['name'];
@@ -419,7 +420,7 @@ export default class SupplyProfileWidget extends React.Component {
         const starColor = rating <= 2 ? RED_START_COLOR : GOLD_STAR_COLOR;
         const freeSlots = this.supplyProfile.freeSlots && this.supplyProfile.freeSlots.hours ? this.freeTimes(this.supplyProfile.freeSlots.hours) : ['-'];
 
-        console.log('Supply location: ', this.supplyProfile.person.presentAddress.location);
+        cnsole.log('Supply location: ', this.supplyProfile.person.presentAddress.location);
         const { lat, lng } = this.supplyProfile.person.presentAddress.location;
         let latLonImg = (<div/>);
         if (lat && lng) {
@@ -606,7 +607,7 @@ const VALUE_COLOR = '#606060';
 const IMG_STRIP_COLOR = '#d2d2d2';
 
 const INNER_WIDTH = IS_MOBILE_SCREEN ? WINDOW_INNER_WIDTH : 0.8 * WINDOW_INNER_WIDTH;
-console.log('INNER_WIDTH: ', INNER_WIDTH);
+cnsole.log('INNER_WIDTH: ', INNER_WIDTH);
 
 const custom = {
     root: {

@@ -11,6 +11,7 @@ import MiscDetailsScreen from "../screens/onboarder/MiscDetailsScreen";
 import SupplyChooserScreen from "../screens/onboarder/SupplyChooserScreen";
 import window from "global";
 import format from 'string-format';
+import cnsole from 'loglevel';
 
 
 export const ONBOARD_HOME_PAGE_URL = '/onboarder/home';
@@ -52,7 +53,7 @@ class StepLocation extends React.Component {
         redirectIfNotFlow(this.contextObj, ONBOARD_FLOW, StepEntry.URL);
     }
     onSubmitFn = (obj) => {
-        console.log('Got location obj: ', obj);
+        cnsole.log('Got location obj: ', obj);
         navigateTo(this, StepNameDetails.URL, this.contextObj, obj);
     };
     render() {
@@ -104,7 +105,7 @@ class StepMiscDetails extends React.Component {
     submitFn = async (obj) => {
         const req = {...this.contextObj, ...obj, onboardedByEnum: 'EXECUTIVE'};
         const supplyId = await createNewSupplyEntryFn(this, req);
-        console.log('supplyId: ', supplyId);
+        cnsole.log('supplyId: ', supplyId);
         if (supplyId > 0) {
             const supplyName = req.name;
             window.postMessage(format("code 1|supply created|{}|{}", supplyId, supplyName));
@@ -172,18 +173,18 @@ class StepDone extends React.Component {
 }
 
 const createNewSupplyEntryFn = async (obj, req) => {
-    console.log('Creating new supply: ', req);
+    cnsole.log('Creating new supply: ', req);
 
     try {
         const response = await newSupplySignup(req);
-        console.log('new supply response: ', response);
+        cnsole.log('new supply response: ', response);
         const textLower = response.toLowerCase();
 
         if (textLower.startsWith('created') || textLower.startsWith('updated')) {
             return parseInt(textLower.split(' ')[1]);
         }
     } catch (e) {
-        console.log('Error in new supply signup: ', e);
+        cnsole.log('Error in new supply signup: ', e);
         window.alert('Something went wrong. Make a note in your notebook');
     }
     return -1;

@@ -3,6 +3,7 @@ import {Image, View, WINDOW_INNER_WIDTH} from '../platform/Util';
 import {getImageUrl} from "../util/Util";
 import SuperRoot from "../widgets/SuperRoot";
 import {HOME_PAGE_URLS} from "../controller/Urls";
+import cnsole from 'loglevel';
 
 
 export default class FullPhotoScreen extends React.Component {
@@ -13,7 +14,7 @@ export default class FullPhotoScreen extends React.Component {
 
     render() {
         let thumbImageUrl = getImageUrl(this.props.match.params.id);
-        console.log('fullImageUrl: ', thumbImageUrl, this.props);
+        cnsole.log('fullImageUrl: ', thumbImageUrl, this.props);
 
         return (
             <SuperRoot>

@@ -21,6 +21,7 @@ import {
 import AllFilters from "../../widgets/AllFilters";
 import {searchSupply} from "../../util/Api";
 import SupplyMiniProfile from "./SupplyMiniProfile";
+import cnsole from 'loglevel';
 
 
 class SearchProfilesWidget extends React.Component {
@@ -54,7 +55,7 @@ class SearchProfilesWidget extends React.Component {
 
     componentDidMount() {
         navigator.geolocation.getCurrentPosition((position => {
-            console.log('Got current gps position:', position);
+            cnsole.log('Got current gps position:', position);
             this.setState({ latitude: position.coords.latitude, longitude: position.coords.longitude });
         }));
     }
@@ -66,13 +67,13 @@ class SearchProfilesWidget extends React.Component {
         this.setState({ address });
     };
     handleSelect = async (address) => {
-        console.log('Address selected:', address);
+        cnsole.log('Address selected:', address);
         try {
             const results = await geocodeByAddress(address);
-            console.log('geocode results: ', results);
+            cnsole.log('geocode results: ', results);
 
             const latLng = await getLatLng(results[0]);
-            console.log('Success: ', latLng);
+            cnsole.log('Success: ', latLng);
             this.setState({
                 landmarkLat: latLng.lat,
                 landmarkLon: latLng.lng,
@@ -80,7 +81,7 @@ class SearchProfilesWidget extends React.Component {
                 addressEntered: address,
             });
         } catch (e) {
-            console.log('Error in geocoding: ', e);
+            cnsole.log('Error in geocoding: ', e);
         }
         this.inputRef.current.blur();
 
@@ -97,7 +98,7 @@ class SearchProfilesWidget extends React.Component {
             const list = await searchSupply(req);
             this.setState({cookList: list, failed: false});
         } catch (e) {
-            console.log('Failed to get worker list: ', e);
+            cnsole.log('Failed to get worker list: ', e);
             window.alert('Failed to get worker list');
             this.setState({failed: true});
         }
@@ -241,12 +242,12 @@ class SearchProfilesWidget extends React.Component {
         }
         list.sort(sortFn);
 
-        console.log('sorted list:', list);
+        cnsole.log('sorted list:', list);
         return list;
     };
 
     sortClickFn = () => {
-        console.log('sorting by price toggle');
+        cnsole.log('sorting by price toggle');
         this.setState({ sortBy: SORT_BY_PRICE, sortByPriceAsc: !this.state.sortByPriceAsc });
     };
     filterClickFn = () => {
@@ -276,7 +277,7 @@ class SearchProfilesWidget extends React.Component {
             if (genders.length > 0) {
                 f.genders = genders;
             }
-            console.log('filters now: ', f);
+            cnsole.log('filters now: ', f);
             this.setState({ filters: f });
             this.closeModal();
         };

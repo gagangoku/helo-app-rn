@@ -30,6 +30,7 @@ import EditableImageWidget from "../../widgets/EditableImageWidget";
 import {firebase} from '../../platform/firebase';
 import lodash from 'lodash';
 import {GROUP_URLS} from "../../controller/Urls";
+import cnsole from 'loglevel';
 
 
 export default class ViewPersonProfile extends React.Component {
@@ -52,7 +53,7 @@ export default class ViewPersonProfile extends React.Component {
 
         const roleId = getUrlParam('roleId');
         const [role, id] = roleId.split(':');
-        console.log('role, id: ', role, id);
+        cnsole.log('role, id: ', role, id);
         if (detailsFromPhone.role === role && detailsFromPhone.id === id) {
             // My profile
             window.location.href = GROUP_URLS.viewMyProfile;
@@ -113,7 +114,7 @@ export default class ViewPersonProfile extends React.Component {
     };
 
     onUpdateNameFn = async (name) => {
-        console.log('onUpdateNameFn: ', name);
+        cnsole.log('onUpdateNameFn: ', name);
         const { visitor, customer } = this.state;
         if (name.length >= 3 && visitor) {
             const v = await crudsRead(DESCRIPTOR_VISITOR, visitor.id);
@@ -123,7 +124,7 @@ export default class ViewPersonProfile extends React.Component {
         }
     };
     onUpdateImageFn = async (photo) => {
-        console.log('onUpdateImageFn: ', photo);
+        cnsole.log('onUpdateImageFn: ', photo);
         const { visitor, customer } = this.state;
         if (visitor) {
             const v = await crudsRead(DESCRIPTOR_VISITOR, visitor.id);
@@ -134,7 +135,7 @@ export default class ViewPersonProfile extends React.Component {
     };
 
     renderVisitor = (visitor) => {
-        console.log('renderVisitor: ', visitor);
+        cnsole.log('renderVisitor: ', visitor);
         const { id, name, photo, phone } = visitor;
         const { detailsFromPhone, p1Groups, p2Groups } = this.state;
         const roleId = 'visitor:' + id;

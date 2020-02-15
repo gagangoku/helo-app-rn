@@ -45,6 +45,7 @@ import Pdf from 'react-native-pdf';
 import TouchableAnim from "./TouchableAnim";
 import {PieChart} from 'react-native-svg-charts';
 import * as Svg from 'react-native-svg';
+import cnsole from 'loglevel';
 
 
 export const HEIGHT_BUFFER = 30;
@@ -119,11 +120,11 @@ export class Image extends React.Component {
         const onDimensionsLoadCbfn = this.props.onDimensionsLoadCbfn || (() => {});
         if (!style.height && !style.width) {
             ImageOrig.getSize(src, (width, height) => {
-                console.log('Got image width, height: ', width, height, src);
+                cnsole.log('Got image width, height: ', width, height, src);
                 this.setState({ width, height });
                 onDimensionsLoadCbfn({ width, height });
             }, () => {
-                console.log('Failed to load image width, height: ', src);
+                cnsole.log('Failed to load image width, height: ', src);
             });
         }
     }
@@ -164,17 +165,17 @@ export class ExpandingImage extends React.Component {
     async componentDidMount() {
         const { src, style } = this.props;
         ImageOrig.getSize(src, (imgWidth, imgHeight) => {
-            console.log('ExpandingImage: Got image width, height: ', imgWidth, imgHeight, src);
+            cnsole.log('ExpandingImage: Got image width, height: ', imgWidth, imgHeight, src);
             this.setState({ imgWidth, imgHeight });
         }, () => {
-            console.log('Failed to load image width, height: ', src);
+            cnsole.log('Failed to load image width, height: ', src);
         });
     }
 
     onLayout = (event) => {
         const { src } = this.props;
         const { x, y, width, height } = event.nativeEvent.layout;
-        console.log('ExpandingImage: onLayout: ', x, y, width, height, src);
+        cnsole.log('ExpandingImage: onLayout: ', x, y, width, height, src);
         this.setState({ layout: { x, y, width, height, src } });
     };
 
@@ -224,11 +225,11 @@ export class AudioElem extends React.Component {
         this.player = new Player(this.props.src, { autoDestroy: false, continuesToPlayInBackground: true });
         await new Promise(resolve => this.player.prepare(resolve));
         const duration = this.player.duration;
-        console.log('player ready: ', duration);
+        cnsole.log('player ready: ', duration);
         this.setState({ ready: true, duration });
 
         this.player.on('ended', async (data) => {
-            console.log('player Ended');
+            cnsole.log('player Ended');
             this.setState({ playing: false, seeking: true });
             await new Promise(resolve => this.player.seek(0, resolve));
             this.setState({ seeking: false });
@@ -246,13 +247,13 @@ export class AudioElem extends React.Component {
         if (!seeking) {
             const currentTime = this.player.currentTime;
             this.setState({ currentTime });
-            console.log('Player currentTime: ', currentTime);
+            cnsole.log('Player currentTime: ', currentTime);
         }
     };
 
     handlePlayPause = async () => {
         const { playing, seeking } = this.state;
-        console.log('handlePlayPause playing, seeking: ', playing, seeking);
+        cnsole.log('handlePlayPause playing, seeking: ', playing, seeking);
         if (seeking) {
             return;
         }
@@ -266,10 +267,10 @@ export class AudioElem extends React.Component {
             await new Promise(resolve => this.player.play(resolve));
         }
         this.setState({ playing: !playing });
-        console.log('Player new state: ', playing);
+        cnsole.log('Player new state: ', playing);
     };
     onSeek = async (data) => {
-        console.log('onSeek: ', data);
+        cnsole.log('onSeek: ', data);
         const { seekTime } = data;
         this.setState({ currentTime: seekTime, seeking: true });
         await new Promise(resolve => this.player.seek(seekTime, resolve));
@@ -316,7 +317,7 @@ export class VideoElem extends React.Component {
             const {encoded, time} = obj;
             this.setState({ base64: encoded, duration: parseInt(time) / 1000 });
         } catch (e) {
-            console.log('Exception in getting thumbnail: ', src, e);
+            cnsole.log('Exception in getting thumbnail: ', src, e);
         }
     }
     refElem = () => ({ duration: this.state.duration });
@@ -395,8 +396,8 @@ class VideoWithControls extends React.Component {
         const onTimeUpdateFn = this.props.onTimeUpdate || (() => {});
         onTimeUpdateFn({ currentTime, duration: seekableDuration, ...extra });
     };
-    onBuffer = (elem) => console.log('VideoElem onBuffer: ', elem);
-    onError = (err) => console.log('VideoElem onError: ', err);
+    onBuffer = (elem) => cnsole.log('VideoElem onBuffer: ', elem);
+    onError = (err) => cnsole.log('VideoElem onError: ', err);
 
     showControls = () => {
         this.setState({ showControls: true });
@@ -579,7 +580,7 @@ class InputTypeFile extends React.Component {
 
         // Weird file, nothing to go on
         if (!file.uri && !file.path) {
-            console.log('ERROR: File doesnt have uri or path, skipping: ', response);
+            cnsole.log('ERROR: File doesnt have uri or path, skipping: ', response);
             return;
         }
 
@@ -594,7 +595,7 @@ class InputTypeFile extends React.Component {
                 const splits = file.uri.split('/');
                 file.name = splits[splits.length - 1];
             } else {
-                console.log('ERROR: Could not get filename, skipping: ', response);
+                cnsole.log('ERROR: Could not get filename, skipping: ', response);
                 return;
             }
         }
@@ -612,7 +613,7 @@ class InputTypeFile extends React.Component {
             file.type = checkFileType(file.name, '').fileType;
         }
         delete file.data;
-        console.log('Processed file: ', file);
+        cnsole.log('Processed file: ', file);
 
         if (file.uri) {
             await new Promise(resolve => this.setState({ files: [file] }, resolve));
@@ -686,16 +687,16 @@ export class PdfFilePreview extends React.PureComponent {
     }
 
     onLoadComplete = (numberOfPages, filePath) => {
-        console.log('pdf onLoadComplete: ', numberOfPages, filePath);
+        cnsole.log('pdf onLoadComplete: ', numberOfPages, filePath);
     };
     onPageChanged = (page, numberOfPages) => {
-        console.log('pdf onPageChanged: ', page, numberOfPages);
+        cnsole.log('pdf onPageChanged: ', page, numberOfPages);
     };
     onError = (error) => {
-        console.log('pdf error: ', error);
+        cnsole.log('pdf error: ', error);
     };
     onPressLink = (uri) => {
-        console.log('pdf onPressLink: ', uri);
+        cnsole.log('pdf onPressLink: ', uri);
     };
 
     showPdf = () => this.setState({ isShowing: true });
@@ -800,7 +801,7 @@ export class ReactMinimalPieChart extends React.PureComponent {
 
         const total = data.map(x => x.value).reduce(sumFn, 0);
         const dataArray = data.map((x, index) => ({ index, cv: { value: x.value, percentage: 100*x.value / total }, key: index, amount: x.value, svg: { fill: x.color } }));
-        console.log('ReactMinimalPieChart total, data, dataArray: ', total, data, dataArray);
+        cnsole.log('ReactMinimalPieChart total, data, dataArray: ', total, data, dataArray);
         const Labels = ({ slices, height, width }) => {
             return slices.map((slice, index) => {
                 const { labelCentroid, pieCentroid, data } = slice;
@@ -870,17 +871,17 @@ export const recordAudio = async (timeslice, dataAvailableCbFn) => {
     const [res, path] = await new Promise(resolve => recorder.prepare((a, b) => {
         resolve([a, b]);
     }));
-    console.log('recordAudio prepare result: ', res, path);
+    cnsole.log('recordAudio prepare result: ', res, path);
 
     const start = () => {
-        console.log('starting recorder.record');
+        cnsole.log('starting recorder.record');
         recorder.record();
     };
     const stop = async () => {
         await new Promise(resolve => recorder.stop(resolve));
 
         const stat = await rnfs.stat(path);
-        console.log('file stat: ', stat, path);
+        cnsole.log('file stat: ', stat, path);
         // await new Promise(resolve => recorder.destroy(resolve));
 
         const audioBlob = {
@@ -903,7 +904,7 @@ export const fileFromBlob = (blob, filePrefix) => {
 };
 
 export const uploadBlob = async (file) => {
-    console.log('uploadBlob file: ', file);
+    cnsole.log('uploadBlob file: ', file);
     if (!file || file.size === 0) {
         return null;
     }
@@ -917,7 +918,7 @@ export const uploadBlob = async (file) => {
 
     const data = new FormData();
     data.append('file', file);
-    console.log('FormData: ', data);
+    cnsole.log('FormData: ', data);
 
     try {
         const url = format(API_URL + '/v1/blob/uploadBlob?fileType={}&fileName={}', encodeURIComponent(file.type), encodeURIComponent(file.name));
@@ -925,12 +926,12 @@ export const uploadBlob = async (file) => {
             method: 'POST',
             body: data,
         });
-        console.log('Blob upload response: ', response);
+        cnsole.log('Blob upload response: ', response);
         const text = await response.text();
-        console.log('Blob upload output: ', text);
+        cnsole.log('Blob upload output: ', text);
         return serverUrl + '/' + text.split('id=')[1];
     } catch (ex) {
-        console.log('Upload failed: ', ex);
+        cnsole.log('Upload failed: ', ex);
         window.alert('Failed: ' + ex + '. Make sure image size is within limits');
         return null;
     }
@@ -963,14 +964,14 @@ export const requestMicPermission = async () => {
             },
         );
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-            console.log('requestMicPermission: You can use the mic');
+            cnsole.log('requestMicPermission: You can use the mic');
             return true;
         } else {
-            console.log('requestMicPermission: Mic permission denied');
+            cnsole.log('requestMicPermission: Mic permission denied');
             return false;
         }
     } catch (err) {
-        console.warn(err);
+        cnsole.warn(err);
         return false;
     }
 };
@@ -980,8 +981,8 @@ export const requestMicPermission = async () => {
 export const WINDOW_INNER_WIDTH = Dimensions.get('window').width;
 export const WINDOW_INNER_HEIGHT = Dimensions.get('window').height;
 
-console.log('WINDOW_INNER_WIDTH: ', WINDOW_INNER_WIDTH);
-console.log('WINDOW_INNER_HEIGHT: ', WINDOW_INNER_HEIGHT);
+cnsole.log('WINDOW_INNER_WIDTH: ', WINDOW_INNER_WIDTH);
+cnsole.log('WINDOW_INNER_HEIGHT: ', WINDOW_INNER_HEIGHT);
 
 
 const customStyle = {

@@ -72,6 +72,7 @@ import {
 } from "../../util/Api";
 import {BOT_FLOWS, getChatContext, getJobId} from "./ChatUtil";
 import Mustache from "mustache";
+import cnsole from 'loglevel';
 
 
 // This code runs in the Node server.
@@ -86,7 +87,7 @@ export class JobOnboardingBot {
     }
 
     onMessage = async (message) => {
-        console.log('onMessage: ', this.messageCount, message);
+        cnsole.log('onMessage: ', this.messageCount, message);
         if (this.messageCount++ === 0) {
             // First message of the session
             const { sessionInfo, flowName } = message;
@@ -97,7 +98,7 @@ export class JobOnboardingBot {
             const { deviceID } = sessionInfo;
             const chatDevices = await crudsSearch(DESCRIPTOR_CHAT_DEVICES, {deviceID});
             if (chatDevices && chatDevices.length > 0) {
-                console.log('Got chatDevices: ', chatDevices);
+                cnsole.log('Got chatDevices: ', chatDevices);
                 const xxx = JSON.parse(chatDevices[0].payload);
                 this.chatContext.structure = xxx.structure;
                 this.chatContext.sessionInfo.lastJobsShownTs = xxx.sessionInfo.lastJobsShownTs || -1;
@@ -119,7 +120,7 @@ export class JobOnboardingBot {
             if (phoneNumber) {
                 // Lookup supply by phone
                 const supplyList = await searchSupply({ phone: phoneNumber });
-                console.log('Got supplyList: ', supplyList.length, phoneNumber);
+                cnsole.log('Got supplyList: ', supplyList.length, phoneNumber);
                 if (supplyList && supplyList.length > 0) {
                     this.chatContext.supply = supplyList[0];
                     adjucateStructureWithSupply(supplyList[0], this.chatContext);
@@ -154,7 +155,7 @@ export class JobOnboardingBot {
         const unanswered1 = questionsNotAnswered([...chatContext.flow.mainQuestions, ...chatContext.flow.optionalQuestions], chatContext);
         const unanswered2 = questionsNotAnswered([...chatContext.flow.mainQuestions, ...chatContext.flow.optionalQuestions], { structure: flattenSupply(chatContext.supply || {}) });
         if (unanswered2 > unanswered1 && chatContext.supply) {
-            console.log('Updating supply');
+            cnsole.log('Updating supply');
             await this.createOrUpdateSupplyId(chatContext, false);
         }
     };
@@ -171,7 +172,7 @@ export class JobOnboardingBot {
     welcomeMessagesFn = (chatContext) => {
         const numQuestionsNotAnswered = questionsNotAnswered([...chatContext.flow.mainQuestions, ...chatContext.flow.optionalQuestions], chatContext);
         const numQuestionsAnswered = chatContext.flow.mainQuestions.length + chatContext.flow.optionalQuestions.length - numQuestionsNotAnswered;
-        console.log('numQuestionsAnswered, numQuestionsNotAnswered, numTimesSessionIdx: ', numQuestionsAnswered, numQuestionsNotAnswered, chatContext.sessionInfo.numTimesSessionIdx);
+        cnsole.log('numQuestionsAnswered, numQuestionsNotAnswered, numTimesSessionIdx: ', numQuestionsAnswered, numQuestionsNotAnswered, chatContext.sessionInfo.numTimesSessionIdx);
 
         // More than 3 times opened, don't show sample job
         const msgs = [];
@@ -193,7 +194,7 @@ export class JobOnboardingBot {
     };
 
     populateQuestion = (question, structure) => {
-        console.log('question, structure: ', question, structure);
+        cnsole.log('question, structure: ', question, structure);
         if (typeof question === 'string') {
             return Mustache.render(question, {...GLOBAL_CONTEXT, ...structure});
         }
@@ -239,7 +240,7 @@ export class JobOnboardingBot {
     };
 
     askNextQuestionFn = async (chatContext) => {
-        console.log('askNextQuestionFn: ', chatContext);
+        cnsole.log('askNextQuestionFn: ', chatContext);
 
         const questionsToAsk = [];
         if (!chatContext.welcomeMessagesDisplayed) {
@@ -249,7 +250,7 @@ export class JobOnboardingBot {
             questionsToAsk.push(... qKeys.map(x => templateToQuestion(QUESTIONS[x], x, chatContext)));
         }
 
-        console.log('Welcome messages done');
+        cnsole.log('Welcome messages done');
         const showJobsThisSession = chatContext.sessionInfo.showJobsThisSession;
         const numJobsPerSession = chatContext.flow.numJobsPerSession;
         const numAllQuestions = chatContext.flow.mainQuestions.length + chatContext.flow.optionalQuestions.length;
@@ -261,10 +262,10 @@ export class JobOnboardingBot {
         const cond1 = allInitialQuestionsAnswered && allMandatoryQuestionsAnswered && showJobsThisSession;
         const cond2 = ((chatContext.sessionInfo.numJobsShown + 1) / numJobsPerSession) <= ((numQuestionsAnswered + 1) / numAllQuestions);
         const showJob = cond1 && cond2;
-        console.log('numAllQuestions, allInitialQuestionsAnswered, allMandatoryQuestionsAnswered, numQuestionsAnswered, numQuestionsBeforeShowingJob, showJobsThisSession: ',
+        cnsole.log('numAllQuestions, allInitialQuestionsAnswered, allMandatoryQuestionsAnswered, numQuestionsAnswered, numQuestionsBeforeShowingJob, showJobsThisSession: ',
                     numAllQuestions, allInitialQuestionsAnswered, allMandatoryQuestionsAnswered, numQuestionsAnswered, numQuestionsBeforeShowingJob, showJobsThisSession);
-        console.log('showJob, numJobsShown: ', showJob, chatContext.sessionInfo.numJobsShown);
-        console.log('cond1, cond2: ', cond1, cond2);
+        cnsole.log('showJob, numJobsShown: ', showJob, chatContext.sessionInfo.numJobsShown);
+        cnsole.log('cond1, cond2: ', cond1, cond2);
 
         const { messages } = chatContext;
         const lastMsg = messages[messages.length - 1];
@@ -285,19 +286,19 @@ export class JobOnboardingBot {
                 qKeys.push(QUESTION_SEE_TODAYS_WORK);
             }
             qKeys.push(QUESTION_JOB_ACTIONABLE_PREFIX + '' + Math.floor(numQuestionsAnswered / numQuestionsBeforeShowingJob));
-            console.log('qKeys: ', qKeys);
+            cnsole.log('qKeys: ', qKeys);
             questionsToAsk.push(... qKeys.map(x => templateToQuestion(QUESTIONS[x], x, chatContext)));
             chatContext.sessionInfo.numJobsShown++;
         }
 
         this.enhanceQuestions(questionsToAsk, chatContext);
-        console.log('questionsToAsk: ', questionsToAsk);
+        cnsole.log('questionsToAsk: ', questionsToAsk);
 
         return questionsToAsk;
     };
 
     processLastMessageAndGetNextQuestion = async (chatContext) => {
-        console.log('processLastMessageAndGetNextQuestion: ', chatContext);
+        cnsole.log('processLastMessageAndGetNextQuestion: ', chatContext);
 
         const { messages } = chatContext;
         const language = chatContext.sessionInfo.language;
@@ -308,14 +309,14 @@ export class JobOnboardingBot {
 
         if (lastQuestionAsked.idx === messages.length - 1) {
             // Waiting for input. This shouldn't happen
-            console.log('BAD');
+            cnsole.log('BAD');
             return [];
         }
 
         const { questionKey } = lastQuestionAsked;
         const lastMsg = messages[messages.length - 1];
         const { structure, errors } = lastMsg;
-        console.log('lastMsg structure, errors: ', structure, errors);
+        cnsole.log('lastMsg structure, errors: ', structure, errors);
 
         if (errors.length > 0) {
             // An error in what the user said
@@ -339,7 +340,7 @@ export class JobOnboardingBot {
             // Compute the next question to ask
             const nextQues = this.nextQuestionToAsk(chatContext);
             if (!nextQues || nextQues.length === 0) {
-                console.log('Reached the end of all questions');
+                cnsole.log('Reached the end of all questions');
                 return [textToQuestion('Bye', language)];
             } else {
                 return nextQues;
@@ -373,13 +374,13 @@ export class JobOnboardingBot {
     };
 
     processAnswerFn = async (answer, chatContext, messageObj) => {
-        console.log('chatContext.messages: ', chatContext.messages);
+        cnsole.log('chatContext.messages: ', chatContext.messages);
         const language = chatContext.sessionInfo.language;
         const lastQuestionAsked = getLastMessage(chatContext.messages, SENDER_HELO);
         assert(lastQuestionAsked);
 
         const questionKey = lastQuestionAsked.questionKey;
-        console.log('processAnswer: ', answer, lastQuestionAsked, language);
+        cnsole.log('processAnswer: ', answer, lastQuestionAsked, language);
 
         const structure = await understandText(answer, questionKey);
         const errors = [];
@@ -390,7 +391,7 @@ export class JobOnboardingBot {
             // User answered something about the question asked
             if (Object.keys(structure).length > 1) {
                 // And something else, which we'll ignore for now
-                console.log('Ignoring extra: ', questionKey, structure);
+                cnsole.log('Ignoring extra: ', questionKey, structure);
             }
             chatContext.structure[questionKey] = structure[questionKey];
         } else {
@@ -552,19 +553,19 @@ export class JobOnboardingBot {
         let supplyList = await searchSupply({ phone });
 
         const details = getSupplyCreationObj(chatContext);
-        console.log('Supply creation object details: ', details);
+        cnsole.log('Supply creation object details: ', details);
 
         if (supplyList.length > 0) {
             const rsp = await newSupplySignup(details, 'true');
-            console.log('newSupplySignup Response (updation): ', rsp);
+            cnsole.log('newSupplySignup Response (updation): ', rsp);
         } else {
             const rsp = await newSupplySignup(details, 'false');
-            console.log('newSupplySignup Response (creation): ', rsp);
+            cnsole.log('newSupplySignup Response (creation): ', rsp);
         }
 
         supplyList = await searchSupply({phone: details[QUESTION_PHONE]});
         if (supplyList.length === 0) {
-            console.log('ERROR: Supply creation / updation failed');
+            cnsole.log('ERROR: Supply creation / updation failed');
             return;
         }
 
@@ -575,13 +576,13 @@ export class JobOnboardingBot {
             for (let i = 0; i < jobsAppliedThisSession.length; i++) {
                 const jobId = jobsAppliedThisSession[i];
                 const rsp = await applyForJob(chatContext.supply.person.id, jobId);
-                console.log('applyForJob response: ', rsp);
+                cnsole.log('applyForJob response: ', rsp);
             }
             const jobsRejectedThisSession = Object.keys(chatContext.sessionInfo.rejectedJobs);
             for (let i = 0; i < jobsRejectedThisSession.length; i++) {
                 const jobId = jobsRejectedThisSession[i];
                 const rsp = await rejectJob(chatContext.supply.person.id, jobId);
-                console.log('rejectJob response: ', rsp);
+                cnsole.log('rejectJob response: ', rsp);
             }
         }
     };

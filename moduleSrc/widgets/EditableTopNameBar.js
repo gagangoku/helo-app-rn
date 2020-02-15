@@ -4,6 +4,7 @@ import {TOP_BAR_COLOR} from "../chat/Constants";
 import {historyBack} from "../platform/Util";
 import TouchableAnim from "../platform/TouchableAnim";
 import {CHECK_TICK_ICON, CHEVRON_LEFT_ICON, EDIT_ICON} from "../constants/Constants";
+import cnsole from 'loglevel';
 
 
 export default class EditableTopNameBar extends React.Component {
@@ -16,7 +17,7 @@ export default class EditableTopNameBar extends React.Component {
     }
 
     goBackFn = () => {
-        console.log('goBackFn: ', this.props);
+        cnsole.log('goBackFn: ', this.props);
         historyBack();
     };
     onChangeTextFn = (elem) => {

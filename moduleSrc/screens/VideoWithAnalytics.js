@@ -4,6 +4,7 @@ import xrange from 'xrange';
 import format from 'string-format';
 import {hmgetKeysFromKVStore, hsetKeyFromKVStore} from "../util/Api";
 import {VIDEO_ANALYTICS_INTERVAL_SECONDS} from "../constants/Constants";
+import cnsole from 'loglevel';
 
 
 export default class VideoWithAnalytics extends React.PureComponent {
@@ -36,7 +37,7 @@ export default class VideoWithAnalytics extends React.PureComponent {
             const key = format('/idx/{}/user/{}', idx, user);
             const rsp = await hmgetKeysFromKVStore(hash, [key]);
             const val = rsp[key];
-            console.log('rsp: ', rsp, val);
+            cnsole.log('rsp: ', rsp, val);
             if (val) {
                 const { compressed, lastUpdatedAtMs } = JSON.parse(val);
                 compressed.forEach(([a,b]) => {
@@ -44,7 +45,7 @@ export default class VideoWithAnalytics extends React.PureComponent {
                 });
                 this.watchMap.lastUpdatedAtMs = lastUpdatedAtMs;
                 this.lastObjToUpdate = { compressed, lastUpdatedAtMs };
-                console.log('updated this.watchMap: ', this.watchMap);
+                cnsole.log('updated this.watchMap: ', this.watchMap);
             }
         }
     }
@@ -71,7 +72,7 @@ export default class VideoWithAnalytics extends React.PureComponent {
         const str = compressed.map(([a,b]) => a + '-' + b).join(',');
         let numKeys = 0;
         compressed.forEach(([a,b]) => numKeys += b-a+1);
-        console.log('this.watchMap duration: ', VIDEO_ANALYTICS_INTERVAL_SECONDS * numKeys, str, this.watchMap.lastUpdatedAtMs);
+        cnsole.log('this.watchMap duration: ', VIDEO_ANALYTICS_INTERVAL_SECONDS * numKeys, str, this.watchMap.lastUpdatedAtMs);
 
         const { videoUrl, collection, groupId, user, idx } = this.detailsObj;
         if (groupId && user && idx) {
@@ -80,7 +81,7 @@ export default class VideoWithAnalytics extends React.PureComponent {
 
             const objToUpdate = { compressed, lastUpdatedAtMs: this.watchMap.lastUpdatedAtMs, duration: this.duration };
             if (objToUpdate.lastUpdatedAtMs !== this.lastObjToUpdate.lastUpdatedAtMs) {
-                console.log('Updating: ', objToUpdate);
+                cnsole.log('Updating: ', objToUpdate);
                 await hsetKeyFromKVStore(hash, key, JSON.stringify(objToUpdate));
             }
             this.lastObjToUpdate = objToUpdate;
@@ -91,7 +92,7 @@ export default class VideoWithAnalytics extends React.PureComponent {
         const { videoUrl, collection, groupId, user, idx } = this.detailsObj;
         const currentTime = elem.target.currentTime;
         const duration = elem.target.duration;
-        // console.log('[analytics] onTimeUpdate audio: ', collection, groupId, idx, user, currentTime, duration, elem.target);
+        // cnsole.log('[analytics] onTimeUpdate audio: ', collection, groupId, idx, user, currentTime, duration, elem.target);
 
         const diff = currentTime - this.lastTime;
         if (diff >= 0 && diff <= 4 * VIDEO_ANALYTICS_INTERVAL_SECONDS) {

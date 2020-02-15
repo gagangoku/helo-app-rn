@@ -5,6 +5,7 @@ import {commonStyle, TEAL_COLOR_THEME} from "../../styles/common";
 import SuperRoot from "../../widgets/SuperRoot";
 import {API_URL} from "../../constants/Constants";
 import {crudsRead, crudsUpdate} from "../../util/Api";
+import cnsole from 'loglevel';
 
 
 class PhotoScreen extends React.Component {
@@ -27,19 +28,19 @@ class PhotoScreen extends React.Component {
 
     uploadFile = async (file) => {
         const data = new FormData();
-        console.log('file: ', file);
+        cnsole.log('file: ', file);
 
         data.append('file', file);
-        console.log(data);
+        cnsole.log(data);
 
         try {
             const response = await fetch(API_URL + '/v1/image/upload?', { method: 'POST', body: data });
-            console.log('response: ', response);
+            cnsole.log('response: ', response);
             const text = await response.text();
-            console.log('text response: ', text);
+            cnsole.log('text response: ', text);
             return text.split('id=')[1];
         } catch (ex) {
-            console.log('Failed to upload: ', ex);
+            cnsole.log('Failed to upload: ', ex);
             return null;
         }
     };
@@ -50,8 +51,8 @@ class PhotoScreen extends React.Component {
         const filesFailed = [];
         this.setState({ uploading: true, finished: false, filesUploaded, fileIdsUploaded, filesFailed });
 
-        console.log('this.photoRef.files: ', this.photoRef.files);
-        console.log('this.idProofsRef.files: ', this.idProofsRef.files);
+        cnsole.log('this.photoRef.files: ', this.photoRef.files);
+        cnsole.log('this.idProofsRef.files: ', this.idProofsRef.files);
         const idProofFiles = Array.from(this.idProofsRef.files);
 
         const filesToUpload = [];
@@ -89,13 +90,13 @@ class PhotoScreen extends React.Component {
     };
 
     updateSupply = async ({ supplyId, photoId, idProofs }) => {
-        console.log('image id: ', photoId, idProofs);
+        cnsole.log('image id: ', photoId, idProofs);
 
         let supply = null;
         try {
             supply = await crudsRead('supply', supplyId);
         } catch (e) {
-            console.log('Error in getting supply: ', e);
+            cnsole.log('Error in getting supply: ', e);
             window.alert('Error in getting supply: ' + e);
             return;
         }
@@ -107,12 +108,12 @@ class PhotoScreen extends React.Component {
         idProofs.forEach(uri => {
             supply.person.documents.push({ uri: 'id=' + uri });
         });
-        console.log('Updating supply: ', supply);
+        cnsole.log('Updating supply: ', supply);
 
         try {
             await crudsUpdate('supply', supplyId, supply);
         } catch (e) {
-            console.log('Error in updating images: ', e);
+            cnsole.log('Error in updating images: ', e);
             window.alert('Error in updating images: ' + e);
             return;
         }

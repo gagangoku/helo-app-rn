@@ -3,6 +3,7 @@ import {recordAudio, spacer, View} from "../util/Util";
 import {MIC_BLACK_ICON, MIC_RED_ICON} from "../constants/Constants";
 import TouchableAnim from "../platform/TouchableAnim";
 import {fileFromBlob, Image, requestMicPermission, Text} from "../platform/Util";
+import cnsole from 'loglevel';
 
 
 export default class MicRecorderWidget extends React.Component {
@@ -50,7 +51,7 @@ export default class MicRecorderWidget extends React.Component {
 
             const file = fileFromBlob(obj.audioBlob, 'audio');
             // const file = new File([obj.audioBlob], "audio.webm", { type: "audio/webm", lastModified: new Date().getTime() });
-            console.log('Audio file: ', file);
+            cnsole.log('Audio file: ', file);
             this.props.onDoneFn(file);
         }
         clearTimeout(this.timeoutId);
@@ -68,7 +69,7 @@ export default class MicRecorderWidget extends React.Component {
     render() {
         const durationMs = this.state.isRecording ? new Date().getTime() - this.state.recStartTimeMs : this.state.recEndTimeMs - this.state.recStartTimeMs;
         const duration = Math.round(durationMs / 1000);
-        console.log('in render');
+        cnsole.log('in render');
         const { opacity } = this.state;
 
         const mins = Math.floor(duration / 60);

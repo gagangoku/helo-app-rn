@@ -5,6 +5,7 @@ import {getOtp, verifyOtp} from "../../util/Api";
 import {CUSTOMER_CARE_HELPLINE} from "../../constants/Constants";
 import {TEAL_COLOR_THEME} from "../../styles/common";
 import SuperRoot from "../../widgets/SuperRoot";
+import cnsole from 'loglevel';
 
 
 class OtpInputScreen extends React.Component {
@@ -28,26 +29,26 @@ class OtpInputScreen extends React.Component {
         // Make the api call
         const obj = this;
         verifyOtp(this.contextObj.phoneNumber, this.state.otp, (otpResponse) => {
-            console.log('otpResponse:', otpResponse);
+            cnsole.log('otpResponse:', otpResponse);
             if (otpResponse === 'ok') {
-                console.log('Otp verified');
+                cnsole.log('Otp verified');
 
                 this.props.otpSuccessFn(this.state.otp);
             } else {
-                console.log('Otp mismatch');
+                cnsole.log('Otp mismatch');
                 obj.setState({ mismatch: true });
             }
         }, (ex) => {
-            console.log('Error in getting otp:', ex);
+            cnsole.log('Error in getting otp:', ex);
             obj.setState({isError: true});
         });
     };
     resendOtp = () => {
         getOtp(this.contextObj.phoneNumber, this.props.role, (r) => {
-            console.log('Got otp:', r);
+            cnsole.log('Got otp:', r);
         }, (ex) => {
             window.alert('Seems like a problem with our servers right now. Try calling ' + CUSTOMER_CARE_HELPLINE);
-            console.log('Error in generating otp:', ex);
+            cnsole.log('Error in generating otp:', ex);
         });
     };
 

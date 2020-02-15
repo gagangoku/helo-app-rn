@@ -1,6 +1,7 @@
 import React from "react";
 import FacebookLogin from 'react-facebook-login';
 import GoogleLogin from 'react-google-login';
+import cnsole from 'loglevel';
 
 
 export class FacebookLoginWidget extends React.Component {
@@ -14,11 +15,11 @@ export class FacebookLoginWidget extends React.Component {
     }
 
     responseFacebookCb = (fbResponse) => {
-        console.log('fbResponse: ', fbResponse);
+        cnsole.log('fbResponse: ', fbResponse);
         this.setState({ fbResponse });
     };
     responseGoogleCb = (googleResponse) => {
-        console.log('googleResponse: ', googleResponse);
+        cnsole.log('googleResponse: ', googleResponse);
         this.setState({ googleResponse });
     };
 

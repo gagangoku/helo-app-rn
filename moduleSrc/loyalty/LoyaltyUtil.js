@@ -10,6 +10,7 @@ import {
 } from "../constants/Constants";
 import {AsyncStorage} from "../platform/Util";
 import format from 'string-format';
+import cnsole from 'loglevel';
 
 
 export const REASON_CODE_DOESNT_EXIST = 'Code doesnt exist';
@@ -21,7 +22,7 @@ export const REASON_ALREADY_REDEEMED_AT_TABLE = 'Already redeemed at table';
 
 export const validateCode = async (code, establishmentId, branchId) => {
     const values = await crudsSearch(DESCRIPTOR_GOLD_CODE, { code });
-    console.log('DEBUG validateCode: ', code, values);
+    cnsole.log('DEBUG validateCode: ', code, values);
     if (!values || values.length === 0) {
         return { success: false, reason: REASON_CODE_DOESNT_EXIST };
     }
@@ -48,9 +49,9 @@ export const validateCode = async (code, establishmentId, branchId) => {
 export const validateOfferForUser = async (userId, offerId) => {
     const todayStartTimestamp = parseDate(getDateToday()).getTime();
     let redeemedCodes = (await crudsSearch(DESCRIPTOR_GOLD_CODE, { userId, timestampGT: todayStartTimestamp })) || [];
-    console.log('DEBUG validateOfferForUser: ', userId, redeemedCodes);
+    cnsole.log('DEBUG validateOfferForUser: ', userId, redeemedCodes);
     redeemedCodes = redeemedCodes.filter(o => !!o.isRedeemed);
-    console.log('DEBUG validateOfferForUser post filter: ', userId, redeemedCodes);
+    cnsole.log('DEBUG validateOfferForUser post filter: ', userId, redeemedCodes);
 
     if (redeemedCodes.length > 0) {
         // User has redeemed an offer today
@@ -77,7 +78,7 @@ export const redeemOffer = async ({ code, codeObj, userId, offerId, tableId, est
     const key = TABLE_REDEEMS_KEY(tableId, establishmentId, branchId);
     try {
         let rsp = await setKeyValueFromKVStore(key, code + '', GOLD_TABLE_CHECKIN_EXPIRY_SEC);
-        console.log('DEBUG redeemOffer: ', code, rsp);
+        cnsole.log('DEBUG redeemOffer: ', code, rsp);
         if (rsp === 'ok') {
             const updated = {...codeObj, isRedeemed: true, details: {...(codeObj.details || {}), tableId, redeemedAt: new Date().getTime()}};
             rsp = await crudsUpdate(DESCRIPTOR_GOLD_CODE, updated.id, updated);
@@ -86,7 +87,7 @@ export const redeemOffer = async ({ code, codeObj, userId, offerId, tableId, est
             }
         }
     } catch (e) {
-        console.log('Exception in saving table active: ', e);
+        cnsole.log('Exception in saving table active: ', e);
     }
     return { success: false };
 };
@@ -98,24 +99,24 @@ const activeRedeemsAtTable = async (tableId, establishmentId, branchId) => {
 
     try {
         const value = await getKeyFromKVStore(key);
-        console.log('DEBUG activeRedeemsAtTable: ', key, value);
+        cnsole.log('DEBUG activeRedeemsAtTable: ', key, value);
         return !value ? [] : value.split(',');
     } catch (e) {
-        console.log('Exception in getting active redeems: ', e);
+        cnsole.log('Exception in getting active redeems: ', e);
         return [];
     }
 };
 
 export const getGoldUserDetailsFromPhone = async (establishmentId, branchId) => {
     const phone = await AsyncStorage.getItem(PHONE_NUMBER_KEY);
-    console.log('Got phone: ', phone);
+    cnsole.log('Got phone: ', phone);
     if (!phone) {
         return {};
     }
 
     // Lookup Gold user
     const goldUserList = await crudsSearch(DESCRIPTOR_GOLD_USER, { phone });
-    console.log('Got goldUserList: ', goldUserList);
+    cnsole.log('Got goldUserList: ', goldUserList);
     if (goldUserList && goldUserList.length > 0) {
         const { id, name } = goldUserList[0];
 
@@ -131,7 +132,7 @@ export const getGoldUserDetailsFromPhone = async (establishmentId, branchId) => 
 // TODO: Add time dimension (last month etc.) based on the establishmentId
 export const getUserCheckins = async (userId, establishmentId) => {
     const userCheckins = (await crudsSearch(DESCRIPTOR_USER_CHECKIN, { userId, establishmentId })) || [];
-    console.log('DEBUG userCheckins: ', userCheckins);
+    cnsole.log('DEBUG userCheckins: ', userCheckins);
     return userCheckins;
 };
 
@@ -144,7 +145,7 @@ export const calculatePoints = (userCheckins) => {
             points += 100;
         }
     });
-    console.log('DEBUG  points: ', points);
+    cnsole.log('DEBUG  points: ', points);
     return points;
 };
 

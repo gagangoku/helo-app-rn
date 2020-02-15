@@ -27,6 +27,7 @@ import ReactMinimalPieChart from "react-minimal-pie-chart";
 import GoogleMapReact from 'google-map-react';
 import {confirmAlert} from 'react-confirm-alert';
 import TouchableAnim from "./TouchableAnim";
+import cnsole from 'loglevel';
 
 
 export const HEIGHT_BUFFER = 5;
@@ -55,35 +56,35 @@ export const recordAudio = (timeslice, dataAvailableCbFn) => new Promise(async r
     dataAvailableCbFn = dataAvailableCbFn || (() => {});
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-        console.log('recordAudio stream: ', stream.active, stream, stream.getAudioTracks());
+        cnsole.log('recordAudio stream: ', stream.active, stream, stream.getAudioTracks());
         const mediaRecorder = new window.MediaRecorder(stream);
         const audioChunks = [];
 
         mediaRecorder.addEventListener('start', (x) => {
-            console.log('MediaRecorder onstart: ', x);
+            cnsole.log('MediaRecorder onstart: ', x);
             return true;
         });
         mediaRecorder.addEventListener('pause', (x) => {
-            console.log('MediaRecorder onpause: ', x);
+            cnsole.log('MediaRecorder onpause: ', x);
         });
         mediaRecorder.addEventListener('resume', (x) => {
-            console.log('MediaRecorder onresume: ', x);
+            cnsole.log('MediaRecorder onresume: ', x);
         });
         mediaRecorder.addEventListener('error', (x) => {
-            console.log('MediaRecorder onerror: ', x);
+            cnsole.log('MediaRecorder onerror: ', x);
         });
 
         mediaRecorder.addEventListener('dataavailable', (event) => {
-            console.log('event.data: ', event.data);
+            cnsole.log('event.data: ', event.data);
             if (event.data.size > 0) {
                 audioChunks.push(event.data);
                 try {
                     event.data.arrayBuffer().then(arrayBuffer => {
-                        console.log('arrayBuffer: ', arrayBuffer);
+                        cnsole.log('arrayBuffer: ', arrayBuffer);
                         dataAvailableCbFn(arrayBuffer);
                     });
                 } catch (e) {
-                    console.log('Error in getting arrayBuffer: ', e);
+                    cnsole.log('Error in getting arrayBuffer: ', e);
                 }
             }
             return true;
@@ -93,26 +94,26 @@ export const recordAudio = (timeslice, dataAvailableCbFn) => new Promise(async r
 
         const stop = () => new Promise(resolve => {
             mediaRecorder.addEventListener('stop', () => {
-                console.log('MediaRecorder onstop');
+                cnsole.log('MediaRecorder onstop');
                 const type = audioChunks.length > 0 && audioChunks[0].type ? audioChunks[0].type.split(';')[0] : 'audio/webm';
                 const audioBlob = new Blob(audioChunks, {type});
                 const audioUrl = URL.createObjectURL(audioBlob);
                 const audio = new Audio(audioUrl);
                 const play = () => audio.play();
 
-                console.log('audioBlob, audioUrl, play: ', audioBlob, audioUrl, play);
+                cnsole.log('audioBlob, audioUrl, play: ', audioBlob, audioUrl, play);
                 resolve({ audioBlob, audioUrl, play });
             });
 
             mediaRecorder.stop();
             stream.getAudioTracks().forEach(track => {
-                console.log('Stopping track: ', track);
+                cnsole.log('Stopping track: ', track);
                 track.stop();
             });
         });
         resolve({start, stop});
     } catch (e) {
-        console.log('Error in recordAudio: ', e);
+        cnsole.log('Error in recordAudio: ', e);
         resolve({start: null, stop: null});
     }
 });
@@ -121,12 +122,12 @@ export const getGpsLocation = async () => {
     // Get GPS location
     return await new Promise((resolve, error) => {
         const resolveFn = (position) => {
-            console.log('Got current gps position:', position);
+            cnsole.log('Got current gps position:', position);
             const { latitude, longitude } = position.coords;
             resolve(position.coords);
         };
         const errorFn = (ex) => {
-            console.log('Got error in GPS location: ', ex);
+            cnsole.log('Got error in GPS location: ', ex);
             error(ex);
         };
         navigator.geolocation.getCurrentPosition(resolveFn, errorFn, { timeout: 5000, enableHighAccuracy: true });
@@ -138,7 +139,7 @@ export const fileFromBlob = (blob, filePrefix) => {
 };
 
 export const uploadBlob = async (file) => {
-    console.log('file: ', file);
+    cnsole.log('file: ', file);
     if (!file || file.size === 0) {
         return null;
     }
@@ -152,7 +153,7 @@ export const uploadBlob = async (file) => {
 
     const data = new FormData();
     data.append('file', file);
-    console.log(data);
+    cnsole.log(data);
 
     try {
         const url = format(API_URL + '/v1/blob/uploadBlob?fileType={}&fileName={}', encodeURIComponent(file.type), encodeURIComponent(file.name));
@@ -160,12 +161,12 @@ export const uploadBlob = async (file) => {
             method: 'POST',
             body: data,
         });
-        console.log('Blob upload response: ', response);
+        cnsole.log('Blob upload response: ', response);
         const text = await response.text();
-        console.log('Blob upload output: ', text);
+        cnsole.log('Blob upload output: ', text);
         return serverUrl + '/' + text.split('id=')[1];
     } catch (ex) {
-        console.log('Upload failed: ', ex);
+        cnsole.log('Upload failed: ', ex);
         window.alert('Failed: ' + ex + '. Make sure image size is within limits');
         return null;
     }
@@ -173,48 +174,48 @@ export const uploadBlob = async (file) => {
 
 export const initWebPush = async (forceUpdate) => {
     const run = async () => {
-        console.log('Registering service worker');
+        cnsole.log('Registering service worker');
         try {
             const registration = await navigator.serviceWorker.register('/static/worker.js', {scope: '/', updateViaCache: 'none'});
-            console.log('Registered service worker: ', registration);
+            cnsole.log('Registered service worker: ', registration);
 
             // NOTE: This does not work in Safari. It uses window.safari.pushNotification
             const pushManager = registration.pushManager;
 
-            console.log('Registering push service: ', pushManager);
+            cnsole.log('Registering push service: ', pushManager);
             let subscription = await pushManager.getSubscription();
             const isAlreadySubscribed = !!subscription;
-            console.log('Current push subscription: ', isAlreadySubscribed, subscription);
+            cnsole.log('Current push subscription: ', isAlreadySubscribed, subscription);
 
             if (forceUpdate || !subscription) {
                 subscription = await pushManager.subscribe({
                     userVisibleOnly: true,
                     applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
                 });
-                console.log('Registered new push: ', subscription);
+                cnsole.log('Registered new push: ', subscription);
 
                 const deviceID = await setupDeviceId();
                 const phone = await AsyncStorage.getItem(PHONE_NUMBER_KEY);
-                console.log('Got deviceID, phone: ', deviceID, phone);
+                cnsole.log('Got deviceID, phone: ', deviceID, phone);
 
                 await registerPushSubscription(deviceID, phone, subscription, isAlreadySubscribed);
-                console.log('Saved in server');
+                cnsole.log('Saved in server');
             } else {
-                console.log('Push already registered: ', subscription);
+                cnsole.log('Push already registered: ', subscription);
             }
         } catch (e) {
-            console.log('Exception in service worker registration process: ', e);
+            cnsole.log('Exception in service worker registration process: ', e);
         }
     };
 
     const navigator = window.navigator || {};
-    console.log('navigator: ', navigator);
-    console.log('navigator.serviceWorker: ', navigator.serviceWorker);
+    cnsole.log('navigator: ', navigator);
+    cnsole.log('navigator.serviceWorker: ', navigator.serviceWorker);
     if ('serviceWorker' in navigator) {
         try {
             await run();
         } catch (error) {
-            console.error('Error in registration: ', error);
+            cnsole.error('Error in registration: ', error);
         }
     }
 };
@@ -232,7 +233,7 @@ export const reverseGeocode = async ({ latitude, longitude }) => {
     return await new Promise(resolve => {
         try {
             geocoder.geocode({location: latlng}, (results, status, event) => {
-                console.log('Reverse geocoding: ', results, status, event);
+                cnsole.log('Reverse geocoding: ', results, status, event);
                 if (status === google.maps.GeocoderStatus.OK) {
                     const area = getSublocalityFromResults(results);
                     const city = getCityFromResults(results);
@@ -248,12 +249,12 @@ export const reverseGeocode = async ({ latitude, longitude }) => {
                     };
                     resolve({results, status, event, obj});
                 } else {
-                    console.log('Reverse geocoding failed: ', status);
+                    cnsole.log('Reverse geocoding failed: ', status);
                     resolve({results, status, event});
                 }
             });
         } catch (e) {
-            console.log('Exception in geocodeByAddress: ', e);
+            cnsole.log('Exception in geocodeByAddress: ', e);
             resolve({results: [], status: 'Exception', event: e});
         }
     });
@@ -475,7 +476,7 @@ const renderF = (obj, styleOverrides={}) => {
     const props = {...obj.props, style: s2};
     if (obj.props.onPress) {
         props.onClick = () => {
-            console.log('renderF onclick');
+            cnsole.log('renderF onclick');
             obj.props.onPress();
         };
         delete props.onPress;
@@ -510,23 +511,23 @@ export const mobileDetect = () => {
 };
 
 export const scrollToBottomFn = (element) => {
-    console.log('scrollToBottomFn: ', element);
+    cnsole.log('scrollToBottomFn: ', element);
     const elem = element.refElem();
-    console.log('scrollToBottomFn: ', element, elem);
+    cnsole.log('scrollToBottomFn: ', element, elem);
     try {
         elem.scrollTop = elem.scrollHeight;
         window.scrollTo(0, document.body.scrollHeight);
     } catch (e) {
-        console.log('Exception in scrollToBottomFn: ', e);
+        cnsole.log('Exception in scrollToBottomFn: ', e);
     }
 };
 export const scrollToElemFn = (ref) => {
     const elem = ref.refElem();
-    console.log('scrollToElemFn: ', ref, elem);
+    cnsole.log('scrollToElemFn: ', ref, elem);
     try {
         elem.scrollIntoView({ behavior: 'instant' });
     } catch (e) {
-        console.log('Exception in scrollToElemFn: ', e);
+        cnsole.log('Exception in scrollToElemFn: ', e);
     }
 };
 

@@ -2,6 +2,7 @@ import {getKeyFromKVStore} from "./Api";
 import webpush from "web-push";
 import {HELO_LOGO} from "../chat/Constants";
 import {NODE_CACHE_SET_TTL_SECONDS} from "../constants/Constants";
+import cnsole from 'loglevel';
 
 
 // To be included only in the server code
@@ -11,7 +12,7 @@ export const sendWebPushNotification = async (nodeCache, subscription, deviceID,
         subscription = nodeCache.get(key);
         if (!subscription) {
             subscription = await getKeyFromKVStore(key);
-            console.log('Got subscription: ', subscription);
+            cnsole.log('Got subscription: ', subscription);
             subscription = JSON.parse(subscription);
             nodeCache.set(key, subscription, NODE_CACHE_SET_TTL_SECONDS);
         }
@@ -24,12 +25,12 @@ export const sendWebPushNotification = async (nodeCache, subscription, deviceID,
     };
     webpush.sendNotification(subscription, JSON.stringify(notifPayload))
         .then(x => {
-            console.log('Web push notif response: ', x);
+            cnsole.log('Web push notif response: ', x);
         })
         .catch(error => {
-            console.error('Error in sending web push notif: ', error, error.stack);
+            cnsole.error('Error in sending web push notif: ', error, error.stack);
         });
-    console.log('sending pushhhhh');
+    cnsole.log('sending pushhhhh');
 };
 
 const TEST_NOTIFICATION_PAYLOAD = {

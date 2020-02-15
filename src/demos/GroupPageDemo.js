@@ -24,7 +24,7 @@ export default class GroupPageDemo extends React.Component {
         AsyncStorage.setItem(PHONE_NUMBER_KEY, '9008781096');
 
         const collection = FIREBASE_GROUPS_DB_NAME;
-        const groupId = 'Helo-Trial';
+        const groupId = 'helo-kitchen-indiranagar';
         const isDebug = false;
         const dontProcessMessages = true;
         const createDocIfDoesntExist = false;

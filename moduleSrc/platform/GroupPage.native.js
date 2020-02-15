@@ -7,12 +7,13 @@ import {firebase} from '../platform/firebase';
 import {OUTPUT_NEW_JOINEE} from "../chat/Questions";
 import {Text} from "./Util";
 import ModalOrig from 'react-native-modal';
+import cnsole from 'loglevel';
 
 
 export class GroupPage extends React.PureComponent {
     constructor(props) {
         super(props);
-        console.log('GroupPage constructor: ', props);
+        cnsole.log('GroupPage constructor: ', props);
     }
 
     joinFn = async () => {

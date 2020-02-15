@@ -27,6 +27,7 @@ import lodash from 'lodash';
 import {ConfigurableTopBar} from "../messaging/TopBar";
 import {ScrollView, Text, WINDOW_INNER_WIDTH} from "../../platform/Util";
 import {GROUP_URLS} from "../../controller/Urls";
+import cnsole from 'loglevel';
 
 
 /**
@@ -43,7 +44,7 @@ export default class GroupListController extends React.PureComponent {
             chatDocs2: null,
             numUpdates: 0,
         };
-        console.log('GroupListController props: ', props);
+        cnsole.log('GroupListController props: ', props);
     }
 
     async componentDidMount() {
@@ -63,15 +64,15 @@ export default class GroupListController extends React.PureComponent {
     }
 
     funcGroups = async (roleId, snapshot, nowMs, docsKey) => {
-        console.log('roleId, snapshot, nowMs, docsKey: ', roleId, snapshot, nowMs, docsKey);
+        cnsole.log('roleId, snapshot, nowMs, docsKey: ', roleId, snapshot, nowMs, docsKey);
         if (this.state.numUpdates <= 1) {
-            console.log('Time taken in firebase snapshot: ', new Date().getTime() - nowMs);
+            cnsole.log('Time taken in firebase snapshot: ', new Date().getTime() - nowMs);
         }
 
         const docs = [];
         snapshot.forEach(d => {
             const groupId = d.id;
-            console.log('Processing group doc: ', d, groupId);
+            cnsole.log('Processing group doc: ', d, groupId);
             if (groupId.startsWith(GROUPS_DOC_NAME_PREFIX)) {
                 const data = d.data();
 
@@ -87,21 +88,21 @@ export default class GroupListController extends React.PureComponent {
                             numUnreads, timestamp, subHeading, messages, members });
             }
         });
-        console.log('Group Documents matching :', docsKey, ' - ', docs);
+        cnsole.log('Group Documents matching :', docsKey, ' - ', docs);
 
         this.setState({ [docsKey]: docs, numUpdates: this.state.numUpdates + 1 });
     };
 
     funcChatMessages = async (roleId, snapshot, nowMs, docsKey) => {
-        console.log('roleId, snapshot, nowMs, docsKey: ', roleId, snapshot, nowMs, docsKey);
+        cnsole.log('roleId, snapshot, nowMs, docsKey: ', roleId, snapshot, nowMs, docsKey);
         if (this.state.numUpdates <= 1) {
-            console.log('Time taken in firebase snapshot: ', new Date().getTime() - nowMs);
+            cnsole.log('Time taken in firebase snapshot: ', new Date().getTime() - nowMs);
         }
 
         const docs = [];
         snapshot.forEach(d => {
             const groupId = d.id;
-            console.log('Processing chat doc: ', d, groupId);
+            cnsole.log('Processing chat doc: ', d, groupId);
             if (groupId.startsWith(CHAT_MESSAGES_DOC_NAME_PREFIX)) {
                 const data = d.data();
 
@@ -115,14 +116,14 @@ export default class GroupListController extends React.PureComponent {
                 docs.push({ collection: FIREBASE_CHAT_MESSAGES_DB_NAME, groupId, title, avatar, numUnreads, timestamp, subHeading, messages, members });
             }
         });
-        console.log('Chat Documents matching: ', docs);
+        cnsole.log('Chat Documents matching: ', docs);
 
         const needLookup = lodash.uniq(docs.flatMap(x => x.members)).filter(x => x !== roleId);
         const roleIdToName = await getPersonNamesByRoleId(needLookup);
         docs.forEach(d => {
             const otherGuy = d.members[0] === roleId ? d.members[1] : d.members[0];
             if (!roleIdToName[otherGuy]) {
-                console.log('roleIdToName[otherGuy] bad: ', otherGuy, roleIdToName);
+                cnsole.log('roleIdToName[otherGuy] bad: ', otherGuy, roleIdToName);
                 return;
             }
             d.title = roleIdToName[otherGuy].person.name;
@@ -159,7 +160,7 @@ export default class GroupListController extends React.PureComponent {
                 return 'Job';
 
             default:
-                console.log('Unknown question type: ', message);
+                cnsole.log('Unknown question type: ', message);
                 return '';
         }
     };
@@ -179,7 +180,7 @@ export default class GroupListController extends React.PureComponent {
         const { groupDocs, chatDocs1, chatDocs2 } = this.state;
         const docs = groupDocs.concat(chatDocs1).concat(chatDocs2).filter(x => x.messages.length > 0 || x.collection === FIREBASE_GROUPS_DB_NAME);
         docs.sort((d1, d2) => d2.timestamp - d1.timestamp);
-        console.log('Documents matching after sorting: ', docs);
+        cnsole.log('Documents matching after sorting: ', docs);
 
         const numUnreadChats = docs.map(x => x.numUnreads && x.numUnreads > 0 ? 1 : 0).reduce(sumFn, 0);
         return (<GroupListUI location={this.props.location} history={this.props.history}
@@ -194,7 +195,7 @@ export class GroupListUI extends React.PureComponent {
         super(props);
         this.contextObj = getCtx(this);
 
-        // console.log('GroupListUI props: ', props);
+        // cnsole.log('GroupListUI props: ', props);
     }
 
     render() {
@@ -324,7 +325,7 @@ const custom = {
 const copyDoc = async () => {
     const db = firebase.firestore();
     const baseDoc = await db.collection(FIREBASE_CHAT_MESSAGES_DB_NAME).doc('cust:0,supply:0').get();
-    console.log('Got baseDoc: ', baseDoc);
+    cnsole.log('Got baseDoc: ', baseDoc);
 
     const messages = baseDoc.data().messages;
     messages.forEach(m => {

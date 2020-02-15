@@ -31,6 +31,7 @@ import ExpectationsScreen from "../screens/customer/ExpectationsScreen";
 import ReactPixel from 'react-facebook-pixel';
 import {initFbPixel} from "../util/GoogleAnalytics";
 import CustomerDashboardScreen from "../screens/customer/CustomerDashboardScreen";
+import cnsole from 'loglevel';
 
 
 export const CUSTOMER_SIGNUP_ENTRY_URL = '/customer/entry';
@@ -90,7 +91,7 @@ class StepEnterOtp extends React.Component {
     }
     otpSuccessFn = async (otp) => {
         await AsyncStorage.setItem(PHONE_NUMBER_KEY, this.contextObj.phoneNumber);
-        console.log('Phone number saved');
+        cnsole.log('Phone number saved');
         navigateTo(this, StepDashboard.URL, this.contextObj, {});
     };
     render() {
@@ -136,12 +137,12 @@ class StepDashboard extends React.Component {
     };
     onPauseJobReqFn = async (jobReq) => {
         jobReq.status = JOB_OPENING_STATUS_PAUSED;
-        console.log('About to pause jobReq: ', jobReq);
+        cnsole.log('About to pause jobReq: ', jobReq);
         return await crudsUpdate(DESCRIPTOR_JOB_REQUIREMENT, jobReq.id, jobReq);
     };
     onReopenJobReqFn = async (jobReq) => {
         jobReq.status = JOB_OPENING_STATUS_OPEN;
-        console.log('About to open jobReq: ', jobReq);
+        cnsole.log('About to open jobReq: ', jobReq);
         return await crudsUpdate(DESCRIPTOR_JOB_REQUIREMENT, jobReq.id, jobReq);
     };
 
@@ -236,7 +237,7 @@ class StepConfirm extends React.Component {
                 await addJobReqId(this.contextObj.customerProfile.person.id, req);
             }
         } catch (e) {
-            console.log('Error in new job requirement add / edit: ', e);
+            cnsole.log('Error in new job requirement add / edit: ', e);
             window.alert('Something went wrong. Please try again after some time or call our customer care: ' + CUSTOMER_CARE_HELPLINE);
             return;
         }

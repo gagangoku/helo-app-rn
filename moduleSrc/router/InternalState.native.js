@@ -152,13 +152,13 @@ const funcChatMessages = async (roleId, snapshot, nowMs, docsKey, store) => {
     cnsole.log('Chat Documents matching: ', docs);
 
     // Lookup the people that haven't already been looked up
-    const needLookup = lodash.uniq(docs.flatMap(x => x.members)).filter(x => x !== roleId);
+    const needLookup = lodash.uniq(docs.flatMap(x => x.members));
     await getPersonDetails(idToDetails, needLookup, []);
 
     docs.forEach(d => {
         const otherGuy = d.members[0] === roleId ? d.members[1] : d.members[0];
         if (!idToDetails[otherGuy]) {
-            cnsole.error('roleIdToName[otherGuy] bad: ', otherGuy, Object.keys(idToDetails));
+            cnsole.warn('roleIdToName[otherGuy] bad: ', otherGuy, Object.keys(idToDetails));
             return;
         }
         d.title = idToDetails[otherGuy].person.name;
@@ -219,7 +219,7 @@ const summary = (message) => {
             return 'Training module: ' + text;
 
         default:
-            cnsole.error('Unknown question type: ', message);
+            cnsole.warn('Unknown question type: ', message);
             return '';
     }
 };

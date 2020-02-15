@@ -29,6 +29,7 @@ import EditableTopNameBar from "../../widgets/EditableTopNameBar";
 import {firebase} from '../../platform/firebase';
 import EditableImageWidget from "../../widgets/EditableImageWidget";
 import {GROUP_URLS} from "../../controller/Urls";
+import cnsole from 'loglevel';
 
 
 export default class GroupDetailsPage extends React.Component {
@@ -41,7 +42,7 @@ export default class GroupDetailsPage extends React.Component {
             isAddAdminModalOpen: false,
         };
         this.idToDetails = {};
-        console.log('GroupDetailsPage props: ', this.props);
+        cnsole.log('GroupDetailsPage props: ', this.props);
     }
 
     async componentDidMount() {
@@ -87,7 +88,7 @@ export default class GroupDetailsPage extends React.Component {
         const groupLink = format('{}/group/join?group={}', MWEB_URL, groupId);
         const msg = format('Dear {}, you have been invited to join the group. Join here: {}', name, groupLink);
         const smsResponse = await sendSms(phone, msg);
-        console.log('smsResponse: ', smsResponse);
+        cnsole.log('smsResponse: ', smsResponse);
         if (smsResponse !== 'ok') {
             window.alert('Failed to send sms, please contact our team');
             return;
@@ -96,13 +97,13 @@ export default class GroupDetailsPage extends React.Component {
         this.setState({ isAddMemberModalOpen: false });
     };
     addAdminFn = async (member) => {
-        console.log('addAdminFn: ', member);
+        cnsole.log('addAdminFn: ', member);
         await this.docRef.update({ admins: firebase.firestore.FieldValue.arrayUnion(member) });
         this.setState({ isAddAdminModalOpen: false });
     };
 
     onUpdateNameFn = async (name) => {
-        console.log('onUpdateNameFn: ', name);
+        cnsole.log('onUpdateNameFn: ', name);
         if (name.length > 3) {
             await this.docRef.update({ name });
             return true;
@@ -110,12 +111,12 @@ export default class GroupDetailsPage extends React.Component {
         return false;
     };
     onUpdateImageFn = async (photo) => {
-        console.log('onUpdateImageFn: ', photo);
+        cnsole.log('onUpdateImageFn: ', photo);
         await this.docRef.update({ photo });
     };
 
     setProp = async (prop, newVal) => {
-        console.log('setProp: ', prop, newVal);
+        cnsole.log('setProp: ', prop, newVal);
         await this.docRef.update({ [prop]: newVal });
     };
 

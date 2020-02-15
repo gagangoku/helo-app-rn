@@ -3,6 +3,7 @@ import AudioVisualiser from './AudioVisualiser';
 import TouchableAnim from "../platform/TouchableAnim";
 import {STOP_ICON} from "../constants/Constants";
 import {Image} from "../platform/Util";
+import cnsole from 'loglevel';
 
 
 export default class AudioAnalyser extends Component {
@@ -25,11 +26,11 @@ export default class AudioAnalyser extends Component {
 
         this.scriptNode = this.audioContext.createScriptProcessor();
         this.scriptNode.onaudioprocess = (audioProcessingEvent) => {
-            console.log('audioProcessingEvent: ', audioProcessingEvent);
+            cnsole.log('audioProcessingEvent: ', audioProcessingEvent);
             this.arrays.push(audioProcessingEvent.inputBuffer);
             const inputData = audioProcessingEvent.inputBuffer.getChannelData(0);
 
-            // console.log('inputData: ', inputData.length);
+            // cnsole.log('inputData: ', inputData.length);
             this.fullAudio = this.fullAudio.concat(Array.from(new Uint8Array(inputData.buffer)));
         };
         this.scriptNode.connect(this.audioContext.destination);

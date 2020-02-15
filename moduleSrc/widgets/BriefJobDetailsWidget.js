@@ -1,13 +1,14 @@
 import React from 'react';
 import {actionButton, spacer} from "../util/Util";
 import {Image, Text, View, WINDOW_INNER_WIDTH} from "../platform/Util";
+import cnsole from 'loglevel';
 
 
 export default class BriefJobDetailsWidget extends React.Component {
     constructor(props) {
         super(props);
 
-        console.log('BriefJobDetailsWidget props:', props);
+        cnsole.log('BriefJobDetailsWidget props:', props);
         this.contextObj = {};
     }
 

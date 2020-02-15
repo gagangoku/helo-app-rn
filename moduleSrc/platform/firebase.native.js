@@ -1,9 +1,10 @@
 import * as firebase from 'firebase';
 import firestore from 'firebase/firestore';         // NOTE: This import is important, otherwise firestore doesnt work
+import cnsole from 'loglevel';
 
 
 export const initFirebase = () => {
-    console.log('firebase.native.js: Initializing firebase');
+    cnsole.log('firebase.native.js: Initializing firebase');
 
     // Your web app's Firebase configuration
     const firebaseConfig = {

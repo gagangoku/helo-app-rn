@@ -13,13 +13,14 @@ import {GENDER_FEMALE} from "../constants/Constants";
 import AudioAnalyser from "../audio/AudioAnalyser";
 import {Image, Modal, Text, View} from "../platform/Util";
 import TouchableAnim from "../platform/TouchableAnim";
+import cnsole from 'loglevel';
 
 
 export default class JobDetailsWidget extends React.Component {
     constructor(props) {
         super(props);
 
-        console.log('JobDetailsWidget props:', props);
+        cnsole.log('JobDetailsWidget props:', props);
         this.contextObj = {};
         this.supplyId = this.props.supplyId || this.contextObj.supplyId || getUrlParam('supplyId');
         this.jobDetails = this.props.jobDetails || this.contextObj.jobDetails || JSON.parse(getUrlParam('jobDetails'));
@@ -96,7 +97,7 @@ export default class JobDetailsWidget extends React.Component {
         });
 
         const categories = Object.keys(skills).map(x => x.toUpperCase());
-        console.log('categories: ', categories);
+        cnsole.log('categories: ', categories);
         const numResidentsSection = categories.includes('COOK') ? <Text style={custom.lineAttrib}>Residents: {numResidents}</Text> : <View />;
         const mealsSection = categories.includes('COOK') ? <Text style={custom.lineAttrib}>Meals: {capitalizeEachWord(breakfastLunchDinner.join(', '))}</Text> : <View />;
 

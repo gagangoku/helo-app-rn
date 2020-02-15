@@ -37,7 +37,7 @@ const allScreens = {};
 
 const AppNavigator = createStackNavigator(allScreens, {
     // initialRouteName: ChatDemo.URL,
-    initialRouteName: GroupListDemo.URL,
+    initialRouteName: GroupPageDemo.URL,
 });
 const Application = createAppContainer(AppNavigator);
 

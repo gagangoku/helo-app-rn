@@ -12,6 +12,7 @@ import StarRatingComponent from 'react-star-rating-component';
 import window from 'global/window';
 import OptionPickerWidget from "../widgets/OptionPickerWidget";
 import {BAD_ATTRIBUTES, GOOD_ATTRIBUTES} from "../constants/Constants";
+import cnsole from 'loglevel';
 
 
 class GiveRecommendation extends React.Component {
@@ -79,14 +80,14 @@ class GiveRecommendation extends React.Component {
         }
 
         const obj = removeNullUndefined({...this.state, goodQualities, badHabits, address: {fullAddress: this.state.customerAddress}});
-        console.log('Submitting: ', obj);
+        cnsole.log('Submitting: ', obj);
 
         this.setState({ loading: true });
         giveMaidRecommendation(obj, () => {
             window.alert('Thank you for submitting your recommendation');
             this.setState({ loading: false });
         }, (ex) => {
-            console.log('Call failed: ', ex);
+            cnsole.log('Call failed: ', ex);
             window.alert('It seems something went wrong. Kindly try again after some time');
             this.setState({ loading: false });
         });

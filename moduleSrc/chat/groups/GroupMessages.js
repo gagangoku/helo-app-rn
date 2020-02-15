@@ -16,6 +16,7 @@ import {
 } from "../Questions";
 import format from "string-format";
 import {firebase} from '../../platform/firebase';
+import cnsole from 'loglevel';
 
 
 /**
@@ -27,7 +28,7 @@ export default class GroupMessages extends React.Component {
         this.contextObj = getCtx(this);
         this.state = {
         };
-        console.log('GroupMessages props: ', this.props);
+        cnsole.log('GroupMessages props: ', this.props);
     }
 
     async componentDidMount() {
@@ -49,7 +50,7 @@ export default class GroupMessages extends React.Component {
     triggerReadIdx = () => {
         const lastReadIdx = this.getLastMessageIdx(this.props.groupInfo.messages);
         const payload = { [`lastReadIdx.${this.props.me.sender}`]: lastReadIdx };
-        console.log('triggerReadIdx: ', payload);
+        cnsole.log('triggerReadIdx: ', payload);
         this.props.docRef.update(payload);
     };
 
@@ -57,7 +58,7 @@ export default class GroupMessages extends React.Component {
         const { me, ipLocation, groupId, groupInfo } = this.props;
 
         const sender = me.sender;
-        console.log('text, type, sender, extra: ', text, type, sender, extra);
+        cnsole.log('text, type, sender, extra: ', text, type, sender, extra);
 
         const newMsgPayload = {
             timestamp: new Date().getTime(),
@@ -72,7 +73,7 @@ export default class GroupMessages extends React.Component {
         }
 
         const lastReadIdx = this.getLastMessageIdx(groupInfo.messages);
-        console.log('newMsgPayload: ', newMsgPayload);
+        cnsole.log('newMsgPayload: ', newMsgPayload);
         this.props.docRef.update({
             messages: firebase.firestore.FieldValue.arrayUnion(newMsgPayload),
             [`lastReadIdx.${sender}`]: lastReadIdx + 1,
@@ -110,7 +111,7 @@ export default class GroupMessages extends React.Component {
 
     callFn = async () => {
         const { me, otherPerson } = this.props;
-        console.log('Call btn clicked: ', me, otherPerson);
+        cnsole.log('Call btn clicked: ', me, otherPerson);
 
         const customerId = me.role === 'cust' ? me.id : otherPerson.id;
         const supplyId = me.role === 'supply' ? me.id : otherPerson.id;
@@ -118,10 +119,10 @@ export default class GroupMessages extends React.Component {
         let success = false;
         try {
             const callSid = await phoneConnectApi(customerId, supplyId, me.role);
-            console.log('callSid: ', callSid);
+            cnsole.log('callSid: ', callSid);
             success = true;
         } catch (e) {
-            console.log('Exception in phone connect api: ', e);
+            cnsole.log('Exception in phone connect api: ', e);
         }
 
         if (success) {
@@ -138,7 +139,7 @@ export default class GroupMessages extends React.Component {
             return <View />;
         }
         const { filteredMessages, members } = groupInfo;
-        console.log('Rendering GroupMessages with messages: ', filteredMessages);
+        cnsole.log('Rendering GroupMessages with messages: ', filteredMessages);
 
         const otherGuy = {
             avatar: photo,

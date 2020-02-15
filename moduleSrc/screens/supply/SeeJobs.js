@@ -6,13 +6,14 @@ import SuperRoot from "../../widgets/SuperRoot";
 import classnames from "classnames";
 import {applyForJob, getApplicableJobs} from "../../util/Api";
 import JobDetailsWidget from "../../widgets/JobDetailsWidget";
+import cnsole from 'loglevel';
 
 
 class SeeJobs extends React.Component {
     constructor(props) {
         super(props);
 
-        console.log('props:', props);
+        cnsole.log('props:', props);
         this.contextObj = getCtx(this);
         this.state = {
             jobs: null,
@@ -23,12 +24,12 @@ class SeeJobs extends React.Component {
 
             jobsAlreadyApplied: {},
         };
-        console.log('supplyId: ', this.state.supplyId);
+        cnsole.log('supplyId: ', this.state.supplyId);
     }
 
     async componentDidMount() {
         const jobs = await getApplicableJobs(this.state.supplyId);
-        console.log('Lots of jobs: ', jobs);
+        cnsole.log('Lots of jobs: ', jobs);
 
         let orderedJobs = [];
         for (let i = 0; i < jobs.length; i++) {
@@ -42,7 +43,7 @@ class SeeJobs extends React.Component {
             orderedJobs = orderedJobs.concat(jobs);
         }
 
-        console.log('orderedJobs: ', orderedJobs);
+        cnsole.log('orderedJobs: ', orderedJobs);
         this.setState({ jobs: orderedJobs, fetched: true });
     }
 

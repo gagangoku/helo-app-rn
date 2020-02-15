@@ -7,9 +7,10 @@ import {BrowserRouter} from "react-router-dom";
 import {routes} from './app';
 import window from "global/window";
 import document from "global/document";
+import cnsole from 'loglevel';
 
 
-console.log('Hello from client.js');
+cnsole.log('Hello from client.js');
 
 // Grab the state from a global variable injected into the server-generated HTML
 const preloadedState = window.__PRELOADED_STATE__;
@@ -33,9 +34,9 @@ const rootElement = document.getElementById('root');
 // window.alert('IS_MOBILE_SCREEN ' + IS_MOBILE_SCREEN);
 
 if (window.__HYDRATE_OR_RENDER__ === 'render') {
-    console.log('Rendering');
+    cnsole.log('Rendering');
     render(element, rootElement);
 } else {
-    console.log('Hydrating');
+    cnsole.log('Hydrating');
     hydrate(element, rootElement);
 }

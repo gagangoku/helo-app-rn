@@ -47,6 +47,7 @@ import format from "string-format";
 import fetch from 'cross-fetch';
 import {amPm, stripPII} from "./Util";
 import window from "global";
+import cnsole from 'loglevel';
 
 
 export const getOtp = (phone, role, responseCb, errorCb) => {
@@ -118,14 +119,14 @@ export const getSimilarSupply = async (supplyId) => {
 };
 
 export const searchSupply = async (obj) => {
-    console.log('Searching for supply matching: ', obj);
+    cnsole.log('Searching for supply matching: ', obj);
     const url = format(API_URL + SUPPLY_SEARCH_API + '?' + Object.keys(obj).map(x => x + '=' + obj[x]).join('&'));
     const h = {[X_AUTH_HEADER]: X_AUTH_TOKEN};
     return await new Promise((responseCb, errorCb) => _fetchUrl(url, obj, true, responseCb, errorCb, 'GET', h));
 };
 
 export const searchCustomer = async (obj) => {
-    console.log('Searching for customer matching: ', obj);
+    cnsole.log('Searching for customer matching: ', obj);
     const url = format(API_URL + CUSTOMER_SEARCH_API + '?' + Object.keys(obj).map(x => x + '=' + obj[x]).join('&'));
     const h = {[X_AUTH_HEADER]: X_AUTH_TOKEN};
     return await new Promise((responseCb, errorCb) => _fetchUrl(url, obj, true, responseCb, errorCb, 'GET', h));
@@ -143,7 +144,7 @@ export const getSupplyProfileById = async (id, strip=true) => {
         strip && stripPII(supplyProfile);
         return supplyProfile;
     } catch (e) {
-        console.log('Exception in getting Supply profile: ', id, e);
+        cnsole.log('Exception in getting Supply profile: ', id, e);
         throw e;
     }
 };
@@ -189,29 +190,29 @@ const _fetchUrl = function(url, body, consumeJson, responseCb, errorCb, method, 
     responseCb = responseCb || ((x) => {});
     errorCb = errorCb || ((x) => {});
     method = method || 'GET';
-    console.log('Sending ', method, ' request to: ' + url);
+    cnsole.log('Sending ', method, ' request to: ' + url);
 
     fetch(url, {
         method: method,
         body: method === 'GET' ? null : JSON.stringify(body),
         headers,
     }).then((response) => {
-        console.log('response: ', response.status);
+        cnsole.log('response: ', response.status);
         if (response.status >= 400) {
-            console.log('Bad response: ', response);
+            cnsole.log('Bad response: ', response);
             errorCb(response);
         } else {
             const out = consumeJson ? response.json() : response.text();
             out.then((obj) => {
-                // console.log('parsed response: ', obj);
+                // cnsole.log('parsed response: ', obj);
                 responseCb(obj);
             }).catch((ex) => {
-                console.log('exception: ', ex);
+                cnsole.log('exception: ', ex);
                 errorCb(ex);
             });
         }
     }).catch((ex) => {
-        console.log('exception: ', ex);
+        cnsole.log('exception: ', ex);
         errorCb(ex);
     });
 };
@@ -245,7 +246,7 @@ export const getLocationFromIPAddress = async (deviceID) => {
     const startTimeMs = new Date().getTime();
     const url = format('https://www.googleapis.com/geolocation/v1/geolocate?key={}', GOOGLE_MAPS_API_KEY);
     const data = await new Promise((responseCb, errorCb) => _fetchUrl(url, { 'considerIp': true }, true, responseCb, errorCb, 'POST', {'Content-Type': 'application/json'}));
-    console.log('getLocationFromIPAddress took: ', new Date().getTime() - startTimeMs);
+    cnsole.log('getLocationFromIPAddress took: ', new Date().getTime() - startTimeMs);
     if (data && data.location) {
         return { latitude: data.location.lat, longitude: data.location.lng };
     }

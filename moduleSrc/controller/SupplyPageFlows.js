@@ -11,6 +11,7 @@ import ConfirmOrderScreen from "../screens/supply/signup/ConfirmOrderScreen";
 import ThankYouScreen from "../screens/supply/signup/ThankYouScreen";
 import IDCard from "../chat/IDCard";
 import {AsyncStorage, Route} from '../platform/Util';
+import cnsole from 'loglevel';
 
 
 export const SUPPLY_HOME_PAGE_URL = '/supply/home';
@@ -77,7 +78,7 @@ class StepEnterOtp extends React.Component {
     }
     otpSuccessFn = async (otp) => {
         await AsyncStorage.setItem(PHONE_NUMBER_KEY, this.contextObj.phoneNumber);
-        console.log('Phone number saved');
+        cnsole.log('Phone number saved');
         navigateTo(this, StepLocation.URL, this.contextObj, {});
     };
     render() {
@@ -125,11 +126,11 @@ class StepConfirm extends React.Component {
     }
     onSubmitFn = async (obj) => {
         const req = {...this.contextObj, ...obj};
-        console.log('Signing up new supply: ', req);
+        cnsole.log('Signing up new supply: ', req);
         try {
             await newSupplySignup(req);
         } catch (e) {
-            console.log('Error in new supply signup: ', e);
+            cnsole.log('Error in new supply signup: ', e);
             window.alert('Something went wrong. Please try again after some time or call our customer care: ' + PARTNER_CARE_HELPLINE);
             return;
         }

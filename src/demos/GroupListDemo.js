@@ -59,7 +59,7 @@ export default class GroupListDemo extends React.Component {
     render2() {
         const me = { role: 'supply', id: 352, name: 'Gagan' };
         const docs = [
-            { collection: FIREBASE_GROUPS_DB_NAME, groupId: 'helo-kitchen', title: 'Helo group', avatar: VIDEO_PAUSE,
+            { collection: FIREBASE_GROUPS_DB_NAME, groupId: 'helo-kitchen', title: 'Helo kitchen indiranagar', avatar: VIDEO_PAUSE,
               numUnreads: 1, timestamp: new Date().getTime(), subHeading: 'blah', messages: [], members: [] },
             { collection: FIREBASE_GROUPS_DB_NAME, groupId: 'helo-kk', title: 'Helo xxx', avatar: VIDEO_PAUSE,
                 numUnreads: 0, timestamp: new Date().getTime(), subHeading: 'bluuh', messages: [], members: [] },

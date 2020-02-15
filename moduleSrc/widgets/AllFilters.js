@@ -3,6 +3,7 @@ import {withStyles} from '../platform/Util';
 import {getKeysWhereValueIs} from "../util/Util";
 import OptionPickerWidget from "../widgets/OptionPickerWidget";
 import {GENDER_FEMALE, GENDER_MALE, GENDER_OTHER, LANGUAGES} from "../constants/Constants";
+import cnsole from 'loglevel';
 
 
 class AllFilters extends React.Component {
@@ -17,7 +18,7 @@ class AllFilters extends React.Component {
         if (props.filters.genders) {
             props.filters.genders.forEach(x => this.genders[x] = true);
         }
-        console.log('AllFilters props:', props);
+        cnsole.log('AllFilters props:', props);
     }
 
     setFn = (x) => (key, val) => {

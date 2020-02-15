@@ -5,6 +5,7 @@ import {crudsRead, crudsUpdate} from "../../util/Api";
 import window from "global";
 import EditableTopNameBar from "../../widgets/EditableTopNameBar";
 import EditableImageWidget from "../../widgets/EditableImageWidget";
+import cnsole from 'loglevel';
 
 
 export default class MyProfile extends React.Component {
@@ -23,7 +24,7 @@ export default class MyProfile extends React.Component {
         this.setState({ detailsFromPhone });
 
         const { role, id } = detailsFromPhone;
-        console.log('role, id: ', role, id);
+        cnsole.log('role, id: ', role, id);
         switch (role) {
             case 'supply':
                 window.location.href = '/person/' + id;
@@ -41,7 +42,7 @@ export default class MyProfile extends React.Component {
     }
 
     onUpdateNameFn = async (name) => {
-        console.log('onUpdateNameFn: ', name);
+        cnsole.log('onUpdateNameFn: ', name);
         const { visitor } = this.state;
         if (name.length >= 3 && visitor) {
             const v = await crudsRead(DESCRIPTOR_VISITOR, visitor.id);
@@ -51,7 +52,7 @@ export default class MyProfile extends React.Component {
         }
     };
     onUpdateImageFn = async (photo) => {
-        console.log('onUpdateImageFn: ', photo);
+        cnsole.log('onUpdateImageFn: ', photo);
         const { visitor } = this.state;
         if (visitor) {
             const v = await crudsRead(DESCRIPTOR_VISITOR, visitor.id);
@@ -62,7 +63,7 @@ export default class MyProfile extends React.Component {
     };
 
     renderVisitor = (visitor) => {
-        console.log('renderVisitor: ', visitor);
+        cnsole.log('renderVisitor: ', visitor);
         const { id, name, photo } = visitor;
         const { detailsFromPhone } = this.state;
         const isDebug = isDebugMode();

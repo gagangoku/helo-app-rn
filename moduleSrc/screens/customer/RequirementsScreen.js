@@ -44,6 +44,7 @@ import Select from "@material-ui/core/Select/Select";
 import MenuItem from "@material-ui/core/MenuItem/MenuItem";
 import {OPTION_NO, OPTION_YES} from "../../chat/Questions";
 import {getJobAttributes} from "../../util/Api";
+import cnsole from 'loglevel';
 
 
 class RequirementsScreen extends React.Component {
@@ -91,7 +92,7 @@ class RequirementsScreen extends React.Component {
 
         try {
             const response = await getJobAttributes();
-            console.log('getJobAttributes response: ', response);
+            cnsole.log('getJobAttributes response: ', response);
 
             const allAttribs = {};
             response.attributes.forEach(x => {
@@ -114,7 +115,7 @@ class RequirementsScreen extends React.Component {
 
             this.setState({ fetched: true });
         } catch (e) {
-            console.log('Exception in getting job attributes: ', e);
+            cnsole.log('Exception in getting job attributes: ', e);
             window.alert('Something went wrong. Please try again after some time or call our customer care: ' + CUSTOMER_CARE_HELPLINE);
         }
     }
@@ -252,7 +253,7 @@ class RequirementsScreen extends React.Component {
             addedPerks, budget, addedComments,
             ...addedReq,
         };
-        console.log('RequirementsScreen req: ', req);
+        cnsole.log('RequirementsScreen req: ', req);
         this.props.onSubmitFn(req);
     };
 
@@ -312,7 +313,7 @@ class RequirementsScreen extends React.Component {
 
     roughChargesSection = () => {
         const { minBudget, maxBudget, minutes } = this.computeBudget();
-        console.log('minBudget, maxBudget, minutes: ', minBudget, maxBudget, minutes);
+        cnsole.log('minBudget, maxBudget, minutes: ', minBudget, maxBudget, minutes);
         if (!minBudget || !maxBudget || !minutes) {
             return '';
         }

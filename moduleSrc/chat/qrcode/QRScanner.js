@@ -4,6 +4,7 @@ import {TOP_BAR_COLOR} from "../Constants";
 import uuidv1 from "uuid/v1";
 import TouchableAnim from "../../platform/TouchableAnim";
 import {WINDOW_INNER_HEIGHT} from "../../platform/Util";
+import cnsole from 'loglevel';
 
 
 export default class QRScanner extends React.Component {
@@ -21,23 +22,23 @@ export default class QRScanner extends React.Component {
     async componentDidMount() {
         this.deviceID = await setupDeviceId();
         this.uuid = uuidv1();
-        console.log('QRScanner componentDidMount: ', this.deviceID, this.uuid);
+        cnsole.log('QRScanner componentDidMount: ', this.deviceID, this.uuid);
         this.start();
     }
 
     async start() {
         this.setState({ result: '' });
         while (!window.QrScanner) {
-            console.log('Sleeping waiting for window.QrScanner');
+            cnsole.log('Sleeping waiting for window.QrScanner');
             await new Promise(resolve => setTimeout(resolve, 200));
         }
         const QrScanner = window.QrScanner;
         const video = document.getElementById('qr-video');
         const hasCamera = await QrScanner.hasCamera();
-        console.log('hasCamera: ', hasCamera);
+        cnsole.log('hasCamera: ', hasCamera);
 
         const scanner = new QrScanner(video, result => {
-            console.log('QR code scan result: ', result);
+            cnsole.log('QR code scan result: ', result);
             this.setState({ result });
             scanner.destroy();
             video.pause();

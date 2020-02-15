@@ -6,6 +6,7 @@ import {firebase} from '../../platform/firebase';
 import window from 'global';
 import EditableImageWidget from "../../widgets/EditableImageWidget";
 import {GROUP_URLS} from "../../controller/Urls";
+import cnsole from 'loglevel';
 
 
 export class GroupCreatePage extends React.Component {
@@ -38,7 +39,7 @@ export class GroupCreatePage extends React.Component {
     createGroup = async () => {
         const { roleId, name, image } = this.state;
         const groupId = this.getGroupId(name);
-        console.log('createGroup: ', name, groupId);
+        cnsole.log('createGroup: ', name, groupId);
 
         if (groupId.length <= 3) {
             this.setState({ errorText: 'Too short: ' + groupId });
@@ -46,11 +47,11 @@ export class GroupCreatePage extends React.Component {
         }
 
         const db = firebase.firestore();
-        console.log('db: ', db);
+        cnsole.log('db: ', db);
         const docRef = db.collection(FIREBASE_GROUPS_DB_NAME).doc(groupId);
-        console.log('docRef: ', docRef);
+        cnsole.log('docRef: ', docRef);
         const doc = await docRef.get();
-        console.log('doc: ', doc);
+        cnsole.log('doc: ', doc);
         if (doc.exists) {
             this.setState({ errorText: 'Group already exists: ' + groupId });
             return;
@@ -75,7 +76,7 @@ export class GroupCreatePage extends React.Component {
             allowChatBotPromptForJobs: false,
         });
         const baseDoc = await docRef.get();
-        console.log('Got baseDoc: ', baseDoc);
+        cnsole.log('Got baseDoc: ', baseDoc);
 
         this.setState({ successText: 'Group created' });
         setTimeout(() => {
@@ -84,7 +85,7 @@ export class GroupCreatePage extends React.Component {
     };
 
     onSelectFile = async (files) => {
-        console.log('Files: ', files);
+        cnsole.log('Files: ', files);
         if (files.length === 0) {
             return;
         }

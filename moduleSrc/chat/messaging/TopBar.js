@@ -15,6 +15,7 @@ import {TOP_BAR_COLOR} from "../Constants";
 import format from "string-format";
 import window from 'global';
 import {GROUP_URLS} from "../../controller/Urls";
+import cnsole from 'loglevel';
 
 
 export class GroupTopBar extends React.Component {
@@ -78,7 +79,7 @@ export class ConfigurableTopBar extends React.Component {
     constructor(props) {
         super(props);
     }
-    static HEIGHT = 60;
+    static HEIGHT = 65;
     static SECTION_BACK = 'back';
     static SECTION_AVATAR = 'avatar';
     static SECTION_NAME = 'name';
@@ -96,7 +97,7 @@ export class ConfigurableTopBar extends React.Component {
 
     // Onclick functions
     backOnclickFn = ({ data }) => {
-        console.log('backOnclickFn: ', this.props);
+        cnsole.log('backOnclickFn: ', this.props);
         historyBack();
     };
     showPersonDetailsPageOnclickFn = ({ data }) => {
@@ -115,13 +116,13 @@ export class ConfigurableTopBar extends React.Component {
     // Functions for more options
     analyticsOnclickFn = ({ data }) => {
         const { me, groupId, collection } = data;
-        console.log('Group level analytics: ', me, groupId, collection);
+        cnsole.log('Group level analytics: ', me, groupId, collection);
         const url = format('{}/?me={}&groupId={}&collection={}', GROUP_URLS.groupAnalytics, me.sender, groupId, collection);
         window.open(url, '_blank');
     };
     leaderboardOnclickFn = ({ data }) => {
         const { me, groupId, collection, leaderboardFn } = data;
-        console.log('Group level leaderboard: ', me, groupId, collection);
+        cnsole.log('Group level leaderboard: ', me, groupId, collection);
         leaderboardFn({ idx: -1, me, groupId, collection });
     };
     settingsOnclickFn = ({ data }) => {};
@@ -144,7 +145,7 @@ export class ConfigurableTopBar extends React.Component {
     };
     nameDisplayFn = ({ displayProps, data, cbFn }) => {
         const { name, subheading } = data;
-        const maxWidth = displayProps.maxWidth || '70%';
+        const maxWidth = displayProps.maxWidth || '90%';
         const nameProps = displayProps.name || {};
         const subheadingProps = displayProps.subheading || {};
 
@@ -289,7 +290,7 @@ export class ConfigurableTopBar extends React.Component {
         return (
             <View style={{ ...custom.root, height: ConfigurableTopBar.HEIGHT, width: '100%' }}>
                 <View style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <View style={{ flex: 2, display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>{left}</View>
+                    <View style={{ flex: 4, display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>{left}</View>
                     <View style={{ flex: 1, display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', paddingRight: 5 }}>{right}</View>
                 </View>
             </View>

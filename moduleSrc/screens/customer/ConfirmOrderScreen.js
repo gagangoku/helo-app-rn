@@ -5,6 +5,7 @@ import {TEAL_COLOR_THEME, TEXT_COLOR_LIGHT} from "../../styles/common";
 import SuperRoot from "../../widgets/SuperRoot";
 import {CUSTOMER_CARE_HELPLINE, IS_MOBILE_SCREEN} from "../../constants/Constants";
 import window from 'global/window';
+import cnsole from 'loglevel';
 
 
 class ConfirmOrderScreen extends React.Component {
@@ -102,7 +103,7 @@ class ConfirmOrderScreen extends React.Component {
     render() {
         const {classes} = this.props;
         const backgroundColor = this.state.termsAgreed ? TEAL_COLOR_THEME : TEXT_COLOR_LIGHT;
-        const submitFn = this.state.inflight ? () => console.log('inflight') : () => this.onSubmit(true);
+        const submitFn = this.state.inflight ? () => cnsole.log('inflight') : () => this.onSubmit(true);
         const submitBtn = this.state.tncModalOpen ? '' : actionButton('SUBMIT', submitFn, { backgroundColor });
         return (
             <SuperRoot>

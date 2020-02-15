@@ -5,6 +5,7 @@ import {getOtp} from "../../util/Api";
 import {TEAL_COLOR_THEME} from "../../styles/common";
 import {IS_MOBILE_SCREEN} from "../../constants/Constants";
 import SuperRoot from "../../widgets/SuperRoot";
+import cnsole from 'loglevel';
 
 
 class PhoneNumberInputScreen extends React.Component {
@@ -27,10 +28,10 @@ class PhoneNumberInputScreen extends React.Component {
         // Make the api call
         const obj = this;
         getOtp(this.state.phoneNumber, this.props.role, (r) => {
-            console.log('Got otp:', r);
+            cnsole.log('Got otp:', r);
             this.props.submitFn(this.state.phoneNumber);
         }, (ex) => {
-            console.log('Error in generating otp:', ex);
+            cnsole.log('Error in generating otp:', ex);
             obj.setState({isError: true});
         });
     };

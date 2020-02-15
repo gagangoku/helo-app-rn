@@ -2,6 +2,7 @@ import React from "react";
 import {getImageUrl, Image, uploadBlob, View} from "../util/Util";
 import TouchableAnim from "../platform/TouchableAnim";
 import {ADD_PHOTO_ICON} from "../constants/Constants";
+import cnsole from 'loglevel';
 
 
 export default class EditableImageWidget extends React.Component {
@@ -14,7 +15,7 @@ export default class EditableImageWidget extends React.Component {
     }
 
     onSelectFile = async (files) => {
-        console.log('Files: ', files);
+        cnsole.log('Files: ', files);
         if (files.length === 0) {
             return;
         }

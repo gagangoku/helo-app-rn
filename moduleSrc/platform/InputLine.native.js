@@ -1,6 +1,7 @@
 import React from "react";
 import {Keyboard} from 'react-native';
 import {InputTextBarWithAttachIcons} from "../widgets/InputTextBarWithAttachIcons";
+import cnsole from 'loglevel';
 
 
 export class InputLine extends React.PureComponent {
@@ -20,11 +21,11 @@ export class InputLine extends React.PureComponent {
     }
 
     keyboardDidShow = (e) => {
-        console.log('keyboardDidShow: ', e.endCoordinates.height);
+        cnsole.log('keyboardDidShow: ', e.endCoordinates.height);
         this.props.setKeyboardHeightFn(e.endCoordinates.height);
     };
     keyboardDidHide = () => {
-        console.log('keyboardDidHide');
+        cnsole.log('keyboardDidHide');
         this.props.setKeyboardHeightFn(0);
     };
 

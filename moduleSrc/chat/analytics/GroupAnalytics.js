@@ -21,6 +21,7 @@ import format from "string-format";
 import {OUTPUT_PROGRESSIVE_MODULE} from "../Questions";
 import lodash from 'lodash';
 import TouchableAnim from "../../platform/TouchableAnim";
+import cnsole from 'loglevel';
 
 
 export default class GroupAnalytics extends React.Component {
@@ -47,8 +48,8 @@ export default class GroupAnalytics extends React.Component {
         this.doc = this.db.collection(collection).doc(groupId);
 
         const doc = await this.doc.get();
-        console.log('Firebase took: ', new Date().getTime() - startTimeMs);
-        console.log('doc: ', doc);
+        cnsole.log('Firebase took: ', new Date().getTime() - startTimeMs);
+        cnsole.log('doc: ', doc);
 
         const { messages, members, photo, name } = getGroupInfo(doc.data(), doc);
         const roleIdToName = await getPersonNamesByRoleId(members);
@@ -65,7 +66,7 @@ export default class GroupAnalytics extends React.Component {
         //const key = format('/idx/{}/user/{}', idx, user);
 
         const rsp = await hgetAllFromKVStore(hash);
-        console.log('GroupAnalytics hgetAllFromKVStore rsp: ', rsp);
+        cnsole.log('GroupAnalytics hgetAllFromKVStore rsp: ', rsp);
 
         const keys = Object.keys(rsp);
         keys.forEach(k => rsp[k] = JSON.parse(rsp[k]));
@@ -110,12 +111,12 @@ export default class GroupAnalytics extends React.Component {
                 });
             }
         }
-        console.log('perModule: ', perModule);
-        console.log('pointsPerUser: ', pointsPerUser);
+        cnsole.log('perModule: ', perModule);
+        cnsole.log('pointsPerUser: ', pointsPerUser);
 
         const sortedUsers = members.slice().sort((a, b) => pointsPerUser[b] - pointsPerUser[a]);
-        console.log('sortedUsers: ', sortedUsers);
-        console.log('roleIdToName: ', roleIdToName);
+        cnsole.log('sortedUsers: ', sortedUsers);
+        cnsole.log('roleIdToName: ', roleIdToName);
 
         const topUsers = sortedUsers.slice(0, NUM_TOP_BOTTOM_USERS).map(u => {
             const x = roleIdToName[u];

@@ -17,6 +17,7 @@ import JobDetailsWidget from "../widgets/JobDetailsWidget";
 import {getJobDetails} from "../util/Api";
 import VideoWithAnalytics from "../screens/VideoWithAnalytics";
 import {HOME_PAGE_URLS} from "./Urls";
+import cnsole from 'loglevel';
 
 
 export const HOME_PAGE_URL = '/';
@@ -264,7 +265,7 @@ class SingleJobScreen extends React.Component {
             fetchError: false,
         };
         const staticContext = this.props.staticContext || {data: window.__DATA__, promises: {}, req: {url: document.location.pathname}};
-        console.log('document.location: ', staticContext.req.url);
+        cnsole.log('document.location: ', staticContext.req.url);
     }
 
     // Wait for the promises to return and set data

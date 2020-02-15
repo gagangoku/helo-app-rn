@@ -40,6 +40,7 @@ import GroupAnalytics from "../chat/analytics/GroupAnalytics";
 import {GROUP_URLS} from "./Urls";
 import {QUESTION_WORK_CATEGORIES} from "../chat/Questions";
 import ChatBotClient from "../chat/bot/ChatBotClient";
+import cnsole from 'loglevel';
 
 
 export class StepGroupList extends React.Component {
@@ -63,7 +64,7 @@ export class StepGroupList extends React.Component {
 
         try {
             const me = getUrlParam('me') || '';
-            console.log('StepGroupList me: ', me);
+            cnsole.log('StepGroupList me: ', me);
             if (me) {
                 const [role, id] = me.split(':');
                 switch (role) {
@@ -80,11 +81,11 @@ export class StepGroupList extends React.Component {
                         this.setState({ id, name: visitor.name, role });
                         return;
                     default:
-                        console.log('Unknown role: ', me, role);
+                        cnsole.log('Unknown role: ', me, role);
                 }
             }
         } catch (e) {
-            console.log('Error in parsing me param: ', e);
+            cnsole.log('Error in parsing me param: ', e);
         }
 
         const { phone, id, name, role } = await getDetailsFromPhone();
@@ -96,7 +97,7 @@ export class StepGroupList extends React.Component {
     }
 
     goToChatFn = async ({ collection, groupId, avatar }) => {
-        console.log('goToChatFn: ', groupId);
+        cnsole.log('goToChatFn: ', groupId);
         const { id, name, role, ipLocation } = this.state;
 
         if (collection === FIREBASE_GROUPS_DB_NAME) {
@@ -112,7 +113,7 @@ export class StepGroupList extends React.Component {
         };
 
         const otherRoleId = groupId.split(',').filter(x => x !== me.sender)[0];
-        console.log('me, otherRoleId; ', me, otherRoleId);
+        cnsole.log('me, otherRoleId; ', me, otherRoleId);
         await getPersonDetails(this.idToDetails, [otherRoleId], []);
         const other = {
             id: otherRoleId.split(':')[1],
@@ -153,11 +154,11 @@ export class StepPersonalMessaging extends React.Component {
         super(props);
         this.contextObj = getCtx(this);
         this.state = {};
-        console.log('StepPersonalMessaging props: ', props);
+        cnsole.log('StepPersonalMessaging props: ', props);
     }
 
     async componentDidMount() {
-        console.log('StepPersonalMessaging componentDidMount: ');
+        cnsole.log('StepPersonalMessaging componentDidMount: ');
         const collection = FIREBASE_CHAT_MESSAGES_DB_NAME;
         const meParam = getUrlParam('me');
         const otherParam = getUrlParam('other');
@@ -199,7 +200,7 @@ export class StepPersonalMessaging extends React.Component {
 
         const groupId = [me.sender, other.sender].sort().join(',');
         this.detailsObj = { collection, me, other, ipLocation, groupId };
-        console.log('detailsObj: ', this.detailsObj);
+        cnsole.log('detailsObj: ', this.detailsObj);
 
         const isDebug = isDebugMode();
         const cbFn = ({ groupInfo }) => {
@@ -207,7 +208,7 @@ export class StepPersonalMessaging extends React.Component {
         };
 
         const obj = await getAllInfoRelatedToGroup({ collection, groupId, cbFn, isDebug, ipLocationPromise: Promise.resolve(ipLocation), createDocIfDoesntExist: true });
-        console.log('Got getAllInfoRelatedToGroup: ', obj);
+        cnsole.log('Got getAllInfoRelatedToGroup: ', obj);
         this.setState(obj);
 
         const idToDetails = {};
@@ -360,7 +361,7 @@ export class StepCookChatBot extends React.Component {
         this.contextObj = getCtx(this);
     }
     render() {
-        console.log('rendering SupplyOnboardingChatBot');
+        cnsole.log('rendering SupplyOnboardingChatBot');
         const params = {};
         getUrlSearchParams(document.location || API_URL).forEach((v, k) => params[k] = v);
         params[QUESTION_WORK_CATEGORIES] = CATEGORY_COOK;     // For cooks

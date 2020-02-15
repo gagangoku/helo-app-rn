@@ -60,6 +60,7 @@ import {firebase, initFirebase} from '../platform/firebase';
 import xrange from 'xrange';
 import lodash from "lodash";
 import TouchableAnim from "../platform/TouchableAnim";
+import cnsole from 'loglevel';
 
 
 export const getCtx = (obj) => {
@@ -72,13 +73,13 @@ export const getCtx = (obj) => {
 };
 
 export const navigateTo = (obj, url, prevCtx, overrides, replace=false) => {
-    console.log('navigateTo obj, url: ', obj, url);
+    cnsole.log('navigateTo obj, url: ', obj, url);
     const s = {...prevCtx, ...overrides};
     if (replace) {
-        console.log('replace state: ', url, s);
+        cnsole.log('replace state: ', url, s);
         obj.props.history.replace(url, s);
     } else {
-        console.log('push state: ', url, s);
+        cnsole.log('push state: ', url, s);
         obj.props.history.push(url, s);
     }
 };
@@ -149,18 +150,18 @@ export const flattenStyleArray = (s) => {
 export const redirectIfNotFlow = (ctx, flowName, redirectUrl) => {
     // Redirect if not part of the flow
     if (ctx.flowName !== flowName) {
-        console.log('Flowname not found, navigating to: ', redirectUrl);
+        cnsole.log('Flowname not found, navigating to: ', redirectUrl);
         window.location.href = redirectUrl;
     }
 };
 
 export const logoutFromWebsite = async (contextObj) => {
-    console.log('Logging out');
+    cnsole.log('Logging out');
     await AsyncStorage.removeItem(PHONE_NUMBER_KEY);
     contextObj.phoneNumber = null;
     contextObj.customerProfile = null;
 
-    console.log('Logged out');
+    cnsole.log('Logged out');
     window.location.reload();
 };
 
@@ -296,7 +297,7 @@ export async function awaitPromises(staticContext, keys, setFn, errorFn) {
                 staticContext.data[key] = await p;
                 setFn(key, staticContext.data[key]);
             } catch (e) {
-                console.log('Exception in getting api: ', key, supplyId, e);
+                cnsole.log('Exception in getting api: ', key, supplyId, e);
                 errorFn();
             }
         }
@@ -388,7 +389,7 @@ export const getAddressComponent = (results, type) => {
     for (let i = 0; i < loc.length; i++) {
         const { types, short_name, long_name } = loc[i];
         if (types && types.includes(type)) {
-            console.log(type, ':', long_name, short_name);
+            cnsole.log(type, ':', long_name, short_name);
             return long_name || short_name;
         }
     }
@@ -413,7 +414,7 @@ export const findJobReq = (customer, jobReqId) => {
     const jobOpenings = customer.jobOpenings || [];
     const openings = jobOpenings.filter(x => parseInt(x.id) === parseInt(jobReqId));
     if (openings.length !== 1) {
-        console.log('Something is wrong, jobReq not found: ', customer, jobReqId);
+        cnsole.log('Something is wrong, jobReq not found: ', customer, jobReqId);
         return null;
     }
 
@@ -441,13 +442,13 @@ export const urlBase64ToUint8Array = (base64String) => {
 
 export const setupDeviceId = async () => {
     const prevSession = await AsyncStorage.getItem(PREVIOUS_SESSION_KEY);
-    console.log('prevSession: ', prevSession);
+    cnsole.log('prevSession: ', prevSession);
 
     let deviceID;
     try {
         deviceID = prevSession ? (JSON.parse(prevSession).deviceID || uuidv1()) : uuidv1();
     } catch (e) {
-        console.log('Exception parsing prevSession: ', e);
+        cnsole.log('Exception parsing prevSession: ', e);
         deviceID = uuidv1();
     }
     await AsyncStorage.setItem(PREVIOUS_SESSION_KEY, JSON.stringify({ deviceID }));
@@ -457,13 +458,13 @@ export const setupDeviceId = async () => {
 export const getDetailsFromPhone = async () => {
     const startTimeMs = new Date().getTime();
     const obj = await getDetailsFromPhoneInternal();
-    console.log('getDetailsFromPhone: ', obj);
-    console.log('getDetailsFromPhone took: ', new Date().getTime() - startTimeMs);
+    cnsole.log('getDetailsFromPhone: ', obj);
+    cnsole.log('getDetailsFromPhone took: ', new Date().getTime() - startTimeMs);
     return obj;
 };
 const getDetailsFromPhoneInternal = async () => {
     const phone = await AsyncStorage.getItem(PHONE_NUMBER_KEY);
-    console.log('Got phone: ', phone);
+    cnsole.log('Got phone: ', phone);
     if (!phone) {
         return {};
     }
@@ -474,7 +475,7 @@ const getDetailsFromPhoneInternal = async () => {
 
     // 1. Lookup supply
     const supplyList = await promise1;
-    console.log('Got supplyList: ', supplyList);
+    cnsole.log('Got supplyList: ', supplyList);
     if (supplyList && supplyList.length > 0) {
         const { id, name, image } = supplyList[0].person;
         return { phone, id, name, role: 'supply', image };
@@ -482,7 +483,7 @@ const getDetailsFromPhoneInternal = async () => {
 
     // 2. Lookup customer
     const customerList = await promise2;
-    console.log('Got customerList: ', customerList);
+    cnsole.log('Got customerList: ', customerList);
     if (customerList && customerList.length > 0) {
         const { id, name, image } = customerList[0].person;
         return { phone, id, name, role: 'cust', image };
@@ -490,13 +491,13 @@ const getDetailsFromPhoneInternal = async () => {
 
     // 3. Lookup visitor
     const visitorList = await promise3;
-    console.log('Got visitorList: ', visitorList);
+    cnsole.log('Got visitorList: ', visitorList);
     if (visitorList && visitorList.length > 0) {
         const { id, name, photo } = visitorList[0];
         return { phone, id, name, role: 'visitor', image: photo };
     }
 
-    console.log('Neither customer, nor supply, nor visitor: ', phone);
+    cnsole.log('Neither customer, nor supply, nor visitor: ', phone);
     return { phone };
 };
 export const getLangCode = (language) => {
@@ -514,7 +515,7 @@ export const getLangCode = (language) => {
 };
 
 export const recognizeSpeechMinMaxDuration = async (eventListenerFn, minListenTimeMs, timeoutMs, language, grammarHints, setMicListeningFn) => {
-    console.log('recognizeSpeechMinMaxDuration: ', minListenTimeMs, timeoutMs);
+    cnsole.log('recognizeSpeechMinMaxDuration: ', minListenTimeMs, timeoutMs);
     let startTimeMs = new Date().getTime();
     let websocket;
     let recording = true;
@@ -528,7 +529,7 @@ export const recognizeSpeechMinMaxDuration = async (eventListenerFn, minListenTi
         };
 
         const dataAvailableCbFn = (arrayBuffer) => {
-            console.log('arrayBuffer: ', arrayBuffer);
+            cnsole.log('arrayBuffer: ', arrayBuffer);
             websocket && websocket.send(arrayBuffer);
 
             if (!recording) {
@@ -574,16 +575,16 @@ const openSpeechWebsocket = (onMessageFn) => {
     websocket.onopen = () => {};
     websocket.onmessage = (e) => {
         const msg = JSON.parse(e.data || '{}');
-        console.log('Message received:', msg);
+        cnsole.log('Message received:', msg);
         onMessageFn(msg);
     };
 
     websocket.onclose = (e) => {
-        console.log('Socket is closed :', e);
+        cnsole.log('Socket is closed :', e);
     };
 
     websocket.onerror = (e) => {
-        console.error('Socket encountered error. Closing socket: ', e.message, e);
+        cnsole.error('Socket encountered error. Closing socket: ', e.message, e);
         websocket.close();
     };
     return websocket;
@@ -621,12 +622,12 @@ export const getPersonDetails = async (idToDetails, members, messages) => {
             idToDetails[k] = roleIdToName[k];
         });
     }
-    // console.log('idToDetails: ', idToDetails);
-    console.log('getPersonDetails took: ', new Date().getTime() - startTimeMs);
+    // cnsole.log('idToDetails: ', idToDetails);
+    cnsole.log('getPersonDetails took: ', new Date().getTime() - startTimeMs);
 };
 
 export const getPersonalMessageDocInfo = (docData, doc) => {
-    console.log('Getting personal message doc info: ', docData, doc);
+    cnsole.log('Getting personal message doc info: ', docData, doc);
     const admins = [];
     const createdAt = docData.createdAt || 1575158400000;
     const messages = docData.messages || [];
@@ -644,7 +645,7 @@ export const getPersonalMessageDocInfo = (docData, doc) => {
 };
 
 export const getGroupInfo = (docData, doc) => {
-    // console.log('Getting group info: ', docData, doc);
+    // cnsole.log('Getting group info: ', docData, doc);
     const { photo, name, desc } = docData;
     const admins = lodash.uniq(docData.admins || []);
     const createdAt = docData.createdAt || 1575158400000;
@@ -670,7 +671,7 @@ const processMessages = ({ messages, collection, isDebug, ipLocation }) => {
     const m1 = hyperLocalPostsFilter(messages, ipLocation, isDebug);
     const m2 = hyperLocalNewJoineeFilter(m1, ipLocation, isDebug);
     const m3 = mergeMultipleNewJoineeFilter(m2, ipLocation, isDebug);
-    console.log('Post filter sizes: ', messages.length, m1.length, m2.length, m3.length);
+    cnsole.log('Post filter sizes: ', messages.length, m1.length, m2.length, m3.length);
     return m3;
 };
 
@@ -755,7 +756,7 @@ const processTrainingModules = async (collection, groupId, messages) => {
     const rsp = await hgetAllFromKVStore(hash);
 
     const keys = Object.keys(rsp).filter(x => x.includes("/user/" + roleId));
-    console.log('processTrainingModules keys: ', keys, rsp, hash);
+    cnsole.log('processTrainingModules keys: ', keys, rsp, hash);
     keys.forEach(k => rsp[k] = JSON.parse(rsp[k]));
 
     const filtered = [];
@@ -767,7 +768,7 @@ const processTrainingModules = async (collection, groupId, messages) => {
                 const { compressed } = rsp[k];
                 return compressed.map(([a, b]) => b + 1 - a).reduce(sumFn, 0) * VIDEO_ANALYTICS_INTERVAL_SECONDS;
             }).reduce(sumFn, 0);
-            console.log('messages[i].watched: ', watched, msg);
+            cnsole.log('messages[i].watched: ', watched, msg);
             filtered.push({...msg, watched});
         } else {
             filtered.push(msg);
@@ -797,21 +798,21 @@ export const getAllInfoRelatedToGroup = async ({ collection, groupId, cbFn, isDe
     }
 
     const docData = doc.data();
-    console.log('Firebase took: ', new Date().getTime() - startTimeMs);
+    cnsole.log('Firebase took: ', new Date().getTime() - startTimeMs);
 
     const groupInfo = collection === FIREBASE_CHAT_MESSAGES_DB_NAME ? getPersonalMessageDocInfo(docData, doc) : getGroupInfo(docData, doc);
     const { shouldApplyFilters, messages, hasAnalytics } = groupInfo;
 
     const ts1 = new Date().getTime();
     const ipLocation = shouldApplyFilters && !dontProcessMessages ? await ipLocationPromise : null;
-    console.log('ipLocation resolve took: ', new Date().getTime() - ts1);
+    cnsole.log('ipLocation resolve took: ', new Date().getTime() - ts1);
 
     const fm1 = shouldApplyFilters && !dontProcessMessages ? processMessages({ messages, collection, isDebug, ipLocation }) : messages;
     const fm2 = hasAnalytics && !dontProcessMessages ? await processTrainingModules(collection, groupId, fm1) : fm1;
     groupInfo.filteredMessages = fm2;
 
     const observer = docRef.onSnapshot(async snapshot => {
-        console.log('Got snapshot: ', snapshot);
+        cnsole.log('Got snapshot: ', snapshot);
         const docData = snapshot.data();
         const doc = snapshot.ref;
         const groupInfo = collection === FIREBASE_CHAT_MESSAGES_DB_NAME ? getPersonalMessageDocInfo(docData, doc) : getGroupInfo(docData, doc);
@@ -833,7 +834,7 @@ export const computeLeaderBoardPoints = ({ key, roleId, watched, duration, lastU
     const s2 = (maxLastUpdatedAtMs - lastUpdatedAtMs + 1) / (maxLastUpdatedAtMs - minLastUpdatedAtMs + 1);
     const points = 100*s1 + 20*s2;
 
-    console.log({ key, roleId, s1, s2, points, watched, duration, lastUpdatedAtMs, minLastUpdatedAtMs, maxLastUpdatedAtMs });
+    cnsole.log({ key, roleId, s1, s2, points, watched, duration, lastUpdatedAtMs, minLastUpdatedAtMs, maxLastUpdatedAtMs });
     return Math.ceil(points);
 };
 

@@ -1,4 +1,5 @@
 import fetch from "cross-fetch";
+import cnsole from 'loglevel';
 
 
 const base64Encode = (data) => Buffer.from(data).toString('base64');
@@ -25,11 +26,11 @@ const testOnGrid = async () => {
     await new Promise(resolve => {
         fetch(url, { method: 'POST', headers: headers, body })
             .then((response) => {
-                console.log('Response: ', response);
+                cnsole.log('Response: ', response);
                 resolve();
             })
             .catch((ex) => {
-                console.log('Exception: ', ex);
+                cnsole.log('Exception: ', ex);
                 resolve();
             });
     });

@@ -1,9 +1,10 @@
 import {firebase} from '@firebase/app';
 import '@firebase/firestore';
+import cnsole from 'loglevel';
 
 
 export const initFirebase = () => {
-    console.log('Initializing firebase');
+    cnsole.log('Initializing firebase');
 
     // Your web app's Firebase configuration
     const firebaseConfig = {

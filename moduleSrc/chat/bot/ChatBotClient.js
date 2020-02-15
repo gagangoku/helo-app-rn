@@ -11,6 +11,7 @@ import uuidv1 from "uuid/v1";
 import {WEBSOCKET_URL} from "../../constants/Constants";
 import window from "global";
 import {GROUP_URLS} from "../../controller/Urls";
+import cnsole from 'loglevel';
 
 
 export default class ChatBotClient extends React.Component {
@@ -33,7 +34,7 @@ export default class ChatBotClient extends React.Component {
     async componentDidMount() {
         this.deviceID = await setupDeviceId();
         this.uuid = uuidv1();
-        console.log('ChatBotClient componentDidMount: ', this.deviceID, this.uuid, this.language);
+        cnsole.log('ChatBotClient componentDidMount: ', this.deviceID, this.uuid, this.language);
     }
 
     componentWillUnmount() {
@@ -50,17 +51,17 @@ export default class ChatBotClient extends React.Component {
         };
 
         this.websocket.onmessage = (e) => {
-            console.log('Message:', e.data);
+            cnsole.log('Message:', e.data);
             this.onHeloMsg(e.data);
         };
 
         this.websocket.onclose = (e) => {
-            console.log('Socket is closed. Reconnect will be attempted in 1 second :', e);
+            cnsole.log('Socket is closed. Reconnect will be attempted in 1 second :', e);
             setTimeout(() => this.connect(), 1000);
         };
 
         this.websocket.onerror = (e) => {
-            console.error('Socket encountered error: ', e.message, 'Closing socket');
+            cnsole.error('Socket encountered error: ', e.message, 'Closing socket');
             this.websocket.close();
         };
     };
@@ -69,7 +70,7 @@ export default class ChatBotClient extends React.Component {
 
     onHeloMsg = (heloMessages) => {
         heloMessages = JSON.parse(heloMessages || '{}');
-        console.log('onHeloMsg: ', heloMessages);
+        cnsole.log('onHeloMsg: ', heloMessages);
 
         const messages = this.state.messages.slice();
         heloMessages.questionsToAsk.forEach(hm => {
@@ -93,7 +94,7 @@ export default class ChatBotClient extends React.Component {
     };
 
     onUserMsg = async ({ text, type, ...extra }) => {
-        console.log('onUserMsg: ', text, type, extra);
+        cnsole.log('onUserMsg: ', text, type, extra);
         const messages = this.state.messages.slice();
         messages.push({
             timestamp: new Date().getTime(),
@@ -137,7 +138,7 @@ export default class ChatBotClient extends React.Component {
 
     languageModal = () => {
         const toggleFn = (language) => {
-            console.log('Selected language: ', language);
+            cnsole.log('Selected language: ', language);
             this.setState({ languageModalOpen: false });
             this.language = language;
             this.connect();

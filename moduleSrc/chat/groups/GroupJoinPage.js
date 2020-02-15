@@ -33,6 +33,7 @@ import GA from "../../util/GoogleAnalytics";
 import {OUTPUT_NEW_JOINEE, OUTPUT_PROGRESSIVE_MODULE} from "../Questions";
 import format from 'string-format';
 import {GROUP_URLS} from "../../controller/Urls";
+import cnsole from 'loglevel';
 
 
 export class GroupJoinPage extends React.Component {
@@ -73,15 +74,15 @@ export class GroupJoinPage extends React.Component {
         });
 
         const _obbj = await Promise.all([userDetailsPromise, groupInfoPromise]);
-        console.log('_obbj: ', _obbj);
+        cnsole.log('_obbj: ', _obbj);
         const [userDetails, groupInfo] = _obbj;
-        console.log('Getting userDetails & groupInfo took: ', new Date().getTime() - startTimeMs);
+        cnsole.log('Getting userDetails & groupInfo took: ', new Date().getTime() - startTimeMs);
 
         const ipLocationResponse = await ipLocationPromise;
-        console.log('Got ip address location: ', ipLocationResponse);
+        cnsole.log('Got ip address location: ', ipLocationResponse);
 
         this.setState({ init: true, userDetails, groupInfo, ipLocationResponse });
-        console.log('GroupJoinPage userDetails, groupInfo, ipLocationResponse: ', userDetails, groupInfo, ipLocationResponse);
+        cnsole.log('GroupJoinPage userDetails, groupInfo, ipLocationResponse: ', userDetails, groupInfo, ipLocationResponse);
 
         const { phone, name, role, id } = userDetails;
         const roleId = role + ':' + id;
@@ -106,7 +107,7 @@ export class GroupJoinPage extends React.Component {
         if (phone && name && members.includes(roleId)) {
             await this.initializeWebPushAndChatBot();
         }
-        console.log('GroupJoinPage componentDidMount finished: ', new Date().getTime() - startTimeMs);
+        cnsole.log('GroupJoinPage componentDidMount finished: ', new Date().getTime() - startTimeMs);
     }
     componentWillUnmount() {
         this.observer && this.observer();        // Unsubscribe
@@ -156,14 +157,14 @@ export class GroupJoinPage extends React.Component {
     initializeWebPushAndChatBot = async () => {
         await this.initializeWebPush();
 
-        console.log('GroupJoinPage checking for chat bot');
+        cnsole.log('GroupJoinPage checking for chat bot');
         setTimeout(this.chatBotRedirectConfirm, 1000);
     };
 
     initializeWebPush = async () => {
-        console.log('initializeWebPush called');
+        cnsole.log('initializeWebPush called');
         const perm = window.Notification && window.Notification.permission;
-        console.log('Notification.permission: ', perm);
+        cnsole.log('Notification.permission: ', perm);
         const deviceID = await setupDeviceId();
 
         await new Promise(async resolve => {
@@ -171,15 +172,15 @@ export class GroupJoinPage extends React.Component {
                 case 'default':
                     confirmAlert({
                         willUnmount: () => {
-                            console.log('willUnmount');
+                            cnsole.log('willUnmount');
                             resolve();
                         },
                         onClickOutside: () => {
-                            console.log('onClickOutside');
+                            cnsole.log('onClickOutside');
                             resolve();
                         },
                         onKeypressEscape: () => {
-                            console.log('onKeypressEscape');
+                            cnsole.log('onKeypressEscape');
                             resolve();
                         },
                         customUI: ({ onClose }) => {
@@ -219,7 +220,7 @@ export class GroupJoinPage extends React.Component {
     };
 
     chatBotRedirectConfirm = async () => {
-        console.log('chatBotRedirectConfirm called');
+        cnsole.log('chatBotRedirectConfirm called');
         let isCityBangalore = false;
         const deviceID = this.deviceID;
         const { ipLocationResponse, groupInfo } = this.state;
@@ -228,11 +229,11 @@ export class GroupJoinPage extends React.Component {
             const dist = haversineDistanceKms(ipLocationResponse, latLonFn(BANGALORE_LAT, BANGALORE_LNG));
             isCityBangalore = dist <= 20;
 
-            console.log('deviceID, ipLocationResponse, isCityBangalore: ', deviceID, ipLocationResponse, isCityBangalore);
+            cnsole.log('deviceID, ipLocationResponse, isCityBangalore: ', deviceID, ipLocationResponse, isCityBangalore);
             try {
                 logDataToServer({deviceID, ipLocationResponse, isCityBangalore});
             } catch (e) {
-                console.log('Error in logging location to server: ', e);
+                cnsole.log('Error in logging location to server: ', e);
             }
         }
 
@@ -242,15 +243,15 @@ export class GroupJoinPage extends React.Component {
             await new Promise(async resolve => {
                 confirmAlert({
                     willUnmount: () => {
-                        console.log('willUnmount');
+                        cnsole.log('willUnmount');
                         resolve();
                     },
                     onClickOutside: () => {
-                        console.log('onClickOutside');
+                        cnsole.log('onClickOutside');
                         resolve();
                     },
                     onKeypressEscape: () => {
-                        console.log('onKeypressEscape');
+                        cnsole.log('onKeypressEscape');
                         resolve();
                     },
                     customUI: ({onClose}) => {
@@ -280,10 +281,10 @@ export class GroupJoinPage extends React.Component {
     };
 
     bellFn = ({ me, groupId, collection }) => {
-        console.log('bellFn: ', me, groupId, collection);
+        cnsole.log('bellFn: ', me, groupId, collection);
     };
     leaderboardFn = ({ idx, message, me, groupId, collection, moduleName }) => {
-        console.log('leaderboardFn: ', idx, message, me, groupId, collection);
+        cnsole.log('leaderboardFn: ', idx, message, me, groupId, collection);
         const { photo, name, members } = this.state.groupInfo;
 
         const url = format('{}/?idx={}&me={}&groupId={}&collection={}&groupName={}&groupPhoto={}&moduleName={}&members={}',
@@ -419,7 +420,7 @@ class LoginModal extends React.Component {
                 if (!role) {
                     const createResponse = await crudsCreate(DESCRIPTOR_VISITOR, { phone, name, deviceID });
                     const id2 = parseInt(createResponse.split(' ')[1]);
-                    console.log('Created new visitor id: ', id2);
+                    cnsole.log('Created new visitor id: ', id2);
                     this.props.joinFn({ phone, name, id: id2, role: 'visitor' });
                 } else {
                     this.props.joinFn({ phone, name, id, role });
@@ -572,13 +573,13 @@ const modalStyle = {
 
 // Useful in creating job openings
 const createJobOpening = async (db) => {
-    console.log('createJobOpening');
+    cnsole.log('createJobOpening');
     const doc = db.collection(FIREBASE_GROUPS_DB_NAME).doc('restaurant-jobs-india');
     const baseDoc = await doc.get();
-    console.log('Got baseDoc: ', baseDoc);
+    cnsole.log('Got baseDoc: ', baseDoc);
 
     const messages = baseDoc.data().messages;
-    console.log('messages: ', messages);
+    cnsole.log('messages: ', messages);
 
     const jobMsg = {
         job: {
@@ -607,20 +608,20 @@ const createJobOpening = async (db) => {
         timestamp: new Date().getTime(),
         type: 'text',
     };
-    console.log('jobMsg: ', jobMsg);
+    cnsole.log('jobMsg: ', jobMsg);
 
     await doc.update({
         messages: firebase.firestore.FieldValue.arrayUnion(jobMsg, msg1),
     });
 };
 const createVideoMsg = async (db) => {
-    console.log('createVideoMsg');
+    cnsole.log('createVideoMsg');
     const doc = db.collection(FIREBASE_GROUPS_DB_NAME).doc('restaurant-jobs-india');
     const baseDoc = await doc.get();
-    console.log('Got baseDoc: ', baseDoc);
+    cnsole.log('Got baseDoc: ', baseDoc);
 
     const messages = baseDoc.data().messages;
-    console.log('messages: ', messages);
+    cnsole.log('messages: ', messages);
 
     const videoMsg = {
         sender: 'supply:352',
@@ -629,14 +630,14 @@ const createVideoMsg = async (db) => {
         type: 'video',
         videoUrl: 'https://helloeko.com/buzzfeed-tasty-eko-fast/biscuit-fast/embed?autoplay=true',
     };
-    console.log('videoMsg: ', videoMsg);
+    cnsole.log('videoMsg: ', videoMsg);
 
     await doc.update({
         messages: firebase.firestore.FieldValue.arrayUnion(videoMsg),
     });
 };
 const createGroup = async (db, groupId, name) => {
-    console.log('createGroup');
+    cnsole.log('createGroup');
     const doc = db.collection(FIREBASE_GROUPS_DB_NAME).doc(groupId);
     await doc.set({
         desc: '',
@@ -660,26 +661,26 @@ const createGroup = async (db, groupId, name) => {
         allowChatBotPromptForJobs: false,
     });
     const baseDoc = await doc.get();
-    console.log('Got baseDoc: ', baseDoc);
+    cnsole.log('Got baseDoc: ', baseDoc);
 
     createVideoTrainingMessages(db, groupId);
 };
 const findPrivateConversations = async (db) => {
-    console.log('findPrivateConversations');
+    cnsole.log('findPrivateConversations');
     const snapshot = await db.collection(FIREBASE_CHAT_MESSAGES_DB_NAME).get();
     snapshot.forEach(doc => {
         const messages = doc.data().messages;
-        console.log('doc: ', doc.id, messages.length);
+        cnsole.log('doc: ', doc.id, messages.length);
     });
 };
 const deleteSelectedConversations = async (db, startIdx, numItems) => {
-    console.log('deleteSelectedConversations');
+    cnsole.log('deleteSelectedConversations');
     const doc = db.collection(FIREBASE_GROUPS_DB_NAME).doc('restaurant-jobs-india');
     const baseDoc = await doc.get();
-    console.log('Got baseDoc: ', baseDoc);
+    cnsole.log('Got baseDoc: ', baseDoc);
 
     const messages = baseDoc.data().messages;
-    console.log('messages: ', messages);
+    cnsole.log('messages: ', messages);
 
     const msgCopy = messages.slice();
     const removed = msgCopy.splice(startIdx, numItems);
@@ -688,16 +689,16 @@ const deleteSelectedConversations = async (db, startIdx, numItems) => {
     });
 };
 const findDuplicatedVisitors = async (db) => {
-    console.log('findDuplicatedVisitors');
+    cnsole.log('findDuplicatedVisitors');
 
     const visitors = await crudsSearch(DESCRIPTOR_VISITOR, {});
-    console.log('visitors: ', visitors);
+    cnsole.log('visitors: ', visitors);
 
     const phoneNumberToIds = {};
     for (let i = 0; i < visitors.length; i++) {
         const {id, phone} = visitors[i];
         if (i+1 !== parseInt(id)) {
-            console.log('Bad record: ', i, visitors[i]);
+            cnsole.log('Bad record: ', i, visitors[i]);
             continue;
         }
         if (!phoneNumberToIds[phone]) {
@@ -715,15 +716,15 @@ const findDuplicatedVisitors = async (db) => {
         }
     });
 
-    console.log('phoneNumberToIds: ', phoneNumberToIds);
-    console.log('idsToRemove: ', idsToRemove);
+    cnsole.log('phoneNumberToIds: ', phoneNumberToIds);
+    cnsole.log('idsToRemove: ', idsToRemove);
 
     const doc = db.collection(FIREBASE_GROUPS_DB_NAME).doc('restaurant-jobs-india');
     const baseDoc = await doc.get();
-    console.log('Got baseDoc: ', baseDoc);
+    cnsole.log('Got baseDoc: ', baseDoc);
 
     const messages = baseDoc.data().messages;
-    console.log('messages: ', messages);
+    cnsole.log('messages: ', messages);
 
     const filteredMessages = messages.filter(m => {
         const { sender, type } = m;
@@ -733,22 +734,22 @@ const findDuplicatedVisitors = async (db) => {
         }
         return true;
     });
-    console.log('filteredMessages: ', filteredMessages);
+    cnsole.log('filteredMessages: ', filteredMessages);
 
     await doc.update({
         messages: filteredMessages,
     });
 
-    console.log('DELETE from Visitor where id IN (', idsToRemove.join(', '), ')');
+    cnsole.log('DELETE from Visitor where id IN (', idsToRemove.join(', '), ')');
 };
 const createVideoTrainingMessages = async (db, groupId) => {
-    console.log('createVideoTrainingMessages');
+    cnsole.log('createVideoTrainingMessages');
     const doc = db.collection(FIREBASE_GROUPS_DB_NAME).doc(groupId);
     const baseDoc = await doc.get();
-    console.log('Got baseDoc: ', baseDoc);
+    cnsole.log('Got baseDoc: ', baseDoc);
 
     const messages = baseDoc.data().messages;
-    console.log('messages: ', messages);
+    cnsole.log('messages: ', messages);
 
     const newMessages = [{
         imageUrl: 'https://images-lb.heloprotocol.in/liq.png-434036-969878-1580287698109.png',
@@ -783,7 +784,7 @@ const createVideoTrainingMessages = async (db, groupId) => {
         timestamp: new Date().getTime(),
         type: OUTPUT_PROGRESSIVE_MODULE,
     }];
-    console.log('newMessages: ', newMessages);
+    cnsole.log('newMessages: ', newMessages);
 
     await doc.update({
         messages: firebase.firestore.FieldValue.arrayUnion(...newMessages),

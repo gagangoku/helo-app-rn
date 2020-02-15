@@ -25,6 +25,7 @@ import {
 } from "../platform/Util";
 import TouchableAnim from "../platform/TouchableAnim";
 import {commonStyle} from "../styles/common";
+import cnsole from 'loglevel';
 
 
 export class InputTextBarWithAttachIcons extends React.Component {
@@ -78,10 +79,10 @@ export class InputTextBarWithAttachIcons extends React.Component {
         const obj = await this.recorder.stop();
 
         const file = fileFromBlob(obj.audioBlob, 'recording');
-        console.log('Audio file: ', file);
+        cnsole.log('Audio file: ', file);
 
         const audioUrl = await uploadBlob(file);
-        console.log('audioUrl: ', audioUrl);
+        cnsole.log('audioUrl: ', audioUrl);
 
         if (audioUrl) {
             await this.props.onNewMsgFn({answer: '', type: OUTPUT_AUDIO, audioUrl});
@@ -93,7 +94,7 @@ export class InputTextBarWithAttachIcons extends React.Component {
     micMouseDown = async () => {
         const { keyboardInputDisabled, enableSpeechRecognition } = this.props;
         if (!keyboardInputDisabled && enableSpeechRecognition) {
-            console.log('mic micMouseDown');
+            cnsole.log('mic micMouseDown');
 
             if (await requestMicPermission()) {
                 this.setState({showExpanded: true, recordingStartTimeMs: new Date().getTime(), numDots: 0});
@@ -105,7 +106,7 @@ export class InputTextBarWithAttachIcons extends React.Component {
     micMouseUp = () => {
         const { keyboardInputDisabled, enableSpeechRecognition } = this.props;
         if (!keyboardInputDisabled && enableSpeechRecognition) {
-            console.log('mic micMouseUp');
+            cnsole.log('mic micMouseUp');
             clearTimeout(this.timeoutId);
             clearInterval(this.intervalId);
             this.setState({showExpanded: false, recordingStartTimeMs: -1, numDots: 0});
@@ -125,7 +126,7 @@ export class InputTextBarWithAttachIcons extends React.Component {
         this.setState({ isTrainingModuleFlowOpen: true, videoUrl, isPopoverOpen: false });
     };
     onAttachCompleteFn = (obj) => {
-        console.log('onAttachCompleteFn: ', obj);
+        cnsole.log('onAttachCompleteFn: ', obj);
         if (obj) {
             this.props.onNewMsgFn(obj);
         }

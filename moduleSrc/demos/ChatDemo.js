@@ -20,6 +20,7 @@ import {
 } from "../chat/Questions";
 import {COOK_ONBOARDING_FLOW, getChatContext} from "../chat/bot/ChatUtil";
 import {HELO_LOGO} from "../chat/Constants";
+import cnsole from 'loglevel';
 
 
 export default class ChatDemo extends React.Component {
@@ -35,7 +36,7 @@ export default class ChatDemo extends React.Component {
     }
 
     onUserMsg = async ({ text, type, ...extra }) => {
-        console.log('onUserMsg: ', text, type, extra);
+        cnsole.log('onUserMsg: ', text, type, extra);
         const messages = this.state.messages.slice();
         messages.push({
             timestamp: new Date().getTime(),

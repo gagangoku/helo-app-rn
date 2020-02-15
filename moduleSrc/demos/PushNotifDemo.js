@@ -1,6 +1,7 @@
 import React from 'react';
 import {withStyles} from '../platform/Util';
 import {getCtx, getUrlParam, initWebPush, setupDeviceId} from "../util/Util";
+import cnsole from 'loglevel';
 
 
 class PushNotifDemo extends React.Component {
@@ -11,7 +12,7 @@ class PushNotifDemo extends React.Component {
     }
 
     async componentDidMount() {
-        console.log('PushNotifDemo componentDidMount');
+        cnsole.log('PushNotifDemo componentDidMount');
         // For web push notifications
 
         const forceUpdate = getUrlParam('forceUpdate');

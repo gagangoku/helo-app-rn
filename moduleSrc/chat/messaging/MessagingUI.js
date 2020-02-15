@@ -104,6 +104,7 @@ import {getKeyFromKVStore, setKeyValueFromKVStore} from "../../util/Api";
 import {ConfigurableTopBar, GroupTopBar, PersonalMessagingTopBar} from "./TopBar";
 import {GROUP_URLS, HOME_PAGE_URLS} from "../../controller/Urls";
 import {InputLine} from '../../platform/InputLine';
+import cnsole from 'loglevel';
 
 
 /**
@@ -121,11 +122,11 @@ export default class MessagingUI extends React.PureComponent {
         this.speechDisabledMap = {};
         this.chatRootRef = React.createRef();
 
-        console.log('MessagingUI constructor: ', props);
+        cnsole.log('MessagingUI constructor: ', props);
     }
 
     componentDidMount() {
-        console.log('MessagingUI componentDidMount: ', this.props);
+        cnsole.log('MessagingUI componentDidMount: ', this.props);
         const { msgToScrollTo } = this.props;
         if (msgToScrollTo) {
             // TODO: Scroll to the message
@@ -210,7 +211,7 @@ export default class MessagingUI extends React.PureComponent {
                     break;
 
                 default:
-                    console.log('Unknown question type: ', message);
+                    cnsole.log('Unknown question type: ', message);
                     break;
             }
         }
@@ -220,7 +221,7 @@ export default class MessagingUI extends React.PureComponent {
     };
 
     onNewMsgFn = async ({ answer, type, ...extra }) => {
-        console.log('onNewMsgFn: ', answer, type, extra);
+        cnsole.log('onNewMsgFn: ', answer, type, extra);
         this.speechDisabledMap[this.props.messages.length - 1] = true;
 
         switch (type) {
@@ -256,7 +257,7 @@ export default class MessagingUI extends React.PureComponent {
     };
 
     callFn = () => {
-        console.log('Calling: ', this.props.otherGuy);
+        cnsole.log('Calling: ', this.props.otherGuy);
         this.props.callFn();
     };
 
@@ -288,7 +289,7 @@ export default class MessagingUI extends React.PureComponent {
             </View>
         );
 
-        console.log('display messages: ', messages, displayMsgs, keyboardInputDisabled);
+        cnsole.log('display messages: ', messages, displayMsgs, keyboardInputDisabled);
 
         const INNER_HEIGHT = WINDOW_INNER_HEIGHT - ConfigurableTopBar.HEIGHT - InputLine.HEIGHT - HEIGHT_BUFFER - keyboardHeight;
         const amIAdmin = admins.includes(me.sender) || GROUPS_SUPER_ADMINS.includes(me.sender);
@@ -432,7 +433,7 @@ class MessageAPersonModal extends React.PureComponent {
 class TextMessage extends React.PureComponent {
     async componentDidMount() {
         const { idx, message, speechDisabledMap, setMicListeningFn } = this.props;
-        // console.log('TextMessage componentDidMount: ', message);
+        // cnsole.log('TextMessage componentDidMount: ', message);
         const { type, text, askInput, language, speak } = message;
         if (speak) {
             enqueueSpeechWithPolly(speak.replace(/(<([^>]+)>)/g, ""), message.language);
@@ -446,7 +447,7 @@ class TextMessage extends React.PureComponent {
                     clearInterval(intervalId);
 
                     const { result } = await recognizeSpeechMinMaxDuration(() => {}, MIN_SPEECH_RECOGNITION_MS, MAX_SPEECH_RECOGNITION_MS, language, grammar, setMicListeningFn);
-                    console.log('TextMessage speech result: ', result, speechDisabledMap);
+                    cnsole.log('TextMessage speech result: ', result, speechDisabledMap);
                     if (result && !speechDisabledMap[idx]) {
                         this.props.onNewMsgFn({ answer: result });
                     }
@@ -489,7 +490,7 @@ class ProgressiveModule extends React.PureComponent {
     openProgressiveModule = () => {
         const { collection, groupId, idx, message, me } = this.props;
         const { videoUrl } = message;
-        console.log('[analytics] openProgressiveModule: ', collection, groupId, idx, me.sender);
+        cnsole.log('[analytics] openProgressiveModule: ', collection, groupId, idx, me.sender);
         const url = format('{}?collection={}&groupId={}&idx={}&user={}&videoUrl={}', HOME_PAGE_URLS.videoAnalytics, collection, groupId, idx, me.sender, encodeURIComponent(videoUrl));
         openUrlOrRoute({ url });
     };
@@ -523,7 +524,7 @@ class ProgressiveModule extends React.PureComponent {
         const right = collection === FIREBASE_GROUPS_DB_NAME && sender !== me.sender ? leaderBoardIcon : <View />;
         const left  = collection === FIREBASE_GROUPS_DB_NAME && sender === me.sender ? leaderBoardIcon : <View />;
 
-        console.log('loggggg: ', { message, idx, me, groupId, collection, sender, duration, watched, completePercent });
+        cnsole.log('loggggg: ', { message, idx, me, groupId, collection, sender, duration, watched, completePercent });
         return (
             <View style={{ display: 'flex', flexDirection: 'row', justifyContent: sender === me.sender ? 'flex-end' : 'flex-start' }}>
                 {left}
@@ -566,7 +567,7 @@ class ImageMessage extends React.PureComponent {
 
     openPic = () => {
         const { collection, groupId, idx, message, me } = this.props;
-        console.log('[analytics] openPic: ', collection, groupId, idx, me.sender);
+        cnsole.log('[analytics] openPic: ', collection, groupId, idx, me.sender);
     };
 
     render () {
@@ -597,7 +598,7 @@ class AudioMessage extends React.PureComponent {
 
     onTimeUpdate = ({ currentTime, duration, ...extra }) => {
         const { collection, groupId, idx, me } = this.props;
-        console.log('[analytics] onTimeUpdate audio: ', collection, groupId, idx, me.sender, currentTime, duration, extra);
+        cnsole.log('[analytics] onTimeUpdate audio: ', collection, groupId, idx, me.sender, currentTime, duration, extra);
     };
     render () {
         const { message, idx, me, otherGuy, onNewMsgFn, mode } = this.props;
@@ -627,7 +628,7 @@ class VideoMessage extends React.PureComponent {
 
     onTimeUpdate = ({ currentTime, duration, ...extra }) => {
         const { collection, groupId, idx, me } = this.props;
-        console.log('[analytics] onTimeUpdate video: ', collection, groupId, idx, me.sender, currentTime, duration, extra);
+        cnsole.log('[analytics] onTimeUpdate video: ', collection, groupId, idx, me.sender, currentTime, duration, extra);
     };
     render () {
         const { message, idx, me, otherGuy, onNewMsgFn, mode } = this.props;
@@ -658,7 +659,7 @@ class PdfMessage extends React.PureComponent {
     openFile = () => {
         const { collection, groupId, idx, message, me } = this.props;
         const { fileUrl } = message;
-        console.log('[analytics] openPdf: ', collection, groupId, idx, me.sender);
+        cnsole.log('[analytics] openPdf: ', collection, groupId, idx, me.sender);
         openUrlOrRoute({ url: fileUrl });
     };
     render () {
@@ -681,7 +682,7 @@ class FileMessage extends React.PureComponent {
     openFile = () => {
         const { collection, groupId, idx, message, me } = this.props;
         const { fileUrl } = message;
-        console.log('[analytics] openFile: ', collection, groupId, idx, me.sender);
+        cnsole.log('[analytics] openFile: ', collection, groupId, idx, me.sender);
         openUrlOrRoute({ url: fileUrl });
     };
     render () {
@@ -725,14 +726,14 @@ class LocationMessage extends React.PureComponent {
             const location = {lat: latitude, lng: longitude};
             await this.props.onNewMsgFn({ answer: obj.address, type: OUTPUT_LOCATION, latitude, longitude, location, geocodeResult: obj });
         } catch (e) {
-            console.log('Exception in getting GSP location: ', e);
+            cnsole.log('Exception in getting GSP location: ', e);
             const location = {lat: -1, lng: -1};
             await this.props.onNewMsgFn({ answer: 'GPS failed', type: OUTPUT_LOCATION, latitude: -1, longitude: -1, location, geocodeResult: null });
         }
     };
     onOpenLocation = (location) => {
         const { collection, groupId, idx, me } = this.props;
-        console.log('[analytics] onOpenLocation: ', collection, groupId, idx, me.sender, location);
+        cnsole.log('[analytics] onOpenLocation: ', collection, groupId, idx, me.sender, location);
         navigateToLatLon(navigator.platform, location.lat, location.lng);
     };
 
@@ -792,7 +793,7 @@ class PlacesAutocompleteMessage extends React.PureComponent {
     }
 
     onSelectFn = async (obj) => {
-        console.log('Selected locality: ', obj);
+        cnsole.log('Selected locality: ', obj);
         this.setState({ enabled: false });
         const { latitude, longitude } = obj;
         const location = { lat: latitude, lng: longitude };
@@ -840,12 +841,12 @@ class OptionsMessage extends React.PureComponent {
     }
 
     toggleSingleFn = async (x) => {
-        console.log('Selected: ', x);
+        cnsole.log('Selected: ', x);
         this.setState({ selectedOptions: [x], enabled: false });
         await this.props.onNewMsgFn({ answer: x });
     };
     toggleMultipleFn = (x) => {
-        console.log('Selected: ', x);
+        cnsole.log('Selected: ', x);
         const s = {...this.state.selections};
         s[x] = x in this.state.selections ? !this.state.selections[x] : true;
         this.setState({ selections: s });
@@ -868,8 +869,8 @@ class OptionsMessage extends React.PureComponent {
         const theme = enabled ? OPTION_THEME : OPTION_THEME_DISABLED;
         const initialSelected = enabled ? [] : this.state.selectedOptions;
         const widgetKey = enabled + '-' + idx;
-        console.log('enabled, theme, initialSelected, selectedOptions: ', enabled, theme, initialSelected, this.state.selectedOptions);
-        console.log('initialSelected: ', initialSelected);
+        cnsole.log('enabled, theme, initialSelected, selectedOptions: ', enabled, theme, initialSelected, this.state.selectedOptions);
+        cnsole.log('initialSelected: ', initialSelected);
 
 
         const selections = getKeysWhereValueIs(this.state.selections, true);
@@ -903,13 +904,13 @@ class JobMessage extends React.PureComponent {
     }
 
     applyJobFn = async (job) => {
-        console.log('Applied to job: ', job);
+        cnsole.log('Applied to job: ', job);
         const jobId = getJobId(job);
         this.setState({ enabled: false });
         await this.props.onNewMsgFn({ answer: OPTION_YES, type: OUTPUT_TEXT, jobId });
     };
     rejectJobFn = async (job) => {
-        console.log('Rejected job: ', job);
+        cnsole.log('Rejected job: ', job);
         const jobId = getJobId(job);
         this.setState({ enabled: false });
         await this.props.onNewMsgFn({ answer: OPTION_NO, type: OUTPUT_TEXT, jobId });
@@ -922,7 +923,7 @@ class JobMessage extends React.PureComponent {
         const { enabled } = this.state;
         const isTest = type === OUTPUT_JOB_REFERENCE;
         const key = idx + '-' + enabled;
-        console.log('renderJob: ', message, job, idx, enabled, isTest, key);
+        cnsole.log('renderJob: ', message, job, idx, enabled, isTest, key);
 
         const actionPanel = isTest || !enabled ? { labels: [], actions: [] } :
             { labels: ['APPLY', 'REJECT'], actions: [() => this.applyJobFn(job), () => this.rejectJobFn(job)] };
@@ -970,7 +971,7 @@ class BriefJobMessage extends React.PureComponent {
     callFn = async (job) => {
         const { me } = this.props;
         const label = 'job.phone:' + job.phone + ',user:' + me.sender;
-        console.log('brief job label: ', label);
+        cnsole.log('brief job label: ', label);
         GA.event({ category: 'job-brief', action: 'call', label });
         window.open('tel:+91' + job.phone, '_blank');
     };
@@ -983,7 +984,7 @@ class BriefJobMessage extends React.PureComponent {
 
         const { enabled } = this.state;
         const key = idx + '-' + enabled;
-        console.log('renderJob: ', message, job, idx, enabled, key);
+        cnsole.log('renderJob: ', message, job, idx, enabled, key);
 
         const labels = [];
         const actions = [];
@@ -1049,7 +1050,7 @@ class NewJoinee extends React.PureComponent {
                                            modalOpen={modalOpen} closeFn={() => this.setState({ modalOpen: false })} />;
 
         const distKms = ipLocation && loc ? haversineDistanceKms(ipLocation, loc) : 1000;
-        // console.log('ipLocation, loc, dist: ', ipLocation, loc, distKms);
+        // cnsole.log('ipLocation, loc, dist: ', ipLocation, loc, distKms);
         const text = distKms < SHOW_NEW_JOINEE_DISTANCE_THRESHOLD_KM ? <Text>{senderName} joined - {distKms.toFixed(1)} km near you</Text> : <Text>{senderName} joined</Text>;
 
         if (!showMemberAddNotifications) {
@@ -1100,7 +1101,7 @@ class LikesWidget extends React.PureComponent {
         const { id } = this.props;
         const key = 'likes-widget1-' + id;
         const value = await getKeyFromKVStore(key);
-        console.log('DEBUG likes widget: ', key, value);
+        cnsole.log('DEBUG likes widget: ', key, value);
         const likesObj = !value ? this.defVal() : JSON.parse(value);
         this.setState({ likesObj });
 
@@ -1153,7 +1154,7 @@ const renderAttachIcon = ({message, idx, type, enabled, disableFn, onNewMsgFn, m
 
     const onSelectFile = async (elem) => {
         const files = fileInputRef.current.refElem().files;
-        console.log('files: ', files);
+        cnsole.log('files: ', files);
         const blobUrl = await uploadBlob(files[0]);
         disableFn();
         if (blobUrl) {
@@ -1197,7 +1198,7 @@ const renderAttachIcon = ({message, idx, type, enabled, disableFn, onNewMsgFn, m
 
 
 window.trackPhone = (phone, me, messageSender) => {
-    console.log('calling phone: ', { phone, me, messageSender });
+    cnsole.log('calling phone: ', { phone, me, messageSender });
     GA.event({category: 'phone-click', action: 'click', label: [phone, me, messageSender].join(',')});
 };
 

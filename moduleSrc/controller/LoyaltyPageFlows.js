@@ -45,6 +45,7 @@ import {
 import format from 'string-format';
 import lodash from 'lodash';
 import xrange from 'xrange';
+import cnsole from 'loglevel';
 
 
 class LoyaltyHomeStep extends React.Component {
@@ -63,8 +64,8 @@ class LoyaltyHomeStep extends React.Component {
         const branchId = getUrlParam('branch') || this.contextObj.branchId || '1';
         this.contextObj.establishmentId = establishmentId;
         this.contextObj.branchId = branchId;
-        console.log('this.contextObj.establishmentId: ', this.contextObj.establishmentId);
-        console.log('this.contextObj.branchId: ', this.contextObj.branchId);
+        cnsole.log('this.contextObj.establishmentId: ', this.contextObj.establishmentId);
+        cnsole.log('this.contextObj.branchId: ', this.contextObj.branchId);
 
         const configs = await getLoyaltyConfigs(establishmentId);
 
@@ -89,7 +90,7 @@ class LoyaltyHomeStep extends React.Component {
         try {
             const timestampGT = new Date().getTime() - GOLD_USER_CHECKIN_VALIDITY_MS;
             const checkins = await crudsSearch(DESCRIPTOR_USER_CHECKIN, { userId, establishmentId, branchId, timestampGT });
-            console.log('DEBUG checkins: ', checkins);
+            cnsole.log('DEBUG checkins: ', checkins);
             if (!checkins || checkins.length === 0) {
                 const rsp = await crudsCreate(DESCRIPTOR_USER_CHECKIN, { userId, establishmentId, branchId, timestamp: new Date().getTime() });
                 if (!rsp.startsWith('created ')) {
@@ -101,20 +102,20 @@ class LoyaltyHomeStep extends React.Component {
                 const link = format('https://heloprotocol.app.link/5yd132u5K1?establishment={}', establishmentId);
                 const message = format('Dear {}, you just checked in into {} with {} points. Visit {} to see your points', name, configs.themeConfig.brandConfig.name, points, link);
                 const smsResponse = await sendSms(phone, message);
-                console.log('smsResponse: ', smsResponse);
+                cnsole.log('smsResponse: ', smsResponse);
                 if (smsResponse !== 'ok') {
                     window.alert('Failed to send sms, please contact our staff');
                 }
             }
         } catch (e) {
-            console.log('Exception in checkinFn: ', e);
+            cnsole.log('Exception in checkinFn: ', e);
         }
     };
 
     imInterestedFn = async () => {
         const deviceID = await setupDeviceId();
         const establishmentId = this.contextObj.establishmentId;
-        console.log('Signing up for gold: ', deviceID);
+        cnsole.log('Signing up for gold: ', deviceID);
 
         const configs = await getLoyaltyConfigs(establishmentId);
         const { success, name, phone, requestId } = await getTruecallerDetails();
@@ -182,13 +183,13 @@ class SignupNamePhoneStep extends React.Component {
         }
     }
     submitFn = async (name, phone) => {
-        console.log('Got name, phone: ', name, phone);
+        cnsole.log('Got name, phone: ', name, phone);
 
         try {
             await new Promise((resolve, reject) => getOtp(phone, 'walkin-customer', resolve, reject));
             navigateTo(this, SignupOtpStep.URL, this.contextObj, { name, phone });
         } catch (e) {
-            console.log('Error in getting otp: ', e);
+            cnsole.log('Error in getting otp: ', e);
         }
     };
     render() {
@@ -212,7 +213,7 @@ class SignupOtpStep extends React.Component {
     }
     submitFn = async (otp) => {
         const { name, phone } = this.contextObj;
-        console.log('Got OTP: ', otp, phone, name);
+        cnsole.log('Got OTP: ', otp, phone, name);
 
         try {
             await new Promise((resolve, reject) => verifyOtp(phone, otp, resolve, reject));
@@ -221,7 +222,7 @@ class SignupOtpStep extends React.Component {
             // TODO: Reset navigation
             navigateTo(this, LoyaltyHomeStep.URL, this.contextObj, { name, phone });
         } catch (e) {
-            console.log('Error in verifying otp: ', e);
+            cnsole.log('Error in verifying otp: ', e);
             showToast('Incorrect OTP');
         }
     };
@@ -316,7 +317,7 @@ class GuestListStep extends React.Component {
         const numConfirmed = guestListConfig.free.num;
         const numWaitList = guestListConfig.waitlist.num;
         const glList = await crudsSearch(DESCRIPTOR_GOLD_GUEST_LIST, { date, establishmentId, branchId }) || [];
-        console.log('DEBUG: crudsSearch resp: ', DESCRIPTOR_GOLD_GUEST_LIST, glList);
+        cnsole.log('DEBUG: crudsSearch resp: ', DESCRIPTOR_GOLD_GUEST_LIST, glList);
         const tentative = glList.filter(x => !x.noOp);
         const idx = tentative.findIndex(x => x.userId === userId);
         if (idx >= 0 && idx < numConfirmed) {
@@ -327,7 +328,7 @@ class GuestListStep extends React.Component {
             return GUEST_LIST_STATUS_FULL;
         } else if (tentative.length < numConfirmed + numWaitList) {
             const createRsp = await crudsCreate(DESCRIPTOR_GOLD_GUEST_LIST, { userId, date, establishmentId, branchId });
-            console.log('DEBUG: crudsCreate resp: ', createRsp);
+            cnsole.log('DEBUG: crudsCreate resp: ', createRsp);
             if (!createRsp.startsWith("created ")) {
                 return GUEST_LIST_STATUS_FAILURE;
             }
@@ -496,7 +497,7 @@ class LoyaltyAdminStep extends React.Component {
 
     verifyFn = async (code, tableId, force) => {
         const rsp = await verifyAndRedeemGoldCode({ code, tableId, establishmentId: 1, branchId: 1, force });
-        console.log('DEBUG verifyAndRedeemGoldCode: ', rsp);
+        cnsole.log('DEBUG verifyAndRedeemGoldCode: ', rsp);
         return rsp;
     };
     logoutFn = () => {};
@@ -528,21 +529,21 @@ class GuestListViewStep extends React.Component {
         const configs = await getLoyaltyConfigs(establishmentId);
 
         const dayViseGuestList = await getGuestListForDays({ establishmentId, branchId, numDays: 7 });
-        console.log('dayViseGuestList: ', dayViseGuestList);
+        cnsole.log('dayViseGuestList: ', dayViseGuestList);
         const userIds = lodash.uniq(dayViseGuestList.flatMap(x => x.tentative).map(x => x.userId));
-        console.log('userIds: ', userIds);
+        cnsole.log('userIds: ', userIds);
         const promises = [];
         userIds.forEach(u => {
             promises.push(crudsRead(DESCRIPTOR_GOLD_USER, u));
         });
         const userDetails = await Promise.all(promises);
-        console.log('userDetails: ', userDetails);
+        cnsole.log('userDetails: ', userDetails);
 
         const userIdToDetails = {};
         for (let i = 0; i < userIds.length; i++) {
             userIdToDetails[userIds[i]] = userDetails[i];
         }
-        console.log('userIdToDetails: ', userIdToDetails);
+        cnsole.log('userIdToDetails: ', userIdToDetails);
 
         this.setState({ configs, dayViseGuestList, userIdToDetails });
     }
@@ -552,7 +553,7 @@ class GuestListViewStep extends React.Component {
 
         const a = dayViseGuestList.filter(x => x.date === date)[0];
         const users = a.tentative.map(x => userIdToDetails[x.userId]);
-        console.log('users: ', date, users);
+        cnsole.log('users: ', date, users);
 
         const thStyle = { border: '1px solid' };
         const tdStyle = { border: '1px solid' };
@@ -621,7 +622,7 @@ const getGuestListForDays = async ({ numDays, establishmentId, branchId }) => {
         const date = getDateStr(y);
 
         const glList = await crudsSearch(DESCRIPTOR_GOLD_GUEST_LIST, {date, establishmentId, branchId}) || [];
-        console.log('DEBUG: crudsSearch resp: ', DESCRIPTOR_GOLD_GUEST_LIST, glList);
+        cnsole.log('DEBUG: crudsSearch resp: ', DESCRIPTOR_GOLD_GUEST_LIST, glList);
         const tentative = glList.filter(x => !x.noOp);
         list.push({ date, tentative, day: (dayToday + day) % 7 });
     }
@@ -631,7 +632,7 @@ const getGuestListForDays = async ({ numDays, establishmentId, branchId }) => {
 
 const initializeWebPush = async (establishmentId, configs) => {
     const perm = window.Notification && window.Notification.permission;
-    console.log('Notification.permission: ', perm);
+    cnsole.log('Notification.permission: ', perm);
     const deviceID = await setupDeviceId();
 
     await new Promise(resolve => setTimeout(resolve, 1500));
@@ -678,7 +679,7 @@ const initializeWebPush = async (establishmentId, configs) => {
 };
 const createGoldUserIfDoesntExist = async (name, phone, establishmentId) => {
     const searchResponse = await crudsSearch(DESCRIPTOR_GOLD_USER, { phone });
-    console.log('Gold user searchResponse: ', searchResponse);
+    cnsole.log('Gold user searchResponse: ', searchResponse);
     if (searchResponse && searchResponse.length > 0) {
         let { id, phone, name } = searchResponse[0];
 
@@ -686,22 +687,22 @@ const createGoldUserIfDoesntExist = async (name, phone, establishmentId) => {
         return { phone, id, name, userCheckins, points: calculatePoints(userCheckins) };
     }
 
-    console.log('Creating new gold user: ', phone, name);
+    cnsole.log('Creating new gold user: ', phone, name);
     const deviceID = await setupDeviceId();
     const createResponse = await crudsCreate(DESCRIPTOR_GOLD_USER, { phone, name, deviceID: [deviceID] });
     const id = parseInt(createResponse.split(' ')[1]);
-    console.log('Created new gold user id: ', id);
+    cnsole.log('Created new gold user id: ', id);
     return { phone, id, name, userCheckins: [], points: 0 };
 };
 
 const availOfferFn = async (userDetails, establishmentId, branchId, offerId) => {
-    console.log('Trying to avail offer: ', offerId);
+    cnsole.log('Trying to avail offer: ', offerId);
     const { phone, id, name } = userDetails;
 
     try {
         return await getGoldCode({ userDetails: {phone, id, name}, establishmentId, branchId, offerId});
     } catch (e) {
-        console.log('Exception in getting gold code: ', e);
+        cnsole.log('Exception in getting gold code: ', e);
         return {success: false};
     }
 };

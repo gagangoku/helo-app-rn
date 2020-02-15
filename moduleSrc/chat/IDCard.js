@@ -24,6 +24,7 @@ import {
 import QRCode from 'qrcode';
 import {flattenSupply} from "./Logic";
 import {Image, Text} from '../platform/Util';
+import cnsole from 'loglevel';
 
 
 export default class IDCard extends React.Component {
@@ -56,7 +57,7 @@ export default class IDCard extends React.Component {
                 const qrCode = await QRCode.toDataURL('https://www.heloprotocol.in/person/' + this.supplyObj.id + "/?source=id-card", opts);
                 this.setState({ qrCode });
             } catch (e) {
-                console.log('Exception in QR code: ', e);
+                cnsole.log('Exception in QR code: ', e);
             }
         }
     }
@@ -95,7 +96,7 @@ export default class IDCard extends React.Component {
             const defValue = [QUESTION_RESTAURANT_SKILLS, QUESTION_LANGUAGES, QUESTION_CUISINES].includes(k) ? ['??????'] : '??????';
             cp[k] = cp[k] || defValue;
         });
-        console.log('ID details: ', cp);
+        cnsole.log('ID details: ', cp);
 
         let image = DEFAULT_IMAGE;
         if (cp[QUESTION_THUMBIMAGE] || cp[QUESTION_PROFILE_PHOTO]) {

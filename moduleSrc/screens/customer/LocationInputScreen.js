@@ -14,6 +14,7 @@ import {BANGALORE_LAT, BANGALORE_LNG, GOOGLE_MAPS_API_KEY, MAP_CENTER_PIN_IMG} f
 import {fabButton, getCtx, haversineDistanceKms, latLonFn} from "../../util/Util";
 import {commonStyle} from "../../styles/common";
 import window from "global/window";
+import cnsole from 'loglevel';
 
 
 class LocationInputScreen extends React.Component {
@@ -50,18 +51,18 @@ class LocationInputScreen extends React.Component {
 
         const setFn = (lat, lon) => this.setState({ latitude: lat, longitude: lon, zoom: 15, gpsLat: lat, gpsLon: lon });
         if (gpsLatitude && gpsLongitude) {
-            console.log('Got current position from url params:', gpsLatitude, gpsLongitude);
+            cnsole.log('Got current position from url params:', gpsLatitude, gpsLongitude);
             setTimeout(() => setFn(gpsLatitude, gpsLongitude), 500);
         } else {
             navigator.geolocation.getCurrentPosition((position => {
-                console.log('Got current gps position:', position);
+                cnsole.log('Got current gps position:', position);
                 setFn(position.coords.latitude, position.coords.longitude);
             }));
         }
     }
 
     mapReady = () => {
-        console.log('Map ready');
+        cnsole.log('Map ready');
         this.setState({ mapReady: true });
     };
     clearAddress = () => {
@@ -71,13 +72,13 @@ class LocationInputScreen extends React.Component {
         this.setState({ address });
     };
     handleSelect = async (address) => {
-        console.log('Address selected:', address);
+        cnsole.log('Address selected:', address);
         try {
             const results = await geocodeByAddress(address);
-            console.log('geocode results: ', results);
+            cnsole.log('geocode results: ', results);
 
             const latLng = await getLatLng(results[0]);
-            console.log('Success: ', latLng);
+            cnsole.log('Success: ', latLng);
             this.setState({
                 latitude: latLng.lat,
                 longitude: latLng.lng,
@@ -90,13 +91,13 @@ class LocationInputScreen extends React.Component {
                 city: this._getCity(results),
             });
         } catch (e) {
-            console.log('Error in geocoding: ', e);
+            cnsole.log('Error in geocoding: ', e);
         }
         this.inputRef.current.blur();
     };
 
     gotoLatLon = (latitude, longitude) => {
-        console.log('Moving to: ', latitude, longitude);
+        cnsole.log('Moving to: ', latitude, longitude);
         if (latitude !== null && longitude !== null) {
             this.setState({ latitude, longitude });
         }
@@ -106,7 +107,7 @@ class LocationInputScreen extends React.Component {
         const loc = results[0]['address_components'];
         for (let i = 0; i < loc.length; i++) {
             if ('types' in loc[i] && loc[i]['types'].includes('sublocality')) {
-                console.log('sublocality:', loc[i]['long_name']);
+                cnsole.log('sublocality:', loc[i]['long_name']);
                 return loc[i]['long_name'];
             }
         }
@@ -117,7 +118,7 @@ class LocationInputScreen extends React.Component {
         const loc = results[0]['address_components'];
         for (let i = 0; i < loc.length; i++) {
             if ('types' in loc[i] && loc[i]['types'].includes('locality')) {
-                console.log('city:', loc[i]['long_name']);
+                cnsole.log('city:', loc[i]['long_name']);
                 return loc[i]['long_name'];
             }
         }
@@ -125,14 +126,14 @@ class LocationInputScreen extends React.Component {
     };
 
     onBoundsChange = (center, zoom) => {
-        console.log('Bounds change:', center, zoom, this.state.mapReady);
+        cnsole.log('Bounds change:', center, zoom, this.state.mapReady);
         if (this.state.mapReady) {
             this.setState({ latitude: center.lat, longitude: center.lng, zoom: zoom });
         }
         this.inputRef.current.blur();
     };
     onDone = () => {
-        console.log('Done: ', this.state);
+        cnsole.log('Done: ', this.state);
 
         if (!this.state.landmarkLat) {
             window.alert('Please enter a landmark !');
@@ -141,7 +142,7 @@ class LocationInputScreen extends React.Component {
 
         const distKm = haversineDistanceKms(latLonFn(this.state.latitude, this.state.longitude), latLonFn(this.state.landmarkLat, this.state.landmarkLon));
         const thresh = DISTANCE_THRESHOLD_LANDMARK_METERS / 1000.0;
-        console.log('distance from landmark, threshold: ', distKm, thresh);
+        cnsole.log('distance from landmark, threshold: ', distKm, thresh);
 
         const confirm = () => {
             this.inputRef.current.blur();

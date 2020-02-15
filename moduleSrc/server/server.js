@@ -41,6 +41,7 @@ import {sendWebPushNotification} from "../util/ServerUtil";
 import {HELO_LOGO} from "../chat/Constants";
 import NodeCache from 'node-cache';
 import {redeemOffer, validateCode, validateOfferForUser} from "../loyalty/LoyaltyUtil";
+import cnsole from 'loglevel';
 
 
 const app = Express();
@@ -68,7 +69,7 @@ app.post('/subscribe', async (req, res) => {
     const deviceID = getUrlParam('deviceID', fullUrl);
     const phone = getUrlParam('phone', fullUrl);
     const isAlreadySubscribed = getUrlParam('isAlreadySubscribed', fullUrl);
-    console.log('Saving push subscription: ', deviceID, phone, subscription, isAlreadySubscribed);
+    cnsole.log('Saving push subscription: ', deviceID, phone, subscription, isAlreadySubscribed);
 
     const resp = await updateDeviceIDMapping(deviceID, phone, subscription);
     res.status(201).json({});
@@ -82,7 +83,7 @@ app.post('/subscribe', async (req, res) => {
 app.get('/push-notify', async (req, res) => {
     const fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
     const deviceID = getUrlParam('deviceID', fullUrl);
-    console.log('Got deviceID: ', deviceID);
+    cnsole.log('Got deviceID: ', deviceID);
 
     await sendWebPushNotification(nodeCache, null, deviceID, 'Helo', 'test');
     res.status(201).json({});
@@ -90,19 +91,19 @@ app.get('/push-notify', async (req, res) => {
 
 app.post('/sendNotificationToMembers', async (req, res) => {
     const { memberRoleIds, sender, message, iconUrl, clickUrl } = req.body;
-    console.log('Got memberRoleIds, sender, message, iconUrl, clickUrl: ', memberRoleIds, sender, message, iconUrl, clickUrl);
+    cnsole.log('Got memberRoleIds, sender, message, iconUrl, clickUrl: ', memberRoleIds, sender, message, iconUrl, clickUrl);
 
     const xx = memberRoleIds.filter(x => x !== sender.sender).map(x => '/roleId/' + x + '/phones');
     const phoneNumbersRsp = await makeBatchRequests(xx, true, 1000000, getKeysFromKVStore);
-    console.log('Got phoneNumbersRsp # keys: ', Object.keys(phoneNumbersRsp).length);
+    cnsole.log('Got phoneNumbersRsp # keys: ', Object.keys(phoneNumbersRsp).length);
     const phoneNumbers = lodash.uniq(Object.values(phoneNumbersRsp).flatMap(x => x.split(',')));
-    console.log('computed phoneNumbers #: ', phoneNumbers.length);
+    cnsole.log('computed phoneNumbers #: ', phoneNumbers.length);
     const deviceIDsMap = await makeBatchRequests(phoneNumbers.map(x => '/phone/' + x + '/deviceIDs'), true, 1000000, getSetMembersFromKVStore);
     const deviceIDs = Object.values(deviceIDsMap);
-    console.log('Got deviceIDs #: ', deviceIDs.length);
+    cnsole.log('Got deviceIDs #: ', deviceIDs.length);
 
     const devicesFlattened = deviceIDs.flatMap(x => x);
-    console.log('devicesFlattened #: ', devicesFlattened.length);
+    cnsole.log('devicesFlattened #: ', devicesFlattened.length);
     devicesFlattened.forEach(deviceID => {
         sendWebPushNotification(nodeCache, null, deviceID, sender.name, message, {
             badge: HELO_LOGO,
@@ -122,11 +123,11 @@ app.post('/sendNotificationToMembers', async (req, res) => {
 // Gold codes
 app.post('/goldCode/generate', async (req, res) => {
     const { userDetails, establishmentId, branchId, offerId } = req.body;
-    console.log('/goldCode/generate: ', {userDetails, establishmentId, branchId, offerId});
+    cnsole.log('/goldCode/generate: ', {userDetails, establishmentId, branchId, offerId});
     const userId = userDetails.id;
 
     const r = await validateOfferForUser(userId, offerId);
-    console.log('DEBUG: validateOfferForUser resp: ', r);
+    cnsole.log('DEBUG: validateOfferForUser resp: ', r);
     if (!r.success) {
         res.status(200).json(r);
         return;
@@ -137,7 +138,7 @@ app.post('/goldCode/generate', async (req, res) => {
         while (true) {
             code = getRandomCode(GOLD_CODE_LENGTH);
             const values = await crudsSearch(DESCRIPTOR_GOLD_CODE, { code });
-            console.log('DEBUG: values: ', code, values);
+            cnsole.log('DEBUG: values: ', code, values);
             // TODO: Delete very old codes at server
             if (!values || values.length === 0) {
                 break;
@@ -145,23 +146,23 @@ app.post('/goldCode/generate', async (req, res) => {
         }
 
         const rsp = await crudsCreate(DESCRIPTOR_GOLD_CODE, { code, userId, establishmentId, branchId, offerId, timestamp: new Date().getTime() });
-        console.log('DEBUG: crudsCreate resp: ', rsp);
+        cnsole.log('DEBUG: crudsCreate resp: ', rsp);
         if (!rsp.startsWith("created ")) {
             res.status(500).json({ success: false, reason: 'Couldnt create code' });
             return;
         }
 
-        console.log('Successfully created gold code: ', code);
+        cnsole.log('Successfully created gold code: ', code);
         res.status(201).json({ success: true, code });
     } catch (e) {
-        console.log('Exception in generating gold code: ', e);
+        cnsole.log('Exception in generating gold code: ', e);
         res.status(500).json({ success: false });
     }
 });
 
 app.post('/goldCode/verifyAndRedeem', async (req, res) => {
     const { code, tableId, establishmentId, branchId, force } = req.body;
-    console.log('/goldCode/verifyAndRedeem: ', {code, tableId, establishmentId, branchId, force});
+    cnsole.log('/goldCode/verifyAndRedeem: ', {code, tableId, establishmentId, branchId, force});
 
     let r = await validateCode(code, establishmentId, branchId);
     if (!r.success) {
@@ -191,7 +192,7 @@ app.post('/goldCode/verifyAndRedeem', async (req, res) => {
 const makeBatchRequests = async (keys, useCache, batchSize, promiseFn) => {
     const obj = {};
     const cached = useCache ? nodeCache.mget(keys) : {};
-    console.log('Found cached keys #: ', Object.keys(cached).length);
+    cnsole.log('Found cached keys #: ', Object.keys(cached).length);
     const uncached = [];
     for (let i = 0; i < keys.length; i++) {
         const k = keys[i];
@@ -218,7 +219,7 @@ const makeBatchRequests = async (keys, useCache, batchSize, promiseFn) => {
                 nodeCache.set(k, res[k], NODE_CACHE_SET_TTL_SECONDS);
             });
         } catch (e) {
-            console.log('Error in getting results for keys: ', splits[i]);
+            cnsole.log('Error in getting results for keys: ', splits[i]);
         }
     }
 
@@ -238,16 +239,16 @@ app.use(handleRender);
 async function handleRender(req, res) {
     const fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
     const path = URI.parse(fullUrl).path;
-    console.log('fullUrl: ', fullUrl);
-    console.log('req.url: ', req.url);
-    console.log('path: ', path);
+    cnsole.log('fullUrl: ', fullUrl);
+    cnsole.log('req.url: ', req.url);
+    cnsole.log('path: ', path);
 
     // Create a new Redux store instance
     const store = createStore(reducerFn);
 
     // Render / instead of req.url since I want to render other urls in JS via bundle.js
     const urlToRender = (URLS_TO_RENDER.includes(path) || path.startsWith('/person/')) ? req.url : '/';
-    console.log('urlToRender: ', urlToRender);
+    cnsole.log('urlToRender: ', urlToRender);
 
     // Render the component to a string
     let renderedHtml;
@@ -263,7 +264,7 @@ async function handleRender(req, res) {
         const helmet = Helmet.renderStatic();
 
         // Wait for all promises to finish
-        console.log('context data, promises: ', context.data, context.promises);
+        cnsole.log('context data, promises: ', context.data, context.promises);
         const keys = Object.keys(context.promises);
         for (let i = 0; i < keys.length; i++) {
             const k = keys[i];
@@ -272,7 +273,7 @@ async function handleRender(req, res) {
                 context.data[k] = await p;
             }
         }
-        console.log('All promises returned data: ', context.data);
+        cnsole.log('All promises returned data: ', context.data);
 
         let html2 = html;
         let helmet2 = helmet;
@@ -285,7 +286,7 @@ async function handleRender(req, res) {
                 </Provider>
             );
             helmet2 = Helmet.renderStatic();
-            console.log('Rendered again with data');
+            cnsole.log('Rendered again with data');
         }
 
         // Grab the initial state from our Redux store
@@ -294,7 +295,7 @@ async function handleRender(req, res) {
         // Send the rendered page back to the client
         renderedHtml = renderFullPage(context.data, helmet2, html2, preloadedState);
     } catch (e) {
-        console.log('Exception in rendering page: ', e);
+        cnsole.log('Exception in rendering page: ', e);
         renderedHtml = '<html><body>Oops, something went wrong. Please try again</body></html>';
     }
 
@@ -517,7 +518,7 @@ app.listen(port, () => process.send && process.send("online"));
 let JOB_ATTRIBUTES = null;
 const refreshAttributes = async () => {
     const response = await getJobAttributes();
-    // console.log('getJobAttributes response: ', response);
+    // cnsole.log('getJobAttributes response: ', response);
 
     const allAttributes = {};
     lodash.uniq(response.attributes.map(x => x.category)).forEach(x => {
@@ -526,7 +527,7 @@ const refreshAttributes = async () => {
     response.attributes.forEach(x => {
         allAttributes[x.category].push(x.id);
     });
-    // console.log('this.allAttributes: ', allAttributes);
+    // cnsole.log('this.allAttributes: ', allAttributes);
     JOB_ATTRIBUTES = allAttributes;
 };
 const refreshInterval = setInterval(refreshAttributes, 10 * 60 * 1000);     // Every 10 minutes

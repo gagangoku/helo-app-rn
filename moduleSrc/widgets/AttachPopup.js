@@ -3,6 +3,7 @@ import {FILE_ICON_IMG, IMAGE_ICON_IMG, TROPHY_IMG} from "../constants/Constants"
 import {Image, InputElem, Text, uploadBlob, View} from "../platform/Util";
 import {checkFileType, getFieldNameFromType} from "../util/Util";
 import TouchableAnim from "../platform/TouchableAnim";
+import cnsole from 'loglevel';
 
 
 export class AttachPopup extends React.PureComponent {
@@ -39,7 +40,7 @@ export class AttachPopup extends React.PureComponent {
     }
 
     onSelectFile = async (files, isTraining) => {
-        console.log('Files: ', files, isTraining);
+        cnsole.log('Files: ', files, isTraining);
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
             const blobUrl = await uploadBlob(file);

@@ -6,6 +6,7 @@ import {getRecommendationsOfSupply, getSupplyProfileById} from "../../util/Api";
 import SuperRoot from "../../widgets/SuperRoot";
 import Header from "../../widgets/Header";
 import Footer from "../../widgets/Footer";
+import cnsole from 'loglevel';
 
 
 class SupplyMiniProfile extends React.Component {
@@ -47,7 +48,7 @@ class SupplyMiniProfile extends React.Component {
                     staticContext.data[key] = await p;
                     this.setState({ [key]: staticContext.data[key] });
                 } catch (e) {
-                    console.log('Exception in getting api: ', key, supplyId, e);
+                    cnsole.log('Exception in getting api: ', key, supplyId, e);
                     this.setState({ fetchError: true });
                 }
             }

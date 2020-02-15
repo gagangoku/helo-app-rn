@@ -1,6 +1,7 @@
 import React from "react";
 import {actionButton, uploadBlob} from "../../util/Util";
 import TouchableAnim from "../../platform/TouchableAnim";
+import cnsole from 'loglevel';
 
 
 export class LoyaltyEntryScreen extends React.Component {
@@ -87,7 +88,7 @@ class ImageChooser extends React.Component {
 
     onSelectFile = async () => {
         const files = this.imgFile.current.files;
-        console.log('Files: ', files);
+        cnsole.log('Files: ', files);
         if (files.length >= 1) {
             const file = files[0];
             const reader = new FileReader();

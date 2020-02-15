@@ -5,6 +5,7 @@ import {TRUECALLER_KEY} from "../constants/Constants";
 import React from "react";
 import {actionButton, getCtx, getUrlParam} from "../util/Util";
 import {getKeyFromKVStore} from "../util/Api";
+import cnsole from 'loglevel';
 
 
 export default class TruecallerDemo extends React.Component {
@@ -23,7 +24,7 @@ export default class TruecallerDemo extends React.Component {
     cbFn = async () => {
         this.setState({ showRoller: true });
         const { success, phone } = await getTruecallerDetails();
-        console.log('Got truecaller details: success, phone: ', success, phone);
+        cnsole.log('Got truecaller details: success, phone: ', success, phone);
         this.setState({ success, phone, showRoller: false, init: true });
     };
 
@@ -52,7 +53,7 @@ export const getTruecallerDetails = async () => {
     const requestId = uuidv1();
     const url = format("truecallersdk://truesdk/web_verify?requestNonce={}&partnerKey={}&partnerName={}&lang={}&title={}",
         requestId, TRUECALLER_KEY, 'Helo', 'en', 'title');
-    console.log('url: ', url);
+    cnsole.log('url: ', url);
     window.location = url;
 
 
@@ -65,7 +66,7 @@ export const getTruecallerDetails = async () => {
     await sleep(1000);
 
     const obj = getTruecallerDetailsForRequest(requestId);
-    console.log('Truecaller details: ', obj);
+    cnsole.log('Truecaller details: ', obj);
     return obj;
 };
 
@@ -76,7 +77,7 @@ export const getTruecallerDetailsForRequest = async (requestId) => {
             // Done with Truecaller
             count++;
             const rsp = await getKeyFromKVStore('/truecaller-rsp-' + requestId);
-            console.log('rsp: ', rsp);
+            cnsole.log('rsp: ', rsp);
 
             if (rsp === '') {
                 // Maybe not yet saved on server side
@@ -87,7 +88,7 @@ export const getTruecallerDetailsForRequest = async (requestId) => {
             } else {
                 const obj = JSON.parse(rsp);
                 const phone = obj.phoneNumbers[0] + '';
-                console.log('Got phone: ', phone);
+                cnsole.log('Got phone: ', phone);
 
                 const name = obj.name.first + ' ' + obj.name.last;
                 let normalizedPhone = '';

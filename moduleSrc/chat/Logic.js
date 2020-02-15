@@ -51,6 +51,7 @@ import {
 import {ageFn, getImageUrl, removeNullUndefined, sumFn} from "../util/Util";
 import {getUrlPath} from '../platform/Util';
 import assert from 'assert';
+import cnsole from 'loglevel';
 
 
 export const WHEN_NOT_TO_WAIT = [OUTPUT_NONE, OUTPUT_JOB_REFERENCE, OUTPUT_ID_CARD];
@@ -75,7 +76,7 @@ export const getLastMessage = (messages, sender) => {
 
 export const genderPrefix = (gender, language=LANG_HINGLISH) => {
     const prefix = GENDER_PREFIX[gender.toUpperCase()][language];
-    console.log('gender prefix: ', prefix);
+    cnsole.log('gender prefix: ', prefix);
     return prefix;
 };
 
@@ -106,9 +107,9 @@ export const getJobs = async (ctx) => {
         req.attributes = [{category: CATEGORY_COOK, id: 'NORTH_INDIAN'}];
     }
 
-    console.log('Sending jobs request: ', req);
+    cnsole.log('Sending jobs request: ', req);
     const jobs = await getJobsForDetails(req);
-    console.log('Got jobs: ', jobs);
+    cnsole.log('Got jobs: ', jobs);
     return jobs;
 };
 
@@ -200,7 +201,7 @@ export const flattenSupply = (supply) => {
     }
 
     obj = removeNullUndefined(obj);
-    console.log('Flattened supply: ', obj, supply);
+    cnsole.log('Flattened supply: ', obj, supply);
     return obj;
 };
 

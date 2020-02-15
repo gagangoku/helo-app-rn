@@ -6,6 +6,7 @@ import SuperRoot from "../../widgets/SuperRoot";
 import OptionPickerWidget from "../../widgets/OptionPickerWidget";
 import window from "global/window";
 import {CATEGORY_COOK, IS_MOBILE_SCREEN, WORK_LOC_TYPE_HOME} from "../../constants/Constants";
+import cnsole from 'loglevel';
 
 
 class ExpectationsScreen extends React.Component {
@@ -56,7 +57,7 @@ class ExpectationsScreen extends React.Component {
             req.numStaff = numStaff;
         }
 
-        console.log('ExpectationsScreen req: ', req);
+        cnsole.log('ExpectationsScreen req: ', req);
         this.props.onSubmitFn(req);
     };
 

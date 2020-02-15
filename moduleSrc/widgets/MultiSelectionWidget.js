@@ -2,6 +2,7 @@ import React from "react";
 import {capitalizeFirstLetter, getKeysWhereValueIs, Text, View} from '../util/Util';
 import PropTypes from 'prop-types';
 import TouchableAnim from "../platform/TouchableAnim";
+import cnsole from 'loglevel';
 
 
 export default class MultiSelectionWidget extends React.Component {
@@ -80,7 +81,7 @@ export default class MultiSelectionWidget extends React.Component {
 
         this.setState({ [k]: newVal });
         this.props.toggleFn(key, newVal);
-        console.log('toggle: ', k, key);
+        cnsole.log('toggle: ', k, key);
     };
 
     box = (text, isSelected, cb) => {

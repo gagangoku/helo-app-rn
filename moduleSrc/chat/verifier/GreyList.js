@@ -7,6 +7,7 @@ import {COOK_ONBOARDING_FLOW, getChatContext} from "../bot/ChatUtil";
 import uuidv1 from "uuid/v1";
 import {detectTextInImage, detectTextInPdf} from "../../util/Api";
 import {ConfigurableTopBar} from "../messaging/TopBar";
+import cnsole from 'loglevel';
 
 
 export default class GreyList extends React.Component {
@@ -24,14 +25,14 @@ export default class GreyList extends React.Component {
     async componentDidMount() {
         this.deviceID = await setupDeviceId();
         this.uuid = uuidv1();
-        console.log('GreyList componentDidMount: ', this.deviceID, this.uuid);
+        cnsole.log('GreyList componentDidMount: ', this.deviceID, this.uuid);
     }
 
     componentWillUnmount() {
     }
 
     onUserMsg = async ({ text, type, ...extra }) => {
-        console.log('onUserMsg: ', text, type, extra);
+        cnsole.log('onUserMsg: ', text, type, extra);
         const messages = this.state.messages.slice();
         messages.push({
             timestamp: new Date().getTime(),
@@ -45,7 +46,7 @@ export default class GreyList extends React.Component {
         if (type === OUTPUT_IMAGE) {
             const gsPath = 'gs://helo-images-2/' + extra.imageUrl.split('.heloprotocol.in/')[1];
             const detectedTextObj = await detectTextInImage(gsPath);
-            console.log('detectedTextObj: ', detectedTextObj);
+            cnsole.log('detectedTextObj: ', detectedTextObj);
             const desc = detectedTextObj.responses[0].textAnnotations[0].description;
             const words = desc.split('\n').map(x => x.trim());
             if (words.includes('INCOME TAX DEPARTMENT') || words.includes('Permanent Account Number Card')) {
@@ -53,7 +54,7 @@ export default class GreyList extends React.Component {
                     const m = x.match(/[A-Z]{5}[0-9]{4}[A-Z]/);
                     return m ? [m[0]] : [];
                 });
-                console.log('panNumber: ', panNumber);
+                cnsole.log('panNumber: ', panNumber);
                 messages.push({
                     timestamp: new Date().getTime(),
                     text: 'PAN: ' + panNumber,
@@ -74,7 +75,7 @@ export default class GreyList extends React.Component {
                         freq[m] = (m in freq ? freq[m] : 0) + 1;
                     }
                 });
-                console.log('freq: ', freq);
+                cnsole.log('freq: ', freq);
                 const aadharNumber = Object.keys(freq).sort((a, b) => freq[b] - freq[a])[0];
 
                 messages.push({
@@ -89,7 +90,7 @@ export default class GreyList extends React.Component {
         if (type === OUTPUT_PDF) {
             const gsPath = 'gs://helo-files/' + extra.fileUrl.split('.heloprotocol.in/')[1];
             const detectedTextObj = await detectTextInPdf(gsPath);
-            console.log('detectedTextObj: ', detectedTextObj);
+            cnsole.log('detectedTextObj: ', detectedTextObj);
         }
     };
 

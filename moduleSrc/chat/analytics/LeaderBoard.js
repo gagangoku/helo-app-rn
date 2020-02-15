@@ -21,6 +21,7 @@ import format from "string-format";
 import {getPersonNamesByRoleId, hgetAllFromKVStore} from "../../util/Api";
 import lodash from "lodash";
 import {ExpandingImage, ScrollView} from "../../platform/Util";
+import cnsole from 'loglevel';
 
 
 export default class LeaderBoard extends React.Component {
@@ -38,7 +39,7 @@ export default class LeaderBoard extends React.Component {
     async componentDidMount() {
         this.deviceID = await setupDeviceId();
         this.uuid = uuidv1();
-        console.log('LeaderBoard componentDidMount: ', this.deviceID, this.uuid);
+        cnsole.log('LeaderBoard componentDidMount: ', this.deviceID, this.uuid);
 
         this.detailsObj = {};
         'collection,groupId,user,idx,groupName,groupPhoto,moduleName,members'.split(',').forEach(x => this.detailsObj[x] = this.props[x] || getUrlParam(x));
@@ -57,22 +58,22 @@ export default class LeaderBoard extends React.Component {
         const key = format('/idx/{}/user/{}', idx, user);
 
         const rsp = await hgetAllFromKVStore(hash);
-        console.log('computeLeaderboard hgetAllFromKVStore rsp: ', rsp);
+        cnsole.log('computeLeaderboard hgetAllFromKVStore rsp: ', rsp);
 
         const keys = (!idx || idx < 0) ? Object.keys(rsp) : Object.keys(rsp).filter(x => x.startsWith("/idx/" + idx));
-        console.log('computeLeaderboard keys: ', keys);
+        cnsole.log('computeLeaderboard keys: ', keys);
         keys.forEach(k => rsp[k] = JSON.parse(rsp[k]));
 
         const users = lodash.uniq(members.split(',').concat(keys.map(x => x.split('/')[4])));
         const roleIdToName = await getPersonNamesByRoleId(users);
-        console.log('computeLeaderboard users, roleIdToName: ', users, roleIdToName);
+        cnsole.log('computeLeaderboard users, roleIdToName: ', users, roleIdToName);
 
         const scores = this.getScoresForIdx(keys, rsp);
-        console.log('scores: ', scores);
+        cnsole.log('scores: ', scores);
         const sample = [];
         Object.keys(scores).forEach(roleId => {
             const person = roleIdToName[roleId].person;
-            console.log('computeLeaderboard person: ', person);
+            cnsole.log('computeLeaderboard person: ', person);
             sample.push({
                 userId: roleId,
                 name: person.name,

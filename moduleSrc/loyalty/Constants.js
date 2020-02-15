@@ -1,3 +1,5 @@
+import cnsole from 'loglevel';
+
 
 const COLOR_1 = "#C08A32";
 const COLOR_2 = "#F2ECA0";
@@ -413,13 +415,13 @@ export const ESTABLISHMENT_LOYALTY_CONFIG = {
 };
 
 export const getLoyaltyConfigs = async (establishmentId) => {
-    console.log('Getting configs for establishment: ', establishmentId);
+    cnsole.log('Getting configs for establishment: ', establishmentId);
     const loyaltyConfig = ESTABLISHMENT_LOYALTY_CONFIG[establishmentId];
     const offers = ESTABLISHMENT_OFFERS_CONFIG[establishmentId];
     const themeConfig = ESTABLISHMENT_LOYALTY_THEME_CONFIG[establishmentId];
 
     const obj = { loyaltyConfig, offers, themeConfig };
-    console.log('Returning config: ', obj);
+    cnsole.log('Returning config: ', obj);
     return obj;
 };
 

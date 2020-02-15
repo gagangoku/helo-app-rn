@@ -11,6 +11,7 @@ import {
     GUEST_LIST_STATUS_FULL,
     GUEST_LIST_STATUS_WAITLIST
 } from "./Constants";
+import cnsole from 'loglevel';
 
 
 export class SilverGoldPlatinumMemberPage extends React.Component {
@@ -40,7 +41,7 @@ export class SilverGoldPlatinumMemberPage extends React.Component {
     };
     availOfferFn = async (offerId) => {
         const { success, code, reason, details } = await this.props.availOfferFn(this.props.userDetails, offerId);
-        console.log('availOfferFn success, code: ', success, code);
+        cnsole.log('availOfferFn success, code: ', success, code);
         this.setState({ isModalOpen: true, offerId, codeObj: {success, code , reason, details} });
     };
     guestListFn = () => this.props.guestListFn(this.props.userDetails);
@@ -123,7 +124,7 @@ export class MemberPage extends React.Component {
         super(props);
         this.state = {
         };
-        console.log('MemberPage props: ', props);
+        cnsole.log('MemberPage props: ', props);
     }
     componentDidMount() {
     }
@@ -179,7 +180,7 @@ export class MemberPage extends React.Component {
 
         const A = LOYALTY_LADDER.filter(x => x.minPointsRequired <= points);
         const theme = A[A.length - 1].name;
-        console.log('theme, name, points: ', theme, name, points);
+        cnsole.log('theme, name, points: ', theme, name, points);
 
         const { benefits, gradientColors, textColor, backgroundColor, guestListEnabled } = loyaltyConfig[theme];
         const textWithGradientFn = (text, fontWeight, letterSpacing) => textWithGradient(text, fontWeight, letterSpacing, gradientColors);
@@ -189,7 +190,7 @@ export class MemberPage extends React.Component {
         const pointsForNextUpgrade = nextUpgrade.minPointsRequired - points;
         const bigVirImg = loyaltyConfig[theme].logo;
 
-        console.log('idx, nextUpgrade, pointsForNextUpgrade, bigVirImg, textWithGradientFn: ', idx, nextUpgrade, pointsForNextUpgrade, bigVirImg, textWithGradientFn);
+        cnsole.log('idx, nextUpgrade, pointsForNextUpgrade, bigVirImg, textWithGradientFn: ', idx, nextUpgrade, pointsForNextUpgrade, bigVirImg, textWithGradientFn);
 
         return (
             <View style={{...custom.root, backgroundColor }}>
@@ -869,7 +870,7 @@ const textWithGradient = (text, fontWeight, letterSpacing, gradientColors) => {
     const width = text.length * 13;
 
     const key = 'linearGradient' + hashCode(text + fontWeight + letterSpacing + gradientColors);
-    console.log('key === ', key);
+    cnsole.log('key === ', key);
     return (
         <svg key={key} width={`${width}px`} height="13px" style={{ border: '0px solid #FFF' }} viewBox={`0 0 ${width} 13`} version="1.1" xmlns="http://www.w3.org/2000/svg">
             <defs>
@@ -907,4 +908,4 @@ const modalStyle = {
 
 const H = WINDOW_INNER_HEIGHT;
 const W = WINDOW_INNER_WIDTH;
-console.log('window_innerHeight, window_innerWidth: ', H, W);
+cnsole.log('window_innerHeight, window_innerWidth: ', H, W);

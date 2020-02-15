@@ -4,6 +4,7 @@ import ReactGA from 'react-ga';
 import window from "global/window";
 import ReactPixel from 'react-facebook-pixel';
 import {FACEBOOK_PIXEL_ID} from "../constants/Constants";
+import cnsole from 'loglevel';
 
 
 class GoogleAnalytics extends React.Component {
@@ -35,7 +36,7 @@ class GoogleAnalytics extends React.Component {
         ReactGA.pageview(page);
         initFbPixel() && ReactPixel.pageView();
         if (!REACT_APP_GA_DEBUG) {
-            console.log('react-ga logging page: ', page);
+            cnsole.log('react-ga logging page: ', page);
         }
     }
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import {getCtx, recordAudio} from "../util/Util";
 import {SPEECH_RECOGNITION_SAMPLE_MS, SPEECH_RECOGNITION_TERMINATOR, WEBSOCKET_URL} from "../constants/Constants";
+import cnsole from 'loglevel';
 
 
 export default class SpeechRecognitionDemo extends React.Component {
@@ -25,7 +26,7 @@ export default class SpeechRecognitionDemo extends React.Component {
 
         this.websocket.onmessage = (e) => {
             const msg = JSON.parse(e.data || '{}');
-            console.log('Message received:', e.data, msg);
+            cnsole.log('Message received:', e.data, msg);
 
             const words = msg.results[0].alternatives[0].words || [];
             const lastWord = words.length > 0 ? words[words.length - 1] : {endTime: {seconds: 0, nanos: 0}};
@@ -37,11 +38,11 @@ export default class SpeechRecognitionDemo extends React.Component {
         };
 
         this.websocket.onclose = (e) => {
-            console.log('Socket is closed :', e);
+            cnsole.log('Socket is closed :', e);
         };
 
         this.websocket.onerror = (e) => {
-            console.error('Socket encountered error: ', e.message, 'Closing socket');
+            cnsole.error('Socket encountered error: ', e.message, 'Closing socket');
             this.websocket.close();
         };
     };
@@ -61,7 +62,7 @@ export default class SpeechRecognitionDemo extends React.Component {
     };
 
     dataAvailableCbFn = (arrayBuffer) => {
-        console.log('arrayBuffer: ', arrayBuffer);
+        cnsole.log('arrayBuffer: ', arrayBuffer);
         this.websocket.send(arrayBuffer);
 
         if (!this.recorder) {
