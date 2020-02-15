@@ -40,7 +40,9 @@ import {Player, Recorder} from '@react-native-community/audio-toolkit';
 import rnfs from 'react-native-fs';
 import window from "global";
 import ImagePicker from 'react-native-image-picker';
-import {TouchableOpacity as TouchableOpacityRNGH} from 'react-native-gesture-handler';
+import DocumentPicker from 'react-native-document-picker';
+import Pdf from 'react-native-pdf';
+import TouchableAnim from "./TouchableAnim";
 
 
 export const HEIGHT_BUFFER = 30;
@@ -94,6 +96,9 @@ export class Text extends React.Component {
             style.fontWeight = '' + style.fontWeight;
         }
 
+        const stylesToDelete = ['WebkitFontSmoothing', 'MozOsxFontSmoothing'];
+        stylesToDelete.forEach(p => delete style[p]);
+
         const props = {...this.props, style: {...style}};
         return (
             <TextOrig {...props}>
@@ -109,10 +114,12 @@ export class Image extends React.Component {
     }
     async componentDidMount() {
         const { src, style } = this.props;
+        const onDimensionsLoadCbfn = this.props.onDimensionsLoadCbfn || (() => {});
         if (!style.height && !style.width) {
             ImageOrig.getSize(src, (width, height) => {
                 console.log('Got image width, height: ', width, height, src);
                 this.setState({ width, height });
+                onDimensionsLoadCbfn({ width, height });
             }, () => {
                 console.log('Failed to load image width, height: ', src);
             });
@@ -129,16 +136,11 @@ export class Image extends React.Component {
         // TODO: Fix these properties properly
         const extra = {};
         const style = props.style ? {...props.style} : {};
+
         props.style && delete props.style;
-        if (style.cursor) {
-            delete style.cursor;
-        }
-        if (style.objectFit) {
-            delete style.objectFit;
-        }
-        if (style.border) {
-            delete style.border;
-        }
+        const stylesToDelete = ['cursor', 'objectFit', 'border', 'userSelect', 'MozUserSelect', 'WebkitUserSelect', 'msUserSelect', 'pointerEvents'];
+        stylesToDelete.forEach(p => delete style[p]);
+
         if (!style.width && !style.height) {
             const M = 100;
             style.width = Math.min(this.state.width || M, style.maxWidth || M);
@@ -491,72 +493,82 @@ class InputTypeFile extends React.Component {
     }
     refElem = () => {
         const { files } = this.state;
-        const { type, accept, onChange } = this.props;
+        const { type, accept } = this.props;
         if (type === 'file') {
             const acceptImg = accept.includes('image/');
             const acceptVideo = accept.includes('video/');
-            const acceptAudio = accept.includes('audio/');
             const acceptFiles = accept.includes('application/');
-            let mediaType;
-            if (acceptImg && !acceptVideo && !acceptAudio && !acceptFiles) {
-                mediaType = 'photo';
-            } else if (!acceptImg && acceptVideo && !acceptAudio && !acceptFiles) {
-                mediaType = 'video';
+
+            let click = null;
+            if (acceptFiles) {
+                click = async () => {
+                    try {
+                        const res = await DocumentPicker.pick({});
+                        this.processFile(res);
+                    } catch (err) {
+                        // Ignore errors, most likely due to user canceling
+                    }
+                };
+            } else if (acceptImg && !acceptVideo) {
+                click = () => ImagePicker.showImagePicker({ mediaType: 'photo' }, this.processFile);
+            } else if (!acceptImg && acceptVideo) {
+                click = () => ImagePicker.showImagePicker({ mediaType: 'video' }, this.processFile);
             } else {
-                mediaType = 'mixed';
+                click = () => ImagePicker.showImagePicker({ mediaType: 'mixed' }, this.processFile);
             }
 
-            return {
-                files,
-                click: () => ImagePicker.showImagePicker({ mediaType }, async (response) => {
-                    const file = {...response};
-
-                    // Weird file, nothing to go on
-                    if (!file.uri && !file.path) {
-                        console.log('ERROR: File doesnt have uri or path, skipping: ', response);
-                        return;
-                    }
-
-                    // Get file name
-                    if (!file.name) {
-                        if (file.fileName) {
-                            file.name = file.fileName;
-                        } else if (file.path) {
-                            const splits = file.path.split('/');
-                            file.name = splits[splits.length - 1];
-                        } else if (file.uri) {
-                            const splits = file.uri.split('/');
-                            file.name = splits[splits.length - 1];
-                        } else {
-                            console.log('ERROR: Could not get filename, skipping: ', response);
-                            return;
-                        }
-                    }
-
-                    if (!file.uri) {
-                        file.uri = file.path.startsWith('file:') ? file.path : 'file://' + file.path;
-                    }
-
-                    if (!file.size) {
-                        const stat = await rnfs.stat(file.path);
-                        file.size = stat.size;
-                    }
-
-                    if (!file.type) {
-                        file.type = checkFileType(file.name, '').fileType;
-                    }
-                    delete file.data;
-                    console.log('image picker response: ', file);
-
-                    if (file.uri) {
-                        await new Promise(resolve => this.setState({ files: [file] }, resolve));
-                        onChange(this);
-                    }
-                })
-            };
+            return { files, click };
         }
         return { click: () => {}, files };
     };
+
+    processFile = async (response) => {
+        const { onChange } = this.props;
+        const file = {...response};
+
+        // Weird file, nothing to go on
+        if (!file.uri && !file.path) {
+            console.log('ERROR: File doesnt have uri or path, skipping: ', response);
+            return;
+        }
+
+        // Get file name
+        if (!file.name) {
+            if (file.fileName) {
+                file.name = file.fileName;
+            } else if (file.path) {
+                const splits = file.path.split('/');
+                file.name = splits[splits.length - 1];
+            } else if (file.uri) {
+                const splits = file.uri.split('/');
+                file.name = splits[splits.length - 1];
+            } else {
+                console.log('ERROR: Could not get filename, skipping: ', response);
+                return;
+            }
+        }
+
+        if (!file.uri) {
+            file.uri = file.path.startsWith('file:') ? file.path : 'file://' + file.path;
+        }
+
+        if (!file.size) {
+            const stat = await rnfs.stat(file.path);
+            file.size = stat.size;
+        }
+
+        if (!file.type) {
+            file.type = checkFileType(file.name, '').fileType;
+        }
+        delete file.data;
+        console.log('Processed file: ', file);
+
+        if (file.uri) {
+            await new Promise(resolve => this.setState({ files: [file] }, resolve));
+            onChange(this);
+        }
+    };
+
     render() {
         return <ViewOrig style={{ height: 0, width: 0 }} />;
     }
@@ -572,6 +584,9 @@ class InputTypeText extends React.Component {
     render() {
         const style = Array.isArray(this.props.style) ? flattenStyleArray(this.props.style) : ({...this.props.style} || {});
         style.height = style.height || 50;
+        const stylesToDelete = ['outline'];
+        stylesToDelete.forEach(p => delete style[p]);
+
         const props = {...this.props, style};
         return (
             <TextInput {...props} />
@@ -602,12 +617,123 @@ export class TextareaElem extends React.Component {
     render() {
         const style = Array.isArray(this.props.style) ? flattenStyleArray(this.props.style) : ({...this.props.style} || {});
         style.height = style.height || 50;
+        const stylesToDelete = ['outline'];
+        stylesToDelete.forEach(p => delete style[p]);
         const props = {...this.props, style, multiline: true};
         return (
             <TextInput {...props} />
         );
     }
 }
+
+export class PdfFilePreview extends React.PureComponent {
+    constructor(props) {
+        super(props);
+        this.state = {
+            isShowing: false,
+        };
+    }
+
+    onLoadComplete = (numberOfPages, filePath) => {
+        console.log('pdf onLoadComplete: ', numberOfPages, filePath);
+    };
+    onPageChanged = (page, numberOfPages) => {
+        console.log('pdf onPageChanged: ', page, numberOfPages);
+    };
+    onError = (error) => {
+        console.log('pdf error: ', error);
+    };
+    onPressLink = (uri) => {
+        console.log('pdf onPressLink: ', uri);
+    };
+
+    showPdf = () => this.setState({ isShowing: true });
+    hidePdf = () => this.setState({ isShowing: false });
+
+    render () {
+        const { fileUrl } = this.props;
+        const { isShowing } = this.state;
+        const modal = (
+            <ModalOrig isVisible={isShowing}
+                       backdropOpacity={0.5} style={{ margin: 0, padding: 0 }}
+                       onRequestClose={this.hidePdf} onBackdropPress={this.hidePdf}>
+                <Pdf source={{ uri: fileUrl }}
+                     onLoadComplete={this.onLoadComplete} onPageChanged={this.onPageChanged}
+                     onError={this.onError} onPressLink={this.onPressLink}
+                     style={{ height: '100%', width: '100%' }} />
+            </ModalOrig>
+        );
+        return (
+            <View style={{ height: 150, width: 150 }}>
+                <TouchableAnim onPress={this.showPdf}>
+                    <Pdf source={{ uri: fileUrl }}
+                         onLoadComplete={this.onLoadComplete} onPageChanged={this.onPageChanged}
+                         onError={this.onError} onPressLink={this.onPressLink}
+                         style={{ height: 150, width: 150 }} />
+                </TouchableAnim>
+
+                {isShowing && modal}
+            </View>
+        );
+    }
+}
+
+export class ImagePreviewWidget extends React.PureComponent {
+    constructor(props) {
+        super(props);
+        this.state = {
+            modalOpen: false,
+        };
+    }
+
+    onDimensionsLoadCbfn = ({ width, height }) => this.setState({ width, height });
+    openPic = () => {
+        this.setState({ modalOpen: true });
+        const onOpenFn = this.props.onOpenFn || (() => {});
+        onOpenFn();
+    };
+    closeFn = () => this.setState({ modalOpen: false });
+
+    render () {
+        const { imageUrl } = this.props;
+        const { modalOpen, width, height } = this.state;
+        const scale = width && height ? Math.min((WINDOW_INNER_HEIGHT / height), (WINDOW_INNER_WIDTH / width)) : 1;
+
+        const modal = (
+            <ModalOrig isVisible={modalOpen}
+                       backdropOpacity={1} style={{ margin: 0, padding: 0 }}
+                       onRequestClose={this.closeFn} onBackdropPress={this.closeFn}>
+                <ViewOrig style={{ height: '100%', width: '100%',
+                                   display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                    <Image src={imageUrl} style={{ height: height * scale, width: width * scale }} />
+                </ViewOrig>
+            </ModalOrig>
+        );
+        return (
+            <ViewOrig>
+                <TouchableAnim onPress={this.openPic}>
+                    <Image src={imageUrl} style={{ maxHeight: 200, maxWidth: 200 }} onDimensionsLoadCbfn={this.onDimensionsLoadCbfn} />
+                </TouchableAnim>
+                {modalOpen && modal}
+            </ViewOrig>
+        );
+    }
+}
+
+export class LongPressMicBtn extends React.PureComponent {
+    render() {
+        const { onPressIn, onPressOut, style, source } = this.props;
+        return (
+            <TouchableOpacity onPressIn={onPressIn} onPressOut={onPressOut}>
+                <Image style={style} source={source} />
+            </TouchableOpacity>
+        );
+    }
+}
+
+export const openUrlOrRoute = ({ url }) => {
+    window.open(url, '_blank');
+};
 
 export const Switch = Dummy;
 export const PlacesAutocomplete = Dummy;
@@ -626,7 +752,7 @@ export const geocodeByAddress = () => {};
 export const getLatLng = () => {};
 
 export const mobileDetect = () => {
-    return { isAndroid: true, isIphone: false };
+    return { isAndroid: true, isIphone: false, isWeb: false };
 };
 
 export const getUrlParam = (param, loc) => {
@@ -648,7 +774,11 @@ export const renderHtmlText = (html, styleObj) => {
 };
 
 export const recordAudio = async (timeslice, dataAvailableCbFn) => {
-    await requestMicPermission();
+    const granted = await requestMicPermission();
+    if (!granted) {
+        return null;
+    }
+
     const name = 'recorder-' + (new Date().getTime()) + '.aac';
     const recorder = new Recorder(name, { format: 'aac' });
 
@@ -666,7 +796,7 @@ export const recordAudio = async (timeslice, dataAvailableCbFn) => {
 
         const stat = await rnfs.stat(path);
         console.log('file stat: ', stat, path);
-        await new Promise(resolve => recorder.destroy(resolve));
+        // await new Promise(resolve => recorder.destroy(resolve));
 
         const audioBlob = {
             uri: path.startsWith('file:') ? path : 'file://' + path,         // NOTE: file:// prefix is required in Android
@@ -689,7 +819,7 @@ export const fileFromBlob = (blob, filePrefix) => {
 
 export const uploadBlob = async (file) => {
     console.log('uploadBlob file: ', file);
-    if (!file) {
+    if (!file || file.size === 0) {
         return null;
     }
 
@@ -834,5 +964,4 @@ export {
     AsyncStorage, StyleSheet, Toast, ScrollView, ImageBackground,
     ViewOrig,
     Popover,
-    TouchableOpacityRNGH,
 }

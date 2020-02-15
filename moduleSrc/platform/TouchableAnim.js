@@ -9,17 +9,26 @@ export default class TouchableAnim extends React.PureComponent {
         };
     }
 
-    handleMouseUp = () => {
+    onMouseUp = () => {
         // Handle smooth animation when clicking without holding
-        const cbFn = this.props.onPress || (() => {});
-        setTimeout(() => { this.setState({ touched: false }); cbFn(); }, 150);
+        setTimeout(() => {
+            this.setState({ touched: false });
+            (this.props.onPressOut || (() => {}))();
+            (this.props.onPress || (() => {}))();
+        }, 150);
     };
 
-    toggleTouched = () => {
+    onMouseDown = () => {
+        (this.props.onPressIn || (() => {}))();
         this.setState(prevState => ({ touched: !prevState.touched }));
     };
 
     render() {
+        const props = {...this.props};
+        delete props.onPressOut;
+        delete props.onPressIn;
+        delete props.onPress;
+
         const propStyle = this.props.style || {};
         const style = {...custom.btn};
         if (this.state.touched) {
@@ -31,7 +40,8 @@ export default class TouchableAnim extends React.PureComponent {
             addedParams.key = this.props.id;
         }
         return (
-            <div {...this.props} style={{...propStyle, ...style}} {...addedParams} onMouseUp={this.handleMouseUp} onMouseDown={this.toggleTouched}>
+            <div {...props} style={{...propStyle, ...style}} {...addedParams}
+                 onMouseUp={this.onMouseUp} onMouseDown={this.onMouseDown}>
                 {this.props.children}
             </div>
         );

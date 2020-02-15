@@ -43,14 +43,15 @@ export class AttachPopup extends React.PureComponent {
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
             const blobUrl = await uploadBlob(file);
-
-            const { type } = checkFileType(file.name, file.type);
-            const key = getFieldNameFromType(type);
-            if (isTraining) {
-                this.setState({ videoUrl: blobUrl });
-                this.props.onChooseTrainingVideo(blobUrl);
-            } else {
-                this.props.onCompleteFn({ answer: '', type, [key]: blobUrl });
+            if (blobUrl) {
+                const { type } = checkFileType(file.name, file.type);
+                const key = getFieldNameFromType(type);
+                if (isTraining) {
+                    this.setState({ videoUrl: blobUrl });
+                    this.props.onChooseTrainingVideo(blobUrl);
+                } else {
+                    this.props.onCompleteFn({ answer: '', type, [key]: blobUrl });
+                }
             }
         }
     };

@@ -22,8 +22,11 @@ import {
     bodyOverflowAuto,
     HEIGHT_BUFFER,
     ImageBackground,
+    ImagePreviewWidget,
     InputElem,
     Modal,
+    openUrlOrRoute,
+    PdfFilePreview,
     renderHtmlText,
     reverseGeocode,
     scrollToBottomFn,
@@ -42,7 +45,7 @@ import {
     BANGALORE_LNG,
     CALL_MISSED_ICON,
     CHAT_FONT_FAMILY,
-    FIREBASE_CHAT_MESSAGES_DB_NAME,
+    FIREBASE_CHAT_MESSAGES_DB_NAME, FIREBASE_GROUPS_DB_NAME,
     GROUPS_SUPER_ADMINS,
     PLAY_ARROW_ICON,
     TROPHY_IMG
@@ -277,8 +280,8 @@ export default class MessagingUI extends React.PureComponent {
                                      keyboardInputDisabled={keyboardInputDisabled} enableSpeechRecognition={enableSpeechRecognition} />;
         const adminOnlyText = (
             <View style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
-                          fontSize: 15, backgroundColor: '#f4f4f4', color: '#505050', border: '0px solid #000000',
-                          height: '100%', width: '100%', userSelect: 'none',
+                           fontSize: 15, backgroundColor: '#f4f4f4', color: '#505050', border: '0px solid #000000',
+                           height: InputLine.HEIGHT, width: '100%', userSelect: 'none',
             }}>
                 <Text>Only admins can send messages</Text>
             </View>
@@ -393,7 +396,7 @@ class MessageAPersonModal extends React.PureComponent {
                 encodeURIComponent(JSON.stringify(other)),
                 encodeURIComponent(JSON.stringify(me)),
                 encodeURIComponent(JSON.stringify(ipLocation)));
-            window.open(url);
+            openUrlOrRoute({ url });
             this.props.closeFn();
         };
         const onPressView = () => {
@@ -487,7 +490,7 @@ class ProgressiveModule extends React.PureComponent {
         const { videoUrl } = message;
         console.log('[analytics] openProgressiveModule: ', collection, groupId, idx, me.sender);
         const url = format('{}?collection={}&groupId={}&idx={}&user={}&videoUrl={}', HOME_PAGE_URLS.videoAnalytics, collection, groupId, idx, me.sender, encodeURIComponent(videoUrl));
-        window.open(url, '_blank');
+        openUrlOrRoute({ url });
     };
 
     render () {
@@ -516,15 +519,15 @@ class ProgressiveModule extends React.PureComponent {
                 </TouchableAnim>
             </View>
         );
-        const right = sender !== me.sender ? leaderBoardIcon : <View />;
-        const left = sender === me.sender ? leaderBoardIcon : <View />;
+        const right = collection === FIREBASE_GROUPS_DB_NAME && sender !== me.sender ? leaderBoardIcon : <View />;
+        const left  = collection === FIREBASE_GROUPS_DB_NAME && sender === me.sender ? leaderBoardIcon : <View />;
 
         console.log('loggggg: ', { message, idx, me, groupId, collection, sender, duration, watched, completePercent });
         return (
-            <View style={{ display: 'flex', flexDirection: 'row' }}>
+            <View style={{ display: 'flex', flexDirection: 'row', justifyContent: sender === me.sender ? 'flex-end' : 'flex-start' }}>
                 {left}
                 <MessageShell key={idx} {...this.props}>
-                    <View style={{ width: 210, marginTop: 5 }}>
+                    <View style={{ width: 200, marginLeft: 10, marginRight: 10, marginTop: 5 }}>
                         <TouchableAnim onPress={this.openProgressiveModule}>
                             <Image src={imageUrl} style={customStyle.imageMessage} />
                         </TouchableAnim>
@@ -537,7 +540,7 @@ class ProgressiveModule extends React.PureComponent {
                                         <Image src={PLAY_ARROW_ICON} style={{ height: 25, width: 25 }} />
                                     </TouchableAnim>
                                 </View>
-                                <View style={{ width: '80%', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                                <View style={{ width: '70%', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                                     <View style={{ height: 5, width: 100*completePercent + '%', backgroundColor: '#000000' }} />
                                     <View style={{ height: 5, width: 100*(1-completePercent) + '%', backgroundColor: '#c0c0c0' }} />
                                 </View>
@@ -562,12 +565,11 @@ class ImageMessage extends React.PureComponent {
 
     openPic = () => {
         const { collection, groupId, idx, message, me } = this.props;
-        const { imageUrl } = message;
         console.log('[analytics] openPic: ', collection, groupId, idx, me.sender);
-        window.open(imageUrl, '_blank');
     };
+
     render () {
-        const { message, idx, me, otherGuy, onNewMsgFn, mode } = this.props;
+        const { message, idx, me, otherGuy, onNewMsgFn } = this.props;
         const { askInput, imageUrl } = message;
         const { enabled } = this.state;
         const disableFn = () => this.setState({ enabled: false });
@@ -575,11 +577,10 @@ class ImageMessage extends React.PureComponent {
         if (askInput) {
             return renderAttachIcon({ message, idx, type: OUTPUT_IMAGE, enabled, disableFn, onNewMsgFn, me, otherGuy });
         }
+
         return (
             <MessageShell key={idx} {...this.props}>
-                <TouchableAnim onPress={this.openPic}>
-                    <Image src={imageUrl} style={customStyle.imageMessage} />
-                </TouchableAnim>
+                <ImagePreviewWidget imageUrl={imageUrl} onOpenFn={this.openPic} />
             </MessageShell>
         );
     }
@@ -657,7 +658,7 @@ class PdfMessage extends React.PureComponent {
         const { collection, groupId, idx, message, me } = this.props;
         const { fileUrl } = message;
         console.log('[analytics] openPdf: ', collection, groupId, idx, me.sender);
-        window.open(fileUrl, '_blank');
+        openUrlOrRoute({ url: fileUrl });
     };
     render () {
         const { message, idx } = this.props;
@@ -665,12 +666,7 @@ class PdfMessage extends React.PureComponent {
 
         return (
             <MessageShell key={idx} {...this.props}>
-                <View style={{ borderRadius: 16, transform: 'translateY(0px)', padding: 5 }}>
-                    <View style={{ position: 'relative', height: 200, width: 200 }}>
-                        <TouchableAnim onPress={this.openFile} style={{ height: 200, width: 200, zIndex: 10, position: 'absolute' }} />
-                        <iframe width="200px" height="200px" allowFullScreen={true} webkitallowfullscreen="true" mozallowfullscreen="true" allow="autoplay; fullscreen" src={fileUrl} />
-                    </View>
-                </View>
+                <PdfFilePreview fileUrl={fileUrl} onOpenFile={this.openFile} />
             </MessageShell>
         );
     }
@@ -685,7 +681,7 @@ class FileMessage extends React.PureComponent {
         const { collection, groupId, idx, message, me } = this.props;
         const { fileUrl } = message;
         console.log('[analytics] openFile: ', collection, groupId, idx, me.sender);
-        window.open(fileUrl, '_blank');
+        openUrlOrRoute({ url: fileUrl });
     };
     render () {
         const { message, idx } = this.props;
@@ -705,15 +701,11 @@ class FileMessage extends React.PureComponent {
 
         return (
             <MessageShell key={idx} {...this.props}>
-                <View>
-                    <View style={{ borderRadius: 16, transform: 'translateY(0px)', padding: 5, paddingBottom: 0 }}>
-                        <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                            <TouchableAnim onPress={this.openFile} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                                <Image src={DOWNLOAD_FILE_BUTTON} style={{ height: 25, width: 25 }} />
-                            </TouchableAnim>
-                            <View style={{ marginLeft: 5 }}>{name}</View>
-                        </View>
-                    </View>
+                <View style={{ borderRadius: 16, padding: 10, paddingBottom: 0 }}>
+                    <TouchableAnim onPress={this.openFile} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                        <Image src={DOWNLOAD_FILE_BUTTON} style={{ height: 25, width: 25 }} />
+                        <Text style={{ marginLeft: 5 }}>{name}</Text>
+                    </TouchableAnim>
                 </View>
             </MessageShell>
         );
@@ -1167,12 +1159,16 @@ const renderAttachIcon = ({message, idx, type, enabled, disableFn, onNewMsgFn, m
         console.log('files: ', files);
         const blobUrl = await uploadBlob(files[0]);
         disableFn();
-        await onNewMsgFn({ answer: blobUrl, type });
+        if (blobUrl) {
+            await onNewMsgFn({ answer: blobUrl, type });
+        }
     };
     const onAudioDoneFn = async (audioFile) => {
         const blobUrl = await uploadBlob(audioFile);
         disableFn();
-        await onNewMsgFn({ answer: blobUrl, type });
+        if (blobUrl) {
+            await onNewMsgFn({ answer: blobUrl, type });
+        }
     };
 
     const accept = type === OUTPUT_IMAGE ? 'image/*' : (type === OUTPUT_VIDEO ? 'video/*' : 'audio/*');
@@ -1256,7 +1252,6 @@ const customStyle = {
         // backgroundColor: 'rgb(255, 255, 255, 0.7)',
     },
     inputLine: {
-        height: InputLine.HEIGHT,
     },
 
     heloMessage: {},

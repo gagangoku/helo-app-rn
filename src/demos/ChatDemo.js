@@ -1,14 +1,14 @@
 import React, {Fragment} from 'react';
 import {
     LANG_HINGLISH,
-    OUTPUT_AUDIO,
+    OUTPUT_AUDIO, OUTPUT_FILE,
     OUTPUT_ID_CARD,
     OUTPUT_IMAGE,
     OUTPUT_JOB_ACTIONABLE,
     OUTPUT_JOB_REFERENCE,
     OUTPUT_LOCATION,
     OUTPUT_MISSED_CALL,
-    OUTPUT_MULTIPLE_CHOICE,
+    OUTPUT_MULTIPLE_CHOICE, OUTPUT_PDF,
     OUTPUT_PROGRESSIVE_MODULE,
     OUTPUT_SINGLE_CHOICE,
     OUTPUT_TEXT,
@@ -115,11 +115,31 @@ const INITIAL_MESSAGES2 = [{
     timestamp: new Date().getTime(),
     sender: SENDER_VISITOR,
 }, {
+    type: OUTPUT_PDF,
+    fileUrl: 'https://files-lb.heloprotocol.in/orgStructure.pdf-18145-946117-1581716224406.pdf',
+    sender: SENDER_VISITOR,
+    text: 'Bar training',
+    timestamp: new Date().getTime(),
+}, {
+    type: OUTPUT_FILE,
+    fileUrl: 'http://www.africau.edu/images/default/sample.pdf',
+    sender: SENDER_VISITOR,
+    text: 'Bar training',
+    timestamp: new Date().getTime(),
+}, {
     type: OUTPUT_PROGRESSIVE_MODULE,
     duration: 497,
     imageUrl: 'https://images-lb.heloprotocol.in/liq.png-434036-969878-1580287698109.png',
     videoUrl: 'https://videos-lb.heloprotocol.in/5-bartender-v1.m4v-137295685-954600-1580286556619.mp4',
     sender: SENDER_VISITOR,
+    text: 'Bar training',
+    timestamp: new Date().getTime(),
+}, {
+    type: OUTPUT_PROGRESSIVE_MODULE,
+    duration: 497,
+    imageUrl: 'https://images-lb.heloprotocol.in/liq.png-434036-969878-1580287698109.png',
+    videoUrl: 'https://videos-lb.heloprotocol.in/5-bartender-v1.m4v-137295685-954600-1580286556619.mp4',
+    sender: SENDER_ME,
     text: 'Bar training',
     timestamp: new Date().getTime(),
 }, {

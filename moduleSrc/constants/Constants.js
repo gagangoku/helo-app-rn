@@ -373,6 +373,7 @@ export const MIC_RED_ICON = 'https://images-lb.heloprotocol.in/mic_red.png-4345-
 export const STOP_ICON = 'https://images-lb.heloprotocol.in/stop.png-125-754019-1581287299173.png';
 export const ITALICIZED_ATTACH_ICON = 'https://images-lb.heloprotocol.in/attach_file_icon.png-3670-987466-1581361704180.png';
 export const PLAY_VIDEO_OVERLAY_ICON = 'https://images-lb.heloprotocol.in/playVideo2.png-10524-642760-1581589414170.png';
+export const RED_RECORDING_ICON = 'https://images-lb.heloprotocol.in/redCircleIcon.png-15103-844445-1581723368137.png';
 
 export const VIDEO_BACK_15_SECS = 'https://images-lb.heloprotocol.in/video-backward.png-3372-382572-1581592203963.png';
 export const VIDEO_FORWARD_15_SECS = 'https://images-lb.heloprotocol.in/video-forward.png-3523-471032-1581592233062.png';

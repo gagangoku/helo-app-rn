@@ -19,16 +19,17 @@ import document from "global/document";
 import {Switch as Switch2, withStyles} from "@material-ui/core";
 import MobileDetect from "mobile-detect";
 import Modal from "react-modal";
-import Popover from "@material-ui/core/Popover";
+import PopoverOrig from "@material-ui/core/Popover";
 import PlacesAutocomplete, {geocodeByAddress, getLatLng} from "react-places-autocomplete";
 import {Route} from "react-router-dom";
 import {Helmet} from "react-helmet";
 import ReactMinimalPieChart from "react-minimal-pie-chart";
 import GoogleMapReact from 'google-map-react';
 import {confirmAlert} from 'react-confirm-alert';
+import TouchableAnim from "./TouchableAnim";
 
 
-export const HEIGHT_BUFFER = 0;
+export const HEIGHT_BUFFER = 5;
 export const stopBodyOverflow = () => {
     document && document.body && (document.body.style.overflowY = 'hidden');
 };
@@ -47,6 +48,8 @@ export const Switch = withStyles(theme => ({
         height: 30,
     },
 }))(Switch2);
+
+export const requestMicPermission = async () => true;
 
 export const recordAudio = (timeslice, dataAvailableCbFn) => new Promise(async resolve => {
     dataAvailableCbFn = dataAvailableCbFn || (() => {});
@@ -136,7 +139,7 @@ export const fileFromBlob = (blob, filePrefix) => {
 
 export const uploadBlob = async (file) => {
     console.log('file: ', file);
-    if (!file) {
+    if (!file || file.size === 0) {
         return null;
     }
 
@@ -351,7 +354,9 @@ export class TextareaElem extends React.Component {
     refElem = () => this.ref.current;
     render() {
         const props = {...this.props};
-        props.onChange = (v) => props.onChangeText(v.target.value);
+        const { onChangeText } = props;
+        props.onChange = (v) => onChangeText(v.target.value);
+        delete props.onChangeText;
         return (
             <textarea {...props} ref={this.ref} />
         );
@@ -393,6 +398,7 @@ export class ImageBackground extends React.Component {
         props.style && delete props.style;
         props.children && delete props.children;
         style.background = `url(${props.source.uri})`;
+        style.backgroundSize = 'cover';
         return (
             <div {...props} style={style}>
                 {this.props.children}
@@ -400,6 +406,67 @@ export class ImageBackground extends React.Component {
         );
     }
 }
+
+export class PdfFilePreview extends React.PureComponent {
+    render () {
+        const { fileUrl, onOpenFile } = this.props;
+        return (
+            <View style={{ borderRadius: 16, transform: 'translateY(0px)', padding: 5 }}>
+                <View style={{ position: 'relative', height: 200, width: 200 }}>
+                    <TouchableAnim onPress={onOpenFile} style={{ height: 200, width: 200, zIndex: 10, position: 'absolute' }} />
+                    <iframe width="200px" height="200px" src={fileUrl}
+                            allowFullScreen={true} webkitallowfullscreen="true" mozallowfullscreen="true" allow="autoplay; fullscreen" />
+                </View>
+            </View>
+        );
+    }
+}
+
+export class ImagePreviewWidget extends React.PureComponent {
+    openPic = () => {
+        const onOpenFn = this.props.onOpenFn || (() => {});
+        onOpenFn();
+        const { imageUrl } = this.props;
+        openUrlOrRoute({ url: imageUrl });
+    };
+
+    render () {
+        const { imageUrl } = this.props;
+        return (
+            <TouchableAnim onPress={this.openPic}>
+                <Image src={imageUrl} style={{ maxHeight: 200, maxWidth: 200 }} />
+            </TouchableAnim>
+        );
+    }
+}
+export class Popover extends React.PureComponent {
+    render() {
+        const props = {...this.props};
+        const propsToDelete = ['contentStyle', 'arrowStyle', 'backgroundStyle', 'fromRect', 'visible'];
+        propsToDelete.forEach(p => delete props[p]);
+        return <PopoverOrig {...props} />;
+    }
+}
+
+export class LongPressMicBtn extends React.PureComponent {
+    render() {
+        const props = {...this.props};
+        const { onPressIn, onPressOut } = props;
+        const style = Array.isArray(this.props.style) ? flattenStyleArray(this.props.style) : (this.props.style || {});
+        style.background = `url(${props.source.uri})`;
+        style.backgroundSize = 'cover';
+
+        return (
+            <TouchableAnim style={style} onPressIn={onPressIn} onPressOut={onPressOut}
+                           onTouchStart={onPressIn} onTouchEnd={onPressOut}>
+            </TouchableAnim>
+        );
+    }
+}
+
+export const openUrlOrRoute = ({ url }) => {
+    window.open(url, '_blank');
+};
 
 const renderF = (obj, styleOverrides={}) => {
     const s = Array.isArray(obj.props.style) ? flattenStyleArray(obj.props.style) : (obj.props.style || {});
@@ -438,7 +505,7 @@ export const mobileDetect = () => {
     const os = mobileDetect.os() || '';
     const isAndroid = os.toLowerCase().includes('android');
     const isIphone = mobileDetect.is('iPhone');
-    return { isAndroid, isIphone };
+    return { isAndroid, isIphone, isWeb: true };
 };
 
 export const scrollToBottomFn = (element) => {
@@ -461,7 +528,6 @@ export const scrollToElemFn = (ref) => {
         console.log('Exception in scrollToElemFn: ', e);
     }
 };
-export const TouchableOpacityRNGH = {};
 
 
 export const WINDOW_INNER_WIDTH = window.innerWidth;
@@ -471,7 +537,6 @@ export const WINDOW_INNER_HEIGHT = window.innerHeight;
 export {
     AsyncStorage,
     Modal,
-    Popover,
     PlacesAutocomplete, geocodeByAddress, getLatLng, GoogleMapReact,
     Route, Helmet,
     withStyles,

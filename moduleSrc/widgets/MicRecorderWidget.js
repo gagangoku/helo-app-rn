@@ -2,7 +2,7 @@ import React from 'react';
 import {recordAudio, spacer, View} from "../util/Util";
 import {MIC_BLACK_ICON, MIC_RED_ICON} from "../constants/Constants";
 import TouchableAnim from "../platform/TouchableAnim";
-import {fileFromBlob, Image, Text} from "../platform/Util";
+import {fileFromBlob, Image, requestMicPermission, Text} from "../platform/Util";
 
 
 export default class MicRecorderWidget extends React.Component {
@@ -30,13 +30,15 @@ export default class MicRecorderWidget extends React.Component {
     };
 
     startFn = async () => {
-        const recorder = await recordAudio();
-        this.setState({ recorder, recStartTimeMs: new Date().getTime(), isRecording: true });
-        recorder.start();
+        if (await requestMicPermission()) {
+            const recorder = await recordAudio();
+            this.setState({ recorder, recStartTimeMs: new Date().getTime(), isRecording: true });
+            recorder.start();
 
-        const autoCutOffSeconds = this.props.autoCutOffSeconds || 25;
-        if (autoCutOffSeconds) {
-            this.timeoutId = setTimeout(() => this.stopFn(), autoCutOffSeconds * 1000);
+            const autoCutOffSeconds = this.props.autoCutOffSeconds || 25;
+            if (autoCutOffSeconds) {
+                this.timeoutId = setTimeout(() => this.stopFn(), autoCutOffSeconds * 1000);
+            }
         }
     };
 

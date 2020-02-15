@@ -23,7 +23,9 @@ export class TrainingModuleThumbnailName extends React.PureComponent {
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
             const blobUrl = await uploadBlob(file);
-            this.setState({ imageUrl: blobUrl });
+            if (blobUrl) {
+                this.setState({ imageUrl: blobUrl });
+            }
         }
     };
     submitFn = () => {

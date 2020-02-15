@@ -2,14 +2,14 @@ import React from 'react';
 import MessagingUI from "../chat/messaging/MessagingUI";
 import {
     LANG_HINGLISH,
-    OUTPUT_AUDIO,
+    OUTPUT_AUDIO, OUTPUT_FILE,
     OUTPUT_ID_CARD,
     OUTPUT_IMAGE,
     OUTPUT_JOB_ACTIONABLE,
     OUTPUT_JOB_REFERENCE,
     OUTPUT_LOCATION,
     OUTPUT_MISSED_CALL,
-    OUTPUT_MULTIPLE_CHOICE,
+    OUTPUT_MULTIPLE_CHOICE, OUTPUT_PDF,
     OUTPUT_PLACES_AUTOCOMPLETE,
     OUTPUT_SINGLE_CHOICE,
     OUTPUT_TEXT,
@@ -94,6 +94,18 @@ const INITIAL_MESSAGES = [{
     text: 'Hello asda sdasdad',
     timestamp: new Date().getTime(),
     sender: SENDER_VISITOR,
+}, {
+    type: OUTPUT_PDF,
+    fileUrl: 'https://files-lb.heloprotocol.in/orgStructure.pdf-18145-946117-1581716224406.pdf',
+    sender: SENDER_VISITOR,
+    text: 'Bar training',
+    timestamp: new Date().getTime(),
+}, {
+    type: OUTPUT_FILE,
+    fileUrl: 'http://www.africau.edu/images/default/sample.pdf',
+    sender: SENDER_VISITOR,
+    text: 'Bar training',
+    timestamp: new Date().getTime(),
 }, {
     type: OUTPUT_TEXT,
     text: 'Hello asda sdasdadHello asda sdasdadHello asda sdasdadHello asda sdasdadHello asda sdasdadHello asda sdasdadHello asda sdasdadHello asda sdasdadHello asda sdasdad',

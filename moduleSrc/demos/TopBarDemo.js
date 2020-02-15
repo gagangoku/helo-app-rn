@@ -1,7 +1,7 @@
 import React from "react";
 import {ConfigurableTopBar} from "../chat/messaging/TopBar";
 import {View} from "../util/Util";
-import {CHAT_FONT_FAMILY, FIREBASE_GROUPS_DB_NAME} from "../constants/Constants";
+import {CHAT_FONT_FAMILY, FIREBASE_GROUPS_DB_NAME, RED_RECORDING_ICON} from "../constants/Constants";
 
 
 export class TopBarDemo extends React.Component {
@@ -24,7 +24,7 @@ export class TopBarDemo extends React.Component {
         ];
         const sections = [
             { float: 'left', name: ConfigurableTopBar.SECTION_BACK, displayProps: {}, data: {} },
-            { float: 'left', name: ConfigurableTopBar.SECTION_AVATAR, displayProps: {}, data: { avatar: 'https:www.heloprotocol.in/static/redCircleIcon.png' }, onClickFn: () => {} },
+            { float: 'left', name: ConfigurableTopBar.SECTION_AVATAR, displayProps: {}, data: { avatar: RED_RECORDING_ICON }, onClickFn: () => {} },
             { float: 'left', name: ConfigurableTopBar.SECTION_NAME, displayProps: {}, data: { name: 'Create Group' }, onClickFn: () => {} },
             { float: 'right', name: ConfigurableTopBar.SECTION_PHONE, displayProps: {}, data: { } },
             { float: 'right', name: ConfigurableTopBar.SECTION_NOTIFICATIONS, displayProps: {}, data: { numNotif: 5 } },

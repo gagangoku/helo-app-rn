@@ -20,8 +20,10 @@ export default class EditableImageWidget extends React.Component {
         }
         const file = files[0];
         const blobUrl = await uploadBlob(file);
-        await this.props.onUpdateFn(blobUrl);
-        this.setState({ photo: blobUrl });
+        if (blobUrl) {
+            await this.props.onUpdateFn(blobUrl);
+            this.setState({ photo: blobUrl });
+        }
     };
 
 

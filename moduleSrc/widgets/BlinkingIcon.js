@@ -1,4 +1,5 @@
 import React from 'react';
+import {View} from "../util/Util";
 
 
 export default class BlinkingIcon extends React.Component {
@@ -26,9 +27,9 @@ export default class BlinkingIcon extends React.Component {
     render() {
         const { opacity } = this.state;
         return (
-            <div style={{ ...this.props.style, opacity }}>
+            <View style={{ ...this.props.style, opacity }}>
                 {this.props.children}
-            </div>
+            </View>
         );
     }
 }
