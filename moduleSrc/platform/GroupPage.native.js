@@ -68,7 +68,7 @@ export class GroupPage extends React.PureComponent {
         return (
             <Fragment>
                 <GroupMessages location={this.props.location} history={this.props.history} key={'msg'}
-                               goBackFn={this.goBackFn}
+                               goBackFn={this.props.goBackFn}
                                ipLocation={ipLocationResponse} msgToScrollTo={null}
                                bellFn={this.bellFn} leaderboardFn={this.leaderboardFn}
                                groupInfo={groupInfo} docRef={docRef}

@@ -4,8 +4,8 @@ import cnsole from 'loglevel';
 
 export const reducerFn = (prevState, action) => {
     const { type, ts, state } = action || {};
-    cnsole.log('[', new Date().getTime(), '] reducerFn: ', type, ts);
-    // cnsole.log('DEBUG reducerFn: ', prevState, action);
+    cnsole.info('reducerFn: ', type, ts);
+    cnsole.log('DEBUG reducerFn: ', prevState, action);
 
     if (typeof prevState === 'undefined') {
         return {};

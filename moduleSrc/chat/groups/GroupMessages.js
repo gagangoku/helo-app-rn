@@ -51,7 +51,7 @@ export default class GroupMessages extends React.Component {
         const lastReadIdx = this.getLastMessageIdx(this.props.groupInfo.messages);
         const payload = { [`lastReadIdx.${this.props.me.sender}`]: lastReadIdx };
         cnsole.log('triggerReadIdx: ', payload);
-        this.props.docRef.update(payload);
+        this.props.docRef && this.props.docRef.update(payload);
     };
 
     onUserMsg = async ({ text, type, answer, ...extra }) => {

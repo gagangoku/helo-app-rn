@@ -344,7 +344,7 @@ export const GOLD_TABLE_CHECKIN_EXPIRY_SEC = 10 * 60 * 60;          // 10 hours
 
 export const MILLIS_IN_DAY = 24 * 60 * 60 * 1000;                   // Milliseconds in a day
 
-export const GROUPS_SUPER_ADMINS = ['supply:352', 'supply:583'];
+export const GROUPS_SUPER_ADMINS = ['supply:352', 'supply:583', 'cust:6412', 'supply:1021'];
 export const VIDEO_ANALYTICS_INTERVAL_SECONDS = 0.2;
 export const LOOKUP_PERSON_DETAILS_BATCH_SIZE = 100;
 

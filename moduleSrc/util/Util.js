@@ -622,8 +622,8 @@ export const getPersonDetails = async (idToDetails, members, messages) => {
             idToDetails[k] = roleIdToName[k];
         });
     }
-    // cnsole.log('idToDetails: ', idToDetails);
-    cnsole.log('getPersonDetails took: ', new Date().getTime() - startTimeMs);
+    cnsole.log('idToDetails: ', idToDetails);
+    cnsole.info('getPersonDetails took: ', new Date().getTime() - startTimeMs);
 };
 
 export const getPersonalMessageDocInfo = (docData, doc) => {
@@ -640,12 +640,13 @@ export const getPersonalMessageDocInfo = (docData, doc) => {
     const allowChatBotPromptForJobs = false;
     const shouldApplyFilters = false;
 
-    return { groupId: doc.id, photo: '', name: '', desc: '', createdAt, admins, messages, members, lastReadIdx, isAdminPosting, hasAnalytics,
+    return { collection: FIREBASE_CHAT_MESSAGES_DB_NAME, groupId: doc.id,
+             photo: '', name: '', desc: '', createdAt, admins, messages, members, lastReadIdx, isAdminPosting, hasAnalytics,
              isPrivate, showMemberAddNotifications, allowChatBotPromptForJobs, shouldApplyFilters };
 };
 
 export const getGroupInfo = (docData, doc) => {
-    // cnsole.log('Getting group info: ', docData, doc);
+    cnsole.log('Getting group info: ', docData, doc);
     const { photo, name, desc } = docData;
     const admins = lodash.uniq(docData.admins || []);
     const createdAt = docData.createdAt || 1575158400000;
@@ -659,7 +660,8 @@ export const getGroupInfo = (docData, doc) => {
     const allowChatBotPromptForJobs = docData.allowChatBotPromptForJobs || false;
     const shouldApplyFilters = docData.shouldApplyFilters || false;
 
-    return { groupId: doc.id, photo, name, desc, createdAt, admins, messages, members, lastReadIdx, isAdminPosting, hasAnalytics,
+    return { collection: FIREBASE_GROUPS_DB_NAME, groupId: doc.id,
+             photo, name, desc, createdAt, admins, messages, members, lastReadIdx, isAdminPosting, hasAnalytics,
              isPrivate, showMemberAddNotifications, allowChatBotPromptForJobs, shouldApplyFilters };
 };
 

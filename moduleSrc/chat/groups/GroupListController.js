@@ -194,12 +194,12 @@ export class GroupListUI extends React.PureComponent {
     constructor(props) {
         super(props);
         this.contextObj = getCtx(this);
-
-        // cnsole.log('GroupListUI props: ', props);
     }
 
     render() {
         const { me, docs } = this.props;
+        cnsole.info('GroupListUI render docs.length: ', docs.length);
+
         const list = docs.map(x => <ListItem key={x.groupId} {...x} goToChatFn={() => this.props.goToChatFn(x)} /> );
 
         const options = !GROUPS_SUPER_ADMINS.includes(me.sender) ? [] : [
