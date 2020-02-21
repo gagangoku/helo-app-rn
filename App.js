@@ -6,10 +6,12 @@
  */
 
 import React from 'react';
+import {StyleSheet, Text} from 'react-native';
 import {initFirebase} from './moduleSrc/platform/firebase.native';
 import {App as Application} from './moduleSrc/router/Flow.native';
 import cnsole from 'loglevel';
 import {setPushyNotificationListeners} from './src/util/pushy';
+import {CHAT_FONT_FAMILY} from './moduleSrc/constants/Constants';
 
 
 cnsole.setLevel('info');
@@ -17,6 +19,27 @@ cnsole.info('****** App starting ********', new Date().getTime());
 
 setPushyNotificationListeners();
 initFirebase();
+
+if (Platform.OS === 'android') {
+    const styles = StyleSheet.create({
+        defaultFontFamily: {
+            fontFamily: CHAT_FONT_FAMILY,       // 'lucida grande',
+        }
+    });
+
+    const oldRender = Text.render;
+    if (!oldRender) {
+        cnsole.warn('Did not find Text.render');
+    } else {
+        cnsole.info('Found Text.render, overriding');
+        Text.render = function (...args) {
+            const origin = oldRender.call(this, ...args);
+            return React.cloneElement(origin, {
+                style: [styles.defaultFontFamily, origin.props.style]
+            });
+        };
+    }
+}
 
 export {
     Application,
