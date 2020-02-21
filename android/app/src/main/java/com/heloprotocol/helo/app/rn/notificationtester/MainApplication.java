@@ -16,6 +16,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import me.pushy.sdk.react.PushyPackage;
 import com.heloprotocol.helo.module.CustomThumbnailPackage;
+import com.heloprotocol.helo.module.PhoneNumberHintPackage;
 
 
 public class MainApplication extends Application implements ReactApplication {
@@ -38,6 +39,7 @@ public class MainApplication extends Application implements ReactApplication {
                     packages.add(new RNFirebaseFirestorePackage());
                     packages.add(new PushyPackage());
                     packages.add(new CustomThumbnailPackage());
+                    packages.add(new PhoneNumberHintPackage());
                     return packages;
                 }
 
