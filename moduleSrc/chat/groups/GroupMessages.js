@@ -139,7 +139,7 @@ export default class GroupMessages extends React.Component {
             return <View />;
         }
         const { filteredMessages, members } = groupInfo;
-        cnsole.log('Rendering GroupMessages with messages: ', filteredMessages);
+        cnsole.info('Rendering GroupMessages with messages: ', filteredMessages);
 
         const otherGuy = {
             avatar: photo,

@@ -458,8 +458,8 @@ export const setupDeviceId = async () => {
 export const getDetailsFromPhone = async () => {
     const startTimeMs = new Date().getTime();
     const obj = await getDetailsFromPhoneInternal();
-    cnsole.log('getDetailsFromPhone: ', obj);
-    cnsole.log('getDetailsFromPhone took: ', new Date().getTime() - startTimeMs);
+    cnsole.info('getDetailsFromPhone: ', obj);
+    cnsole.info('getDetailsFromPhone took: ', new Date().getTime() - startTimeMs);
     return obj;
 };
 const getDetailsFromPhoneInternal = async () => {
@@ -623,7 +623,7 @@ export const getPersonDetails = async (idToDetails, members, messages) => {
         });
     }
     cnsole.log('idToDetails: ', idToDetails);
-    cnsole.info('getPersonDetails took: ', new Date().getTime() - startTimeMs);
+    cnsole.info('getPersonDetails took: ', new Date().getTime() - startTimeMs, needLookup);
 };
 
 export const getPersonalMessageDocInfo = (docData, doc) => {

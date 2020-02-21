@@ -56,6 +56,22 @@ export const bodyOverflowAuto = () => {};
 export const historyBack = () => {};
 
 
+export class PhoneNumberSelector extends React.Component {
+    async componentDidMount() {
+        try {
+            const obj = await NativeModules.PhoneNumberHintModule.phoneNumberSelector();
+            cnsole.info('Text PhoneNumberHintModule.phoneNumberSelector: ', obj);
+        } catch (e) {
+            cnsole.error('Exception in phoneNumberSelector: ', e);
+        }
+    }
+    render() {
+        return <ViewOrig {...this.props}>
+            {this.props.children}
+        </ViewOrig>
+    }
+}
+
 export class Modal extends React.Component {
     render() {
         // React Native expects fontWeight to be string
@@ -92,6 +108,8 @@ export class View extends React.Component {
     }
 }
 export class Text extends React.Component {
+    async componentDidMount() {
+    }
     render() {
         // React Native expects fontWeight to be string
         const style = Array.isArray(this.props.style) ? flattenStyleArray(this.props.style) : ({...this.props.style} || {});
@@ -164,9 +182,11 @@ export class ExpandingImage extends React.Component {
     }
     async componentDidMount() {
         const { src, style } = this.props;
+        const onDimensionsLoadCbfn = this.props.onDimensionsLoadCbfn || (() => {});
         ImageOrig.getSize(src, (imgWidth, imgHeight) => {
             cnsole.log('ExpandingImage: Got image width, height: ', imgWidth, imgHeight, src);
             this.setState({ imgWidth, imgHeight });
+            onDimensionsLoadCbfn({ width: imgWidth, height: imgHeight });
         }, () => {
             cnsole.log('Failed to load image width, height: ', src);
         });
@@ -198,7 +218,7 @@ export class ExpandingImage extends React.Component {
         const b = layout.width / imgWidth;
         const scale = layout.height === 0 || layout.width === 0 ? a + b : Math.min(a, b);
         return (
-            <ViewOrig style={style}>
+            <ViewOrig style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', ...style}}>
                 <ImageOrig source={{ uri: src }} {...props} style={{ height: imgHeight * scale, width: imgWidth * scale }} />
             </ViewOrig>
         );
@@ -280,11 +300,11 @@ export class AudioElem extends React.Component {
     render() {
         const { currentTime, ready, playing, duration, seeking } = this.state;
         if (!ready) {
-            return <ViewOrig />;
+            return <ViewOrig style={{ minHeight: 60 }} />;
         }
 
         const pauseImg = <ImageOrig source={{ uri: VIDEO_PAUSE }} style={{ height: 40, width: 40, opacity: 0.5 }} />;
-        const playImg = <ImageOrig source={{ uri: PLAY_ARROW_ICON }} style={{ height: 30, width: 30, marginLeft: 10 }} />;
+        const playImg  = <ImageOrig source={{ uri: PLAY_ARROW_ICON }} style={{ height: 30, width: 30, marginLeft: 10 }} />;
         const minimumTrackTintColor='#F44336', maximumTrackTintColor='#747474', thumbTintColor='#F44336';
         return (
             <ViewOrig style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', width: 250 }}>
@@ -751,22 +771,19 @@ export class ImagePreviewWidget extends React.PureComponent {
         const { modalOpen, width, height } = this.state;
         const scale = width && height ? Math.min((WINDOW_INNER_HEIGHT / height), (WINDOW_INNER_WIDTH / width)) : 1;
 
-        const modal = (
-            <ModalOrig isVisible={modalOpen}
-                       backdropOpacity={1} style={{ margin: 0, padding: 0 }}
-                       onRequestClose={this.closeFn} onBackdropPress={this.closeFn}>
-                <ViewOrig style={{ height: '100%', width: '100%',
-                                   display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                    <ImageOrig source={{ uri: imageUrl }} style={{ height: height * scale, width: width * scale }} />
-                </ViewOrig>
-            </ModalOrig>
-        );
         return (
             <ViewOrig>
                 <TouchableAnim onPress={this.openPic}>
-                    <Image src={imageUrl} style={{ maxHeight: 200, maxWidth: 200 }} onDimensionsLoadCbfn={this.onDimensionsLoadCbfn} />
+                    <ExpandingImage src={imageUrl} style={{ width: 200, height: 200 }} onDimensionsLoadCbfn={this.onDimensionsLoadCbfn} />
                 </TouchableAnim>
-                {modalOpen && modal}
+                {modalOpen && <ModalOrig isVisible={modalOpen}
+                                         backdropOpacity={1} style={{ margin: 0, padding: 0 }}
+                                         onRequestClose={this.closeFn} onBackdropPress={this.closeFn}>
+                    <ViewOrig style={{ height: '100%', width: '100%',
+                        display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                        <ImageOrig source={{ uri: imageUrl }} style={{ height: height * scale, width: width * scale }} />
+                    </ViewOrig>
+                </ModalOrig>}
             </ViewOrig>
         );
     }
@@ -945,7 +962,9 @@ export const showToast = (text) => {
 
 export const reverseGeocode = async ({ latitude, longitude }) => {};
 export const playBeepSound = () => {};
-export const scrollToBottomFn = () => {};
+export const scrollToBottomFn = (element) => {
+    element && element.scrollToEnd && element.scrollToEnd({ animated: false });
+};
 export const scrollToElemFn = (ref) => {};
 export const resizeForKeyboard = ({ mode, msgToScrollTo, cbFn }) => {};
 

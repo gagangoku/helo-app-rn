@@ -531,6 +531,12 @@ export const scrollToElemFn = (ref) => {
     }
 };
 
+export class PhoneNumberSelector extends React.Component {
+    render() {
+        return <div>{...this.props.children}</div>;
+    }
+}
+
 
 export const WINDOW_INNER_WIDTH = window.innerWidth;
 export const WINDOW_INNER_HEIGHT = window.innerHeight;

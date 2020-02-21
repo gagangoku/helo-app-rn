@@ -21,7 +21,7 @@ import {
     RESTAURANT_JOBS_INDIA_GROUP_ADDITION
 } from "../../constants/Constants";
 import TouchableAnim from "../../platform/TouchableAnim";
-import {USER_BACKGROUND_COLOR_DARK} from "../Constants";
+import {NUM_MEMBERS_TO_SHOW, USER_BACKGROUND_COLOR_DARK} from "../Constants";
 import {sendSms} from "../../util/Api";
 import window from "global";
 import format from 'string-format';
@@ -314,7 +314,6 @@ class AddMemberModal extends React.Component {
     }
 }
 
-const NUM_MEMBERS_TO_SHOW = 100;
 const MAX_WIDTH = 450;
 const BORDER_COLOR_RED = '#ff8b4a';
 const BORDER_COLOR_GRAY = '#b9b9b9';

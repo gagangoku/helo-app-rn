@@ -2,16 +2,17 @@ import 'react-native-gesture-handler';
 import * as React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import {Text, View} from "../platform/Util";
+import {PhoneNumberSelector, Text, View} from "../platform/Util";
 import {FIREBASE_CHAT_MESSAGES_DB_NAME, FIREBASE_GROUPS_DB_NAME} from "../constants/Constants";
 import {GroupListUI} from "../chat/groups/GroupListController";
 import {GroupPage} from "../platform/GroupPage";
 import GroupMessages from "../chat/groups/GroupMessages";
 import {store} from './store';
 import {connect, Provider} from 'react-redux';
-import {sumFn} from "../util/Util";
+import {getImageUrl, sumFn} from "../util/Util";
 import cnsole from 'loglevel';
 import SplashPage from "../chat/SplashPage";
+import {NativeModules} from 'react-native';
 
 
 const Stack = createStackNavigator();
@@ -20,7 +21,7 @@ export function App() {
         <Provider store={store}>
             <NavigationContainer>
                 <Stack.Navigator initialRouteName={Splash.URL} headerMode="none">
-                    {screens.map(x => <Stack.Screen name={x.URL} component={connect(state => ({ globalState: state }))(x)} />)}
+                    {screens.map(x => <Stack.Screen name={x.URL} key={x.URL} component={connect(state => ({ globalState: state }))(x)} />)}
                 </Stack.Navigator>
             </NavigationContainer>
         </Provider>
@@ -38,15 +39,20 @@ export function App() {
 // Analytics
 
 
-function Splash({ navigation, route }) {
+function Splash({ navigation, route, globalState }) {
     cnsole.log('Splash: ');
-    return <SplashPage onDoneFn={() => goToGroupListFn(navigation)} onDoneTimeoutMs={2000} />;
+    return (
+        <PhoneNumberSelector>
+            <SplashPage onDoneFn={() => goToGroupListFn(navigation)} onDoneTimeoutMs={10000} />
+        </PhoneNumberSelector>
+    );
 }
 Splash.URL = '/splash';
 
 
 function GroupList({ navigation, route, globalState }) {
     cnsole.log('GroupList: ', globalState, navigation, route);
+    cnsole.info('GroupList version: ', globalState.version);
     const {idToDocMap, userDetails} = globalState;
     if (!idToDocMap || !userDetails) {
         return <Text>Loading ...</Text>;
@@ -63,13 +69,14 @@ function GroupList({ navigation, route, globalState }) {
 
     const numUnreadChats = docs.map(x => x.numUnreads && x.numUnreads > 0 ? 1 : 0).reduce(sumFn, 0);
     return <GroupListUI me={me} docs={docs} numUnreadChats={numUnreadChats}
-                        goToChatFn={(doc) => goToChatFn(doc, navigation, globalState)} />;
+                        goToChatFn={(doc) => goToChatFn(doc, navigation)} />;
 }
 GroupList.URL = '/group-list';
 
 
 function GroupPageEntry({ navigation, route, globalState }) {
-    cnsole.info('GroupPageEntry: ', globalState, navigation, route);
+    cnsole.log('GroupPageEntry: ', globalState, navigation, route);
+    cnsole.info('GroupPageEntry version: ', globalState.version);
     const { groupId } = route.params;
     const { userDetails, ipLocation, idToDocMap, idToDetails } = globalState;
     if (!idToDocMap) {
@@ -77,8 +84,8 @@ function GroupPageEntry({ navigation, route, globalState }) {
     }
 
     const { groupInfo, docRef } = idToDocMap[groupId];
-    groupInfo.filteredMessages = groupInfo.messages;
-    return <GroupPage groupInfo={groupInfo} userDetails={userDetails} ipLocationResponse={ipLocation}
+    const groupInfoCopy = {...groupInfo, filteredMessages: groupInfo.messages};
+    return <GroupPage groupInfo={groupInfoCopy} userDetails={userDetails} ipLocationResponse={ipLocation}
                       idToDetails={idToDetails} docRef={docRef}
                       goBackFn={() => goBackFn(navigation)} />;
 }
@@ -87,6 +94,7 @@ GroupPageEntry.URL = '/message/group';
 
 function PersonalMessagingEntry({ navigation, route, globalState }) {
     cnsole.info('PersonalMessagingEntry: ', globalState, navigation, route);
+    cnsole.info('PersonalMessagingEntry version: ', globalState.version);
     const { groupId } = route.params;
     const { userDetails, ipLocation, idToDocMap, idToDetails } = globalState;
     if (!idToDocMap) {
@@ -98,12 +106,13 @@ function PersonalMessagingEntry({ navigation, route, globalState }) {
 
     const other = groupId.split(',').filter(x => x !== me.sender)[0];
     const otherPerson = idToDetails[other].person;
+    cnsole.info('otherPerson: ', otherPerson);
 
     const { groupInfo, docRef } = idToDocMap[groupId];
-    groupInfo.filteredMessages = groupInfo.messages;
+    const groupInfoCopy = {...groupInfo, filteredMessages: groupInfo.messages, photo: getImageUrl(otherPerson.image), name: otherPerson.name};
     return (<GroupMessages goBackFn={() => goBackFn(navigation)}
                            me={me} otherPerson={otherPerson} collection={FIREBASE_CHAT_MESSAGES_DB_NAME} groupId={groupId} ipLocation={ipLocation}
-                           groupInfo={groupInfo} docRef={docRef} idToDetails={idToDetails} />);
+                           groupInfo={groupInfoCopy} docRef={docRef} idToDetails={idToDetails} />);
 }
 PersonalMessagingEntry.URL = '/message/personal';
 
@@ -112,7 +121,7 @@ const goToGroupListFn = (navigation) => {
     navigation.replace(GroupList.URL, {});
 
 };
-const goToChatFn = (doc, navigation, globalState) => {
+const goToChatFn = (doc, navigation) => {
     const { collection, groupId } = doc;
     const url = collection === FIREBASE_CHAT_MESSAGES_DB_NAME ? PersonalMessagingEntry.URL : GroupPageEntry.URL;
     navigation.navigate(url, {groupId});

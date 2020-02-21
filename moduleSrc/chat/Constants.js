@@ -17,3 +17,4 @@ export const MODE_PERSONAL_MESSAGE = 'personal-message';
 export const MODE_GROUP_CHAT = 'group-chat';
 
 export const HELO_KITCHEN_PIC = 'https://images-lb.heloprotocol.in/2020-01-24.png-112605-632146-1580033640911.png';
+export const NUM_MEMBERS_TO_SHOW = 50;

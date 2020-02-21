@@ -12,7 +12,7 @@ import {
     FIREBASE_CHAT_MESSAGES_DB_NAME,
     FIREBASE_GROUPS_DB_NAME,
     GROUPS_DOC_NAME_PREFIX,
-    GROUPS_SUPER_ADMINS
+    GROUPS_SUPER_ADMINS, PHONE_NUMBER_KEY
 } from "../constants/Constants";
 import lodash from "lodash";
 import {AsyncStorage} from "../platform/Util";
@@ -31,6 +31,7 @@ import {
 } from "../chat/Questions";
 import {store} from '../router/store';
 import cnsole from 'loglevel';
+import {NUM_MEMBERS_TO_SHOW} from "../chat/Constants";
 
 
 const GROUP_DOCS_1 = 'groupDocs1';
@@ -41,9 +42,9 @@ const PERSIST_KEY_ID_TO_DETAILS = 'persist-idToDetails';
 const PERSIST_KEY_USER_DETAILS = 'persist-userDetails';
 const PERSIST_KEY_ID_TO_DOCUMENT_MAP = 'persist-idToDocs2';
 
-const globalState = {
+let stateVersion = 0;
+const initialState = {
     userDetails: null,
-    observers: [],
     documentsCache: {},
     idToDocMap: {},
     idToDetails: {},
@@ -56,41 +57,63 @@ const globalState = {
         [CHAT_DOCS_2]: 0,
     },
 };
-setInterval(() => persistOffline(globalState.idToDetails, PERSIST_KEY_ID_TO_DETAILS), 2 * 60 * 1000);
+const observers = [];
 
-const dispatch = () => {
-    store.dispatch({ type: 'set', ts: new Date().getTime(), state: {...globalState} });
+
+const dispatch = (newState) => {
+    const state = {...newState, version: ++stateVersion};
+    cnsole.info('Dispatching new state: ', state.version);
+    store.dispatch({ type: 'set', ts: new Date().getTime(), state });
+
+    const doc = state.idToDocMap['supply:352,visitor:1'];
+    cnsole.info('DEBUG: doc.groupInfo.messages: ', state.version, doc && doc.groupInfo.messages);
 };
+
+
 const setupInternalState = async (store) => {
+    const newState = {...initialState};
+
     // TODO: Remove after testing
-    // await AsyncStorage.setItem(PERSIST_KEY_USER_DETAILS, JSON.stringify({ phone: '9008781096', id: 352, name: 'Gagan', role: 'supply', image: '' }));
+    // await AsyncStorage.setItem(PHONE_NUMBER_KEY, '9008781096');
     // store.dispatch({ type: 'set', ts: new Date().getTime(), state: { init: true } });
+    const phoneNumber = await AsyncStorage.getItem(PHONE_NUMBER_KEY);
+    if (!phoneNumber) {
+        cnsole.info("No phone number saved, login first");
+        return;
+    }
 
     const ipLocationPromise = getLocationFromIPAddress();
 
-    globalState.idToDetails = await readFromOffline(PERSIST_KEY_ID_TO_DETAILS);
-    globalState.userDetails = (await readFromOffline(PERSIST_KEY_USER_DETAILS)) || {};
+    newState.idToDetails = await readFromOffline(PERSIST_KEY_ID_TO_DETAILS);
+    newState.userDetails = (await readFromOffline(PERSIST_KEY_USER_DETAILS)) || {};
     getDetailsFromPhone().then(userDetails => {
-        globalState.userDetails = userDetails;
+        newState.userDetails = userDetails;
         persistOffline(userDetails, PERSIST_KEY_USER_DETAILS);
-        dispatch();
+        dispatch(newState);
     });
 
-    const { id, role } = globalState.userDetails;
+    const { id, role } = newState.userDetails;
     if (!id || !role) {
         // Not logged in
+        window.alert('Not logged in');
         return;
     }
 
     const idToDocMap = await readFromOffline(PERSIST_KEY_ID_TO_DOCUMENT_MAP);
     if (Object.keys(idToDocMap).length > 0) {
-        globalState.idToDocMap = idToDocMap;
-        dispatch();
+        newState.idToDocMap = idToDocMap;
+        dispatch(newState);
     }
 
-    globalState.ipLocation = await ipLocationPromise;
-    dispatch();
+    newState.ipLocation = await ipLocationPromise;
+    dispatch(newState);
     setupObservers({ role, id, store });
+};
+const setupInternalState2 = async (store) => {
+    store.dispatch({ type: 'set', ts: new Date().getTime(), state: {count: 1} });
+    setTimeout(() => {
+        store.dispatch({ type: 'set', ts: new Date().getTime(), state: {count: 2} });
+    }, 3000);
 };
 
 const setupObservers = ({ role, id, store }) => {
@@ -113,19 +136,20 @@ const setupObservers = ({ role, id, store }) => {
     const observer2 = queryRef2.onSnapshot((snapshot) => funcGroups(roleId, snapshot, nowMs, GROUP_DOCS_2, store));
     const observer3 = queryRef3.onSnapshot((snapshot) => funcChatMessages(roleId, snapshot, nowMs, CHAT_DOCS_1, store));
     const observer4 = queryRef4.onSnapshot((snapshot) => funcChatMessages(roleId, snapshot, nowMs, CHAT_DOCS_2, store));
-    globalState.observers.push(observer1, observer2, observer3, observer4);
+    observers.push(observer1, observer2, observer3, observer4);
 };
 
 const funcGroups = async (roleId, snapshot, nowMs, docsKey, store) => {
     cnsole.info('funcGroups: roleId, nowMs, docsKey: ', roleId, nowMs, docsKey);
     cnsole.log('roleId, snapshot, nowMs, docsKey: ', roleId, snapshot, nowMs, docsKey);
-    const { numUpdates, idToDocMap } = globalState;
+    const newState = store.getState();
+    const { numUpdates, idToDetails, idToDocMap } = newState;
 
     if (numUpdates[docsKey] <= 1) {
         cnsole.info('Time taken in firebase snapshot: ', new Date().getTime() - nowMs);
     }
 
-    let numDocsUpdated = 0;
+    const docs = [];
     snapshot.forEach(d => {
         const groupId = d.id;
         cnsole.info('Processing group doc: ', groupId);
@@ -142,22 +166,30 @@ const funcGroups = async (roleId, snapshot, nowMs, docsKey, store) => {
 
             idToDocMap[groupId] = { collection: FIREBASE_GROUPS_DB_NAME, groupId, docRef: d.ref, title: name, avatar: photo,
                                     numUnreads, timestamp, subHeading, messages, members, groupInfo };
-            numDocsUpdated++;
+            docs.push(idToDocMap[groupId]);
         }
     });
+    const numDocsUpdated = docs.length;
     cnsole.info('Group Documents matching: ', docsKey, numDocsUpdated);
-
     numUpdates[docsKey]++;
     cnsole.info('Num docs updated: ', docsKey, numDocsUpdated);
-    dispatch();
+    dispatch(newState);
 
+    // Lookup the people that haven't already been looked up
+    const needLookup1 = lodash.uniq(docs.flatMap(x => x.groupInfo.members.slice(0, NUM_MEMBERS_TO_SHOW)));
+    const needLookup2 = lodash.uniq(docs.flatMap(x => x.groupInfo.messages.map(x => x.sender).reverse().slice(0, 50)));
+    await getPersonDetails(idToDetails, needLookup2.concat(needLookup1), []);
+    dispatch(newState);
+
+    await persistOffline(idToDetails, PERSIST_KEY_ID_TO_DETAILS);
     await persistOfflineDocs(idToDocMap, PERSIST_KEY_ID_TO_DOCUMENT_MAP);
 };
 
 const funcChatMessages = async (roleId, snapshot, nowMs, docsKey, store) => {
     cnsole.info('funcChatMessages: roleId, nowMs, docsKey: ', roleId, nowMs, docsKey);
     cnsole.log('roleId, snapshot, nowMs, docsKey: ', roleId, snapshot, nowMs, docsKey);
-    const { numUpdates, idToDetails, idToDocMap } = globalState;
+    const newState = store.getState();
+    const { numUpdates, idToDetails, idToDocMap } = newState;
 
     if (numUpdates[docsKey] <= 1) {
         cnsole.info('Time taken in firebase snapshot: ', new Date().getTime() - nowMs);
@@ -166,7 +198,7 @@ const funcChatMessages = async (roleId, snapshot, nowMs, docsKey, store) => {
     const docs = [];
     snapshot.forEach(d => {
         const groupId = d.id;
-        cnsole.info('Processing chat doc: ', groupId);
+        cnsole.info(docsKey, ' Processing chat doc: ', groupId);
         cnsole.log('Processing chat doc: ', d, groupId);
         if (groupId.startsWith(CHAT_MESSAGES_DOC_NAME_PREFIX)) {
             const data = d.data();
@@ -181,6 +213,9 @@ const funcChatMessages = async (roleId, snapshot, nowMs, docsKey, store) => {
             idToDocMap[groupId] = { collection: FIREBASE_CHAT_MESSAGES_DB_NAME, groupId, docRef: d.ref, title: '', avatar: '',
                                     numUnreads, timestamp, subHeading, messages, members, groupInfo };
             docs.push(idToDocMap[groupId]);
+        }
+        if (groupId === 'supply:352,visitor:1') {
+            cnsole.info('idToDocMap[groupId]: ', idToDocMap[groupId]);
         }
     });
     const numDocsUpdated = docs.length;
@@ -202,8 +237,9 @@ const funcChatMessages = async (roleId, snapshot, nowMs, docsKey, store) => {
 
     numUpdates[docsKey]++;
     cnsole.info('Num docs updated: ', docsKey, numDocsUpdated);
-    dispatch();
+    dispatch(newState);
 
+    await persistOffline(idToDetails, PERSIST_KEY_ID_TO_DETAILS);
     await persistOfflineDocs(idToDocMap, PERSIST_KEY_ID_TO_DOCUMENT_MAP);
 };
 
@@ -226,7 +262,8 @@ const persistOfflineDocs = async (idToDocMap, keyName) => {
         const copy = {...doc};
         delete copy.docRef;
         copy.messages = copy.messages.slice(copy.messages.length - 10, copy.messages.length);
-        copy.groupInfo.messages = copy.messages;
+        copy.groupInfo = {...copy.groupInfo, messages: copy.messages};
+        delete copy.groupInfo.filteredMessages;
         map[k] = copy;
     });
     await AsyncStorage.setItem(keyName, JSON.stringify(map));
@@ -240,14 +277,6 @@ const readFromOffline = async (keyName) => {
     return obj;
 };
 
-// TODO: Use when appropriate
-const lruCache = new LRU({
-    max: 10000,
-    maxAge: 1000 * 60 * 60,
-    dispose: (key, val) => {
-        globalState.disposedKeys.push(key);
-    },
-});
 
 const summary = (message) => {
     const { type, text, imageUrl } = message;

@@ -4,7 +4,7 @@ import cnsole from 'loglevel';
 
 
 export const initFirebase = () => {
-    cnsole.log('firebase.native.js: Initializing firebase');
+    cnsole.info('firebase.native.js: Initializing firebase');
 
     // Your web app's Firebase configuration
     const firebaseConfig = {
@@ -18,7 +18,8 @@ export const initFirebase = () => {
     };
 
     // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
+    const app = firebase.initializeApp(firebaseConfig);
+    cnsole.log('firebase.native.js: firebase app: ', app);
 };
 
 export {
