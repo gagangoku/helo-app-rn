@@ -189,7 +189,6 @@ android {
 }
 
 dependencies {
-    implementation project(':react-native-video')
     // Pushy notification service
     compile 'me.pushy:sdk:1.0.54'
     compile 'me.pushy:sdk-react-native:1.0.13'
@@ -209,7 +208,6 @@ dependencies {
     implementation 'com.facebook.fresco:webpsupport:2.0.0'
 
     // Firebase dependencies
-    implementation project(':react-native-firebase')
     implementation "com.google.android.gms:play-services-base:16.1.0"
     implementation "com.google.android.gms:play-services-auth:16.0.0"
     implementation "com.google.android.gms:play-services-auth-api-phone:16.0.0"
