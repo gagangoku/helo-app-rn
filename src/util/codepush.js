@@ -8,13 +8,14 @@ import {APP_VERSION} from '../../moduleSrc/constants/Constants';
 // CODEPUSH
 const handleUpdate = (update) => {
     const currentVersion = APP_VERSION;
+    cnsole.info('currentVersion: ', currentVersion);
     if (update != null) {
         delete update['deploymentKey'];                         // Secret - should not be exposed
         cnsole.info('Code push remote package: ', update);
 
         let desc = update['description'];
         let newVersion;
-        if (desc.startsWith('version ')) {
+        if (desc.toLowerCase().startsWith('version ')) {
             newVersion = desc.split(' ')[1];
             cnsole.info('newVersion: ', newVersion);
         } else {
@@ -26,15 +27,11 @@ const handleUpdate = (update) => {
             cnsole.info('Exact same version. Ignoring codepush');
             return;
         }
-        let curSemVersion = semver(currentVersion);
-        let newSemVersion = semver(newVersion);
-        cnsole.info('curSemVersion:', curSemVersion);
-        cnsole.info('newSemVersion:', newSemVersion);
-        if (semver.major(curSemVersion) !== semver.major(newSemVersion)) {
+        if (semver.major(currentVersion) !== semver.major(newVersion)) {
             cnsole.info('Major version mismatch. Ignoring codepush');
             return;
         }
-        if (semver.lt(newSemVersion, curSemVersion)) {
+        if (semver.lt(newVersion, currentVersion)) {
             cnsole.info('Older version. Ignoring codepush');
             return;
         }
@@ -47,7 +44,7 @@ const handleUpdate = (update) => {
             });
         }, 200);
     } else {
-        console.warn('Code push remote package: null');
+        cnsole.warn('Code push remote package: null');
     }
 };
 export const checkForCodepushUpdateAsync = () => {
