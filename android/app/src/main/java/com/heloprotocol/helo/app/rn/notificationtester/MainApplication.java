@@ -15,37 +15,42 @@ import java.util.List;
 import me.pushy.sdk.react.PushyPackage;
 import com.heloprotocol.helo.module.CustomThumbnailPackage;
 import com.heloprotocol.helo.module.PhoneNumberHintPackage;
+import com.microsoft.codepush.react.CodePush;
 
 
 public class MainApplication extends Application implements ReactApplication {
 
-    private final ReactNativeHost mReactNativeHost =
-            new ReactNativeHost(this) {
-                @Override
-                public boolean getUseDeveloperSupport() {
-                    return BuildConfig.DEBUG;
-                }
+    private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
+        @Override
+        public boolean getUseDeveloperSupport() {
+            return BuildConfig.DEBUG;
+        }
 
-                @Override
-                protected List<ReactPackage> getPackages() {
-                    @SuppressWarnings("UnnecessaryLocalVariable")
-                    List<ReactPackage> packages = new PackageList(this).getPackages();
-                    // Packages that cannot be autolinked yet can be added manually here, for example:
-                    // packages.add(new MyReactNativePackage());
-                    packages.add(new RNFirebaseMessagingPackage());
-                    packages.add(new RNFirebaseNotificationsPackage());
-                    packages.add(new RNFirebaseFirestorePackage());
-                    packages.add(new PushyPackage());
-                    packages.add(new CustomThumbnailPackage());
-                    packages.add(new PhoneNumberHintPackage());
-                    return packages;
-                }
+        @Override
+        protected List<ReactPackage> getPackages() {
+            @SuppressWarnings("UnnecessaryLocalVariable")
+            List<ReactPackage> packages = new PackageList(this).getPackages();
+            // Packages that cannot be autolinked yet can be added manually here, for example:
+            // packages.add(new MyReactNativePackage());
+            packages.add(new RNFirebaseMessagingPackage());
+            packages.add(new RNFirebaseNotificationsPackage());
+            packages.add(new RNFirebaseFirestorePackage());
+            packages.add(new PushyPackage());
+            packages.add(new CustomThumbnailPackage());
+            packages.add(new PhoneNumberHintPackage());
+            return packages;
+        }
 
-                @Override
-                protected String getJSMainModuleName() {
-                    return "index";
-                }
-            };
+        @Override
+        protected String getJSBundleFile() {
+            return CodePush.getJSBundleFile();
+        }
+
+        @Override
+        protected String getJSMainModuleName() {
+            return "index";
+        }
+    };
 
     @Override
     public ReactNativeHost getReactNativeHost() {
