@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">Helo</string>
     <string name="default_notification_channel_id">HeloChannel</string>
+
+    <string moduleConfig="true" name="reactNativeCodePush_androidDeploymentKey">8229lhmVs_dwtIVO9IIyI8Ss0DZ1p255Eua-3</string>
+    <string moduleConfig="true" name="CodePushDeploymentKey">8229lhmVs_dwtIVO9IIyI8Ss0DZ1p255Eua-3</string>
+    <string name="appCenterCrashes_whenToSendCrashes" moduleConfig="true" translatable="false">ALWAYS_SEND</string>
+    <string name="appCenterAnalytics_whenToEnableAnalytics" moduleConfig="true" translatable="false">ALWAYS_SEND</string>
 </resources>

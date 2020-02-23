@@ -12,6 +12,7 @@ import {App as Application} from './moduleSrc/router/Flow.native';
 import cnsole from 'loglevel';
 import {setPushyNotificationListeners} from './src/util/pushy';
 import {CHAT_FONT_FAMILY} from './moduleSrc/constants/Constants';
+import {checkForCodepushUpdateAsync} from './src/util/codepush';
 
 
 cnsole.setLevel('info');
@@ -19,6 +20,8 @@ cnsole.info('****** App starting ********', new Date().getTime());
 
 setPushyNotificationListeners();
 initFirebase();
+checkForCodepushUpdateAsync();
+
 
 if (Platform.OS === 'android') {
     const styles = StyleSheet.create({

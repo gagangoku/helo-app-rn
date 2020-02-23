@@ -18,6 +18,7 @@ public class MainActivity extends ReactActivity {
         super.onCreate(savedInstanceState);
         // Enable when you want to debug webview. Super useful stuff
         WebView.setWebContentsDebuggingEnabled(false);
+
     }
 
     /**
