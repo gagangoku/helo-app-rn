@@ -10,15 +10,16 @@ import {StyleSheet, Text} from 'react-native';
 import {initFirebase} from './moduleSrc/platform/firebase.native';
 import {App as Application} from './moduleSrc/router/Flow.native';
 import cnsole from 'loglevel';
-import {setPushyNotificationListeners} from './src/util/pushy';
 import {CHAT_FONT_FAMILY} from './moduleSrc/constants/Constants';
 import {checkForCodepushUpdateAsync} from './src/util/codepush';
+import {setPushyNotificationListeners} from './moduleSrc/platform/pushy';
+
+setPushyNotificationListeners();
 
 
 cnsole.setLevel('info');
 cnsole.info('****** App starting ********', new Date().getTime());
 
-setPushyNotificationListeners();
 initFirebase();
 checkForCodepushUpdateAsync();
 

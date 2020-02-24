@@ -1,4 +1,5 @@
-import {Platform, ToastAndroid as Toast} from 'react-native';
+import {Platform} from 'react-native';
+import Toast from 'react-native-simple-toast';
 import codePush from 'react-native-code-push';
 import semver from 'semver';
 import cnsole from 'loglevel';
