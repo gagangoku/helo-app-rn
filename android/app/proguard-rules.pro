@@ -10,3 +10,6 @@
 # Add any project specific keep options here:
 
 -dontwarn io.branch.**
+-dontwarn me.pushy.**
+-keep class me.pushy.** { *; }
+-keep public class com.horcrux.svg.** {*;}
