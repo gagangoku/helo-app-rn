@@ -34,6 +34,7 @@
     "react-native": "0.61.5",
     "react-native-android-wifi": "0.0.41",
     "react-native-code-push": "^6.1.0",
+    "react-native-contacts": "^5.0.7",
     "react-native-document-picker": "^3.2.4",
     "react-native-firebase": "^5.6.0",
     "react-native-fs": "^2.16.4",

@@ -13,3 +13,5 @@
 -dontwarn me.pushy.**
 -keep class me.pushy.** { *; }
 -keep public class com.horcrux.svg.** {*;}
+-keep class com.rt2zz.reactnativecontacts.** {*;}
+-keepclassmembers class com.rt2zz.reactnativecontacts.** {*;}
