@@ -8,7 +8,7 @@
 import React from 'react';
 import {StyleSheet, Text} from 'react-native';
 import {initFirebase} from './moduleSrc/platform/firebase.native';
-import {App as Application} from './moduleSrc/router/Flow.native';
+import {App as Application, appInit} from './moduleSrc/router/Flow.native';
 import cnsole from 'loglevel';
 import {CHAT_FONT_FAMILY} from './moduleSrc/constants/Constants';
 import {checkForCodepushUpdateAsync} from './src/util/codepush';
@@ -25,7 +25,7 @@ cnsole.info('****** App starting ********', new Date().getTime());
 initFirebase();
 checkForCodepushUpdateAsync();
 setupInternalState(store, false);
-
+appInit();
 
 if (Platform.OS === 'android') {
     const styles = StyleSheet.create({
