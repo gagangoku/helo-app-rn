@@ -16,6 +16,7 @@ import me.pushy.sdk.react.PushyPackage;
 import com.heloprotocol.helo.module.CustomThumbnailPackage;
 import com.heloprotocol.helo.module.PhoneNumberHintPackage;
 import com.microsoft.codepush.react.CodePush;
+import io.branch.rnbranch.RNBranchModule;
 
 
 public class MainApplication extends Application implements ReactApplication {
@@ -61,6 +62,7 @@ public class MainApplication extends Application implements ReactApplication {
     public void onCreate() {
         super.onCreate();
         SoLoader.init(this, /* native exopackage */ false);
+        RNBranchModule.getAutoInstance(this);
         initializeFlipper(this); // Remove this line if you don't want Flipper enabled
     }
 

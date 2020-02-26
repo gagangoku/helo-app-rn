@@ -15,3 +15,8 @@
 -keep public class com.horcrux.svg.** {*;}
 -keep class com.rt2zz.reactnativecontacts.** {*;}
 -keepclassmembers class com.rt2zz.reactnativecontacts.** {*;}
+
+-keep class com.google.android.gms.ads.identifier.** { *; }
+-keep class com.facebook.applinks.** { *; }
+-keepclassmembers class com.facebook.applinks.** { *; }
+-keep class com.facebook.FacebookSdk { *; }

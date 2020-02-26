@@ -4,6 +4,7 @@ import android.webkit.WebView;
 import android.os.Bundle;
 import android.content.Intent;
 import com.facebook.react.ReactActivity;
+import io.branch.rnbranch.*;
 
 
 public class MainActivity extends ReactActivity {
@@ -19,6 +20,12 @@ public class MainActivity extends ReactActivity {
         // Enable when you want to debug webview. Super useful stuff
         WebView.setWebContentsDebuggingEnabled(false);
 
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        RNBranchModule.initSession(getIntent().getData(), this);
     }
 
     /**

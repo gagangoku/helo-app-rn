@@ -15,6 +15,7 @@ import {checkForCodepushUpdateAsync} from './src/util/codepush';
 import {setPushyNotificationListeners} from './moduleSrc/platform/pushy';
 import {store} from './moduleSrc/router/store';
 import {setupInternalState} from './moduleSrc/router/InternalState.native';
+import {initBranch} from './moduleSrc/platform/Branch.native';
 
 setPushyNotificationListeners();
 
@@ -26,6 +27,8 @@ initFirebase();
 checkForCodepushUpdateAsync();
 setupInternalState(store, false);
 appInit();
+initBranch();
+
 
 if (Platform.OS === 'android') {
     const styles = StyleSheet.create({
