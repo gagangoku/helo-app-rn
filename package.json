@@ -21,7 +21,6 @@
     "assert": "^2.0.0",
     "aws-sdk": "^2.614.0",
     "cross-fetch": "^3.0.4",
-    "firebase": "^7.8.2",
     "global": "^4.4.0",
     "lodash": "^4.17.15",
     "loglevel": "^1.6.7",

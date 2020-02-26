@@ -20,3 +20,6 @@
 -keep class com.facebook.applinks.** { *; }
 -keepclassmembers class com.facebook.applinks.** { *; }
 -keep class com.facebook.FacebookSdk { *; }
+
+-keep class io.invertase.firebase.** { *; }
+-dontwarn io.invertase.firebase.**

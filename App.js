@@ -12,9 +12,9 @@ import {App as Application, appInit} from './moduleSrc/router/Flow.native';
 import cnsole from 'loglevel';
 import {CHAT_FONT_FAMILY} from './moduleSrc/constants/Constants';
 import {checkForCodepushUpdateAsync} from './src/util/codepush';
-import {setPushyNotificationListeners} from './moduleSrc/platform/pushy';
+import {setPushyNotificationListeners} from './moduleSrc/platform/pushy.native';
 import {store} from './moduleSrc/router/store';
-import {setupInternalState} from './moduleSrc/router/InternalState.native';
+import {setupInternalStateFromLocal} from './moduleSrc/router/InternalState.native';
 import {initBranch} from './moduleSrc/platform/Branch.native';
 
 setPushyNotificationListeners();
@@ -23,9 +23,9 @@ setPushyNotificationListeners();
 cnsole.setLevel('info');
 cnsole.info('****** App starting ********', new Date().getTime());
 
+setupInternalStateFromLocal(store);
 initFirebase();
 checkForCodepushUpdateAsync();
-setupInternalState(store, false);
 appInit();
 initBranch();
 
