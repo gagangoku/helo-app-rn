@@ -132,8 +132,8 @@ android {
         applicationId "com.heloprotocol.helo.app.rn.notificationtester"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 3
-        versionName "1.0.3"
+        versionCode 4
+        versionName "1.0.4"
         multiDexEnabled true    // needed for firestore:
     }
     splits {
