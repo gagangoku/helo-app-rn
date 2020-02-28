@@ -17,6 +17,8 @@ import com.heloprotocol.helo.module.CustomThumbnailPackage;
 import com.heloprotocol.helo.module.PhoneNumberHintPackage;
 import com.microsoft.codepush.react.CodePush;
 import io.branch.rnbranch.RNBranchModule;
+import com.facebook.react.modules.storage.ReactDatabaseSupplier;
+
 
 
 public class MainApplication extends Application implements ReactApplication {
@@ -62,6 +64,8 @@ public class MainApplication extends Application implements ReactApplication {
     public void onCreate() {
         super.onCreate();
         SoLoader.init(this, /* native exopackage */ false);
+        long size = 50L * 1024L * 1024L; // 50 MB
+        com.facebook.react.modules.storage.ReactDatabaseSupplier.getInstance(getApplicationContext()).setMaximumSize(size);
         RNBranchModule.getAutoInstance(this);
         initializeFlipper(this); // Remove this line if you don't want Flipper enabled
     }
