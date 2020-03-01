@@ -132,9 +132,10 @@ android {
         applicationId "com.heloprotocol.helo.app.rn.notificationtester"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 6
-        versionName "1.0.6"
+        versionCode 7
+        versionName "1.0.7"
         multiDexEnabled true    // needed for firestore:
+        missingDimensionStrategy 'react-native-camera', 'general'
     }
     splits {
         abi {
