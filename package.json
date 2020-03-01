@@ -22,6 +22,8 @@
     "aws-sdk": "^2.614.0",
     "cross-fetch": "^3.0.4",
     "global": "^4.4.0",
+    "libphonenumber-js": "^1.7.44",
+    "linkifyjs": "^2.1.9",
     "lodash": "^4.17.15",
     "loglevel": "^1.6.7",
     "lottie-react-native": "^3.3.2",
