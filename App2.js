@@ -4,13 +4,17 @@ import cnsole from 'loglevel';
 import {ExcelDemo} from './src/demos/ExcelDemo';
 import ChatDemo from './moduleSrc/demos/ChatDemo';
 import {CameraRN} from './moduleSrc/platform/CameraRN.native';
+// import Promise from 'promise';
+import {QueueLoadTest} from './moduleSrc/demos/QueueLoadTest';
+import EditableTextBox from './moduleSrc/widgets/EditableTextBox';
+import {spacer} from './moduleSrc/util/Util';
 
 
 cnsole.setLevel('info');
 cnsole.info('****** Test app ********', new Date().getTime());
 // setupInternalStateFromLocal(store);
 
-export class Application extends React.PureComponent {
+class Application0 extends React.PureComponent {
     submitFn = (x) => {
         console.log('spreadsheet: ', x);
     };
@@ -22,7 +26,7 @@ export class Application extends React.PureComponent {
         );
     }
 }
-export class Application1 extends React.PureComponent {
+class Application1 extends React.PureComponent {
     submitFn = (x) => {
         console.log('spreadsheet: ', x);
     };
@@ -38,10 +42,21 @@ export class Application1 extends React.PureComponent {
         );
     }
 }
-export class Application2 extends React.PureComponent {
+class Application2 extends React.PureComponent {
+    onUpdateFn = async (x) => {
+        console.log('onUpdateFn: ', x);
+    };
     render() {
         return (
-            <CameraRN />
+            <View style={{ height: '100%', width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                <View style={{ width: '80%' }}>
+                    <EditableTextBox name={'hi'} isEditable={true} onUpdateFn={this.onUpdateFn} label={'Designation'} />
+                </View>
+            </View>
         );
     }
+}
+
+export {
+    Application2 as Application,
 }
