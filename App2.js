@@ -3,11 +3,9 @@ import {View} from 'react-native';
 import cnsole from 'loglevel';
 import {ExcelDemo} from './src/demos/ExcelDemo';
 import ChatDemo from './moduleSrc/demos/ChatDemo';
-import {CameraRN} from './moduleSrc/platform/CameraRN.native';
 // import Promise from 'promise';
-import {QueueLoadTest} from './moduleSrc/demos/QueueLoadTest';
 import EditableTextBox from './moduleSrc/widgets/EditableTextBox';
-import {spacer} from './moduleSrc/util/Util';
+import {FlatbufferDemo} from './moduleSrc/demos/FlatbufferDemo';
 
 
 cnsole.setLevel('info');
@@ -56,7 +54,19 @@ class Application2 extends React.PureComponent {
         );
     }
 }
+class ApplicationFbs extends React.PureComponent {
+    onUpdateFn = async (x) => {
+        console.log('onUpdateFn: ', x);
+    };
+    render() {
+        return (
+            <View style={{ height: '100%', width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                <FlatbufferDemo />
+            </View>
+        );
+    }
+}
 
 export {
-    Application2 as Application,
+    ApplicationFbs as Application,
 }
