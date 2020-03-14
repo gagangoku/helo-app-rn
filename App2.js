@@ -3,13 +3,20 @@ import {Text, View} from 'react-native';
 import cnsole from 'loglevel';
 import {ExcelDemo} from './src/demos/ExcelDemo';
 import ChatDemo from './moduleSrc/demos/ChatDemo';
-// import Promise from 'promise';
 import EditableTextBox from './moduleSrc/widgets/EditableTextBox';
 import {FlatbufferDemo} from './moduleSrc/demos/FlatbufferDemo';
 import {Modal, WINDOW_INNER_HEIGHT, WINDOW_INNER_WIDTH} from './moduleSrc/platform/Util';
 import {TaskList} from './moduleSrc/platform/TaskList';
 import {noOpFn} from './moduleSrc/util/Util';
 import TouchableAnim from './moduleSrc/platform/TouchableAnim';
+import {TextMessage} from './moduleSrc/chat/messaging/MessageTypes';
+import {INNER_HEIGHT} from './moduleSrc/constants/Constants';
+import ScrollableList from './moduleSrc/platform/ScrollableList';
+import xrange from 'xrange';
+import allMessages from './src/demos/1.json';
+import assert from "assert";
+import MessagingUI from './moduleSrc/chat/messaging/MessagingUI';
+import {MODE_GROUP_CHAT} from './moduleSrc/chat/Constants';
 
 
 cnsole.setLevel('info');
@@ -113,6 +120,45 @@ class ApplicationFSModal extends React.PureComponent {
     }
 }
 
+class TextMessage1 extends React.Component {
+    shouldComponentUpdate(nextProps, nextState, nextContext) {
+        if (this.props !== nextProps) {
+            cnsole.info('this.props, nextProps: ', this.props, nextProps);
+            return true;
+        }
+        return false;
+    }
+    render() {
+        const { idx, message } = this.props;
+        cnsole.info('TextMessage1 render: ', idx);
+        return <Text style={{ margin: 10 }}>{message.text}</Text>;
+    }
+}
+
+class ApplicationFlatList extends React.PureComponent {
+    constructor(props) {
+        super(props);
+        this.me = { id: 0, name: 'Me', avatar: 'xx', role: 'visit', sender: 'visit:0' };
+        this.otherGuy = { id: 1, name: 'other', avatar: 'xx', role: 'visit', sender: 'visit:1' };
+        this.groupInfo = {
+            isAdminPosting: false,
+            admins: [],
+        };
+        this.messages = allMessages;
+        // this.messages = allMessages.slice(0, 77);
+        // this.messages = allMessages.filter(x => x.type === 'text');
+    }
+
+    render () {
+        return (
+            <View style={{ height: '100%', width: '100%' }}>
+                <MessagingUI me={this.me} messages={this.messages} mode={MODE_GROUP_CHAT}
+                             groupInfo={this.groupInfo} otherGuy={this.otherGuy} />
+            </View>
+        );
+    }
+}
+
 export {
-    ApplicationFSModal as Application,
+    ApplicationFlatList as Application,
 }
