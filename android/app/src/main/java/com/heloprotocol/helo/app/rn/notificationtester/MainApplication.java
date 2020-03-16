@@ -6,18 +6,19 @@ import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
+import com.facebook.react.modules.storage.ReactDatabaseSupplier;
 import com.facebook.soloader.SoLoader;
-import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
-import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
-import io.invertase.firebase.firestore.RNFirebaseFirestorePackage;
-import java.lang.reflect.InvocationTargetException;
-import java.util.List;
-import me.pushy.sdk.react.PushyPackage;
 import com.heloprotocol.helo.module.CustomThumbnailPackage;
 import com.heloprotocol.helo.module.PhoneNumberHintPackage;
 import com.microsoft.codepush.react.CodePush;
 import io.branch.rnbranch.RNBranchModule;
-import com.facebook.react.modules.storage.ReactDatabaseSupplier;
+import io.invertase.firebase.firestore.RNFirebaseFirestorePackage;
+import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
+import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
+import me.pushy.sdk.react.PushyPackage;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 
 

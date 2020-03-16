@@ -7,6 +7,7 @@ import android.os.Bundle;
 import javax.annotation.Nullable;
 import com.facebook.react.bridge.Arguments;
 import android.util.Log;
+import com.heloprotocol.helo.app.rn.notificationtester.ArgumentsConverter;
 
 
 public class MyTaskService extends HeadlessJsTaskService {
@@ -36,7 +37,7 @@ public class MyTaskService extends HeadlessJsTaskService {
         if (extras != null) {
             return new HeadlessJsTaskConfig(
                     "SomeTaskName",
-                    Arguments.fromBundle(extras),
+                    ArgumentsConverter.fromBundle(extras),
                     5000, // timeout for the task
                     false // optional: defines whether or not  the task is allowed in foreground. Default is false
             );
