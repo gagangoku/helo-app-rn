@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class CustomThumbnailPackage implements ReactPackage {
+public class AllModulesPackage implements ReactPackage {
     @Override
     public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
         return Collections.emptyList();
@@ -19,7 +19,8 @@ public class CustomThumbnailPackage implements ReactPackage {
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
         modules.add(new ThumbnailModule(reactContext));
+        modules.add(new PhoneNumberHintModule(reactContext));
+        modules.add(new PhoneNumberVerificationModule(reactContext));
         return modules;
     }
-
 }

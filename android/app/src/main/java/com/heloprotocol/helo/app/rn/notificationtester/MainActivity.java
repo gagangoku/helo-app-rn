@@ -1,6 +1,9 @@
 package com.heloprotocol.helo.app.rn.notificationtester;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -22,9 +25,22 @@ import java.util.List;
 
 public class MainActivity extends ReactActivity {
     private static final String TAG = "ReactNative.MainActivity";
-    private static final String EVENT_NAME = "receivedShareIntent";
+    private static final String SHARE_INTENT_NAME = "receivedShareIntent";
+    private static final String OTP_INTENT_NAME = "receivedOtp";
     private ReactContext reactContext;
     private List<WritableMap> buffer = new ArrayList<>();
+
+    private BroadcastReceiver broadcastReceiver =  new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            WritableMap data = ArgumentsConverter.fromBundle(intent.getExtras());
+            Log.e(TAG, "newmesage: " + data);
+            ReactContext reactContext = MainActivity.this.reactContext;
+            if (reactContext != null) {
+                reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(OTP_INTENT_NAME, data);
+            }
+        }
+    };
 
     @Override
     public void onNewIntent(Intent intent) {
@@ -40,6 +56,7 @@ public class MainActivity extends ReactActivity {
         WebView.setWebContentsDebuggingEnabled(false);
 
         getReactContext();
+        registerReceiver(this.broadcastReceiver, new IntentFilter("otp-broadcast"));
     }
 
     @Override
@@ -59,6 +76,7 @@ public class MainActivity extends ReactActivity {
     protected void onStart() {
         super.onStart();
         RNBranchModule.initSession(getIntent().getData(), this);
+
     }
 
     /**
@@ -103,7 +121,7 @@ public class MainActivity extends ReactActivity {
             Log.i(TAG, "sendIntentToJS: data: " + data);
 
             if (reactContext != null) {
-                reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EVENT_NAME, data);
+                reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(SHARE_INTENT_NAME, data);
             } else {
                 Log.i(TAG, "sendIntentToJS: Buffering: " + data);
                 buffer.add(data);
@@ -118,7 +136,7 @@ public class MainActivity extends ReactActivity {
 
         if (!buffer.isEmpty()) {
             Log.i(TAG, "processBufferedIntents: Dispatching buffered intent: " + buffer.get(0));
-            this.reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EVENT_NAME, buffer.get(0));
+            this.reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(SHARE_INTENT_NAME, buffer.get(0));
             buffer.clear();
         }
     }

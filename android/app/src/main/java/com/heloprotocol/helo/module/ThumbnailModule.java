@@ -18,7 +18,7 @@ public class ThumbnailModule extends ReactContextBaseJavaModule {
     private static ReactApplicationContext reactContext;
     private static final String TAG = "ReactNative.ThumbnailModule";
 
-    ThumbnailModule(ReactApplicationContext context) {
+    public ThumbnailModule(ReactApplicationContext context) {
         super(context);
         reactContext = context;
     }
@@ -43,7 +43,7 @@ public class ThumbnailModule extends ReactContextBaseJavaModule {
     public void createVideoThumbnail(String filePath, int maxWidth, int maxHeight, int quality, Promise promise) {
         Log.i(TAG, "createVideoThumbnail started");
         AsyncTask asyncTask = new ThumbnailTask(filePath, maxWidth, maxHeight, quality, promise);
-        asyncTask.execute(new String[] {});
+        asyncTask.execute(new String[] { "" });
         Log.i(TAG, "createVideoThumbnail finished");
     }
 

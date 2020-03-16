@@ -40,7 +40,7 @@ public class PhoneNumberHintModule extends ReactContextBaseJavaModule
     private GoogleApiClient apiClient;
     private Promise promise;
 
-    private static final String TAG = "PhoneNumberHintModule";
+    private static final String TAG = "ReactNative.PhoneNumberHintModule";
     private static final int RESOLVE_HINT = 1001;
     private static final String DURATION_SHORT_KEY = "SHORT";
     private static final String DURATION_LONG_KEY = "LONG";

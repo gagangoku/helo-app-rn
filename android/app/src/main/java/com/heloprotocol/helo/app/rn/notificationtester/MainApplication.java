@@ -8,8 +8,8 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.modules.storage.ReactDatabaseSupplier;
 import com.facebook.soloader.SoLoader;
-import com.heloprotocol.helo.module.CustomThumbnailPackage;
-import com.heloprotocol.helo.module.PhoneNumberHintPackage;
+import com.heloprotocol.helo.module.AllModulesPackage;
+import com.heloprotocol.helo.module.AppSignatureHelper;
 import com.microsoft.codepush.react.CodePush;
 import io.branch.rnbranch.RNBranchModule;
 import io.invertase.firebase.firestore.RNFirebaseFirestorePackage;
@@ -40,8 +40,7 @@ public class MainApplication extends Application implements ReactApplication {
             packages.add(new RNFirebaseNotificationsPackage());
             packages.add(new RNFirebaseFirestorePackage());
             packages.add(new PushyPackage());
-            packages.add(new CustomThumbnailPackage());
-            packages.add(new PhoneNumberHintPackage());
+            packages.add(new AllModulesPackage());
             return packages;
         }
 
@@ -68,6 +67,9 @@ public class MainApplication extends Application implements ReactApplication {
         long size = 50L * 1024L * 1024L; // 50 MB
         com.facebook.react.modules.storage.ReactDatabaseSupplier.getInstance(getApplicationContext()).setMaximumSize(size);
         RNBranchModule.getAutoInstance(this);
+
+        AppSignatureHelper helper = new AppSignatureHelper(this);
+        helper.getAppSignatures();
         initializeFlipper(this); // Remove this line if you don't want Flipper enabled
     }
 
