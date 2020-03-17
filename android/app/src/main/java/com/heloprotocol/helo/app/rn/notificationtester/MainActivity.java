@@ -44,6 +44,7 @@ public class MainActivity extends ReactActivity {
 
     @Override
     public void onNewIntent(Intent intent) {
+        Log.i(TAG, "onNewIntent");
         super.onNewIntent(intent);
         setIntent(intent);
         sendIntentToJS(intent);
@@ -51,6 +52,7 @@ public class MainActivity extends ReactActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.i(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         // Enable when you want to debug webview. Super useful stuff
         WebView.setWebContentsDebuggingEnabled(false);
@@ -64,6 +66,7 @@ public class MainActivity extends ReactActivity {
         return new ReactActivityDelegate(this, getMainComponentName()) {
             @Override
             protected Bundle getLaunchOptions() {
+                Log.i(TAG, "getLaunchOptions");
                 Intent intent = MainActivity.this.getIntent();
                 MainActivity.this.sendIntentToJS(intent);
                 Bundle bundle = intent.getExtras();
@@ -74,9 +77,9 @@ public class MainActivity extends ReactActivity {
 
     @Override
     protected void onStart() {
+        Log.i(TAG, "onStart");
         super.onStart();
         RNBranchModule.initSession(getIntent().getData(), this);
-
     }
 
     /**
