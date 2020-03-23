@@ -1,4 +1,4 @@
-package com.heloprotocol.helo.app.rn.notificationtester;
+package com.heloprotocol.helo.chat.app.rn.notificationtester;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -14,8 +14,8 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.heloprotocol.helo.app.rn.notificationtester.ArgumentsConverter;
-import com.heloprotocol.helo.app.rn.notificationtester.Util;
+import com.heloprotocol.helo.chat.app.rn.notificationtester.ArgumentsConverter;
+import com.heloprotocol.helo.chat.app.rn.notificationtester.Util;
 import io.branch.rnbranch.*;
 import io.branch.rnbranch.RNBranchModule;
 

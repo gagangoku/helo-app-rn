@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:241327438102:android:a3a35e746c7dd2d9e97837",
         "android_client_info": {
-          "package_name": "com.heloprotocol.helo.app.rn.notificationtester"
+          "package_name": "com.heloprotocol.helo.chat.app.rn.notificationtester"
         }
       },
       "oauth_client": [

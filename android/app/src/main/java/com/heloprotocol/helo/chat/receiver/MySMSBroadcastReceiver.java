@@ -1,4 +1,4 @@
-package com.heloprotocol.helo.app.rn.notificationtester;
+package com.heloprotocol.helo.chat.app.rn.notificationtester;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

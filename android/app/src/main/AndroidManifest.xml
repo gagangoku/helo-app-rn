@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.heloprotocol.helo.app.rn.notificationtester">
+          package="com.heloprotocol.helo.chat.app.rn.notificationtester">
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
@@ -154,7 +154,7 @@
 
         <!-- File provider -->
         <provider android:name="androidx.core.content.FileProvider"
-                  android:authorities="com.heloprotocol.helo.app.rn.notificationtester.provider"
+                  android:authorities="com.heloprotocol.helo.chat.app.rn.notificationtester.provider"
                   android:exported="false"
                   android:grantUriPermissions="true">
             <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/provider_paths" />

@@ -129,7 +129,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.heloprotocol.helo.app.rn.notificationtester"
+        applicationId "com.heloprotocol.helo.chat.app.rn.notificationtester"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 11

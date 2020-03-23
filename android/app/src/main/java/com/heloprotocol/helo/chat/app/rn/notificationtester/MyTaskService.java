@@ -1,4 +1,4 @@
-package com.heloprotocol.helo.app.rn.notificationtester;
+package com.heloprotocol.helo.chat.app.rn.notificationtester;
 
 import com.facebook.react.HeadlessJsTaskService;
 import com.facebook.react.jstasks.HeadlessJsTaskConfig;
@@ -7,7 +7,7 @@ import android.os.Bundle;
 import javax.annotation.Nullable;
 import com.facebook.react.bridge.Arguments;
 import android.util.Log;
-import com.heloprotocol.helo.app.rn.notificationtester.ArgumentsConverter;
+import com.heloprotocol.helo.chat.app.rn.notificationtester.ArgumentsConverter;
 
 
 public class MyTaskService extends HeadlessJsTaskService {
