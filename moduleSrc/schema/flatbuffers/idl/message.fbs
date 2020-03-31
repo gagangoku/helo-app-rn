@@ -1,0 +1,35 @@
+// example IDL file
+
+namespace helo;
+
+enum Type : byte {
+  Red = 0,
+  Green,
+  Blue
+}
+enum Role : byte {
+  VISITOR = 0,
+  CUSTOMER,
+  SUPPLY
+}
+
+table ExtraData {
+  imageUrl:string;
+  audioUrl:string;
+  videoUrl:string;
+  fileUrl:string;
+  location:ulong;
+  excel:[ubyte];
+}
+table Message {
+  index:ulong;
+  type:Type;
+  timestamp:ulong;
+  senderRole:Role;
+  senderId:ulong;
+  location:ulong;
+  text:string;
+  extra:ExtraData;
+}
+
+root_type Message;

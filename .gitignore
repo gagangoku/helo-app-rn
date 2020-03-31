@@ -62,4 +62,4 @@ buck-out/
 *.aab
 
 # As its a direct copy
-moduleSrc/
+#moduleSrc/

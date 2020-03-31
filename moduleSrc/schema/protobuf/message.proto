@@ -1,0 +1,7 @@
+syntax = "proto2";
+package helo;
+
+message Message {
+    optional uint32 index = 1;
+    optional string text = 4;
+}
