@@ -79,6 +79,14 @@ public class MainActivity extends ReactActivity {
     protected void onStart() {
         Log.i(TAG, "onStart");
         super.onStart();
+        // Commented as docs say so : https://www.npmjs.com/package/react-native-branch#android-setup
+        // RNBranchModule.initSession(getIntent().getData(), this);
+    }
+
+    @Override
+    protected void onResume() {
+        Log.i(TAG, "onResume");
+        super.onResume();
         RNBranchModule.initSession(getIntent().getData(), this);
     }
 
