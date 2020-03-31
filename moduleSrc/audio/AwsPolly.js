@@ -5,8 +5,8 @@ import cnsole from 'loglevel';
 
 
 AWS.config.update({
-    accessKeyId: "AKIAI5HVGQ2IVQ72RY6Q",
-    secretAccessKey: "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",
+    accessKeyId: "",
+    secretAccessKey: "",
 });
 
 let initialized = false;

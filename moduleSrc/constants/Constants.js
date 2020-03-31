@@ -47,7 +47,7 @@ export const OFFICE_LOCATION = 'MG Road, Bangalore';
 export const MAP_CENTER_PIN_IMG = 'https://images-lb.heloprotocol.in/map-pin-filled.png-17231-86697-1553957693482.png';
 export const BANGALORE_LAT = 12.967972;
 export const BANGALORE_LNG = 77.641199;
-export const GOOGLE_MAPS_API_KEY = 'AIzaSyBIjIiAjO4XV3P3LqEO2AFYKyTLc_42HkE';
+export const GOOGLE_MAPS_API_KEY = '';
 
 // API's
 export const SEND_OTP_TO_PHONE_API = '/v1/otp/sendToPhone';
@@ -115,7 +115,7 @@ export const PHONE_NUMBER_KEY = 'phone-number-1';
 export const CONTACTS_STORED_KEY = 'contacts-stored';
 export const AUTH_TOKEN_KEY = 'auth-token-key';
 export const X_AUTH_HEADER = 'X-Authorization-Token';
-export const X_AUTH_TOKEN = '685428C417C5357856BEB8235888C';
+export const X_AUTH_TOKEN = '';
 
 export const INFO_IMG_URL = 'https://images-lb.heloprotocol.in/81.png-1560-652566-1552576424939.png?name=signs.png';
 export const TOAST_DURATION_MS = 3000;
@@ -339,13 +339,13 @@ export const JOB_OPENING_STATUS_CLOSED = 'CLOSED';
 
 export const CHAT_FONT_FAMILY = '"Helvetica Neue","Segoe UI",Helvetica,Arial';
 
-export const VAPID_PUBLIC_KEY = 'BLRq293tD07zU7qJ9ojBIMSu_SnCjPAzQE8J0DKAKJ3pImr1axwMDTVLlaVStRAvrEfBqD2Poeh8nGpEQ0_DMr0';
-export const VAPID_PRIVATE_KEY = 'VphmqaJLparua2JH22xRErOrIue1pWbFlpAUHisr5CI';
+export const VAPID_PUBLIC_KEY = '';
+export const VAPID_PRIVATE_KEY = '';
 export const PREVIOUS_SESSION_KEY = 'previous-session';
-export const RESPONSIVE_VOICE_KEY = 'Ckjzbum5';
+export const RESPONSIVE_VOICE_KEY = '';
 export const SPEECH_RECOGNITION_TERMINATOR = 'SP-null-term';
 export const SPEECH_RECOGNITION_SAMPLE_MS = 100;
-export const TRUECALLER_KEY = 'NpSYO314dcaadcaf84bfc8ecebbee4f7385e5';
+export const TRUECALLER_KEY = '';
 
 export const NODE_CACHE_SET_TTL_SECONDS = 2 * 60 * 60;              // 2 hours
 
@@ -404,7 +404,7 @@ export const FLASH_OFF_ICON = 'https://images-lb.heloprotocol.in/flashOff.png-14
 export const FLASH_AUTO_ICON = 'https://images-lb.heloprotocol.in/flashAuto.png-14689-470635-1583094859010.png';
 export const FLIP_CAMERA_ICON = 'https://images-lb.heloprotocol.in/flipCamera.png-14173-911809-1583095480958.png';
 
-export const PUSHY_API_KEY = 'b27a81b8a22168de20b2f4104c7c41b1598d3fa235867edf9ea729f5d3fdf87b';
+export const PUSHY_API_KEY = '';
 export const APP_DEBUG_MODE = false;
 export const GROUP_INVITE_LINK_BASE = 'https://helochat.app.link/gtSFI7l4n4';
 
