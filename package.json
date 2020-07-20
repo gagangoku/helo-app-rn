@@ -27,7 +27,7 @@
     "global": "^4.4.0",
     "libphonenumber-js": "^1.7.44",
     "linkifyjs": "^2.1.9",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "loglevel": "^1.6.7",
     "lottie-react-native": "^3.3.2",
     "lru-cache": "^5.1.1",
