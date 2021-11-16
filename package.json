@@ -20,7 +20,7 @@
     "appcenter-analytics": "3.0.0",
     "appcenter-crashes": "3.0.0",
     "assert": "^2.0.0",
-    "aws-sdk": "^2.614.0",
+    "aws-sdk": "^2.814.0",
     "cross-fetch": "^3.0.4",
     "debounce": "^1.2.0",
     "flatbuffers": "^1.11.0",
